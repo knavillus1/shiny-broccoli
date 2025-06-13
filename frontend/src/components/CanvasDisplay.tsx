@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import useCanvas from '../hooks/useCanvas';
 import MaskToolbar from './MaskToolbar';
-import { processImage } from '../services/apiClient';
+import { editImage } from '../services/apiClient';
 
 /**
  * Displays an uploaded image on an HTML5 canvas.
@@ -47,7 +47,11 @@ export default function CanvasDisplay({ image }: { image: File | null }) {
       maskCanvas.width = canvas.width;
       maskCanvas.height = canvas.height;
       const mctx = maskCanvas.getContext('2d');
-      mctx?.clearRect(0, 0, maskCanvas.width, maskCanvas.height);
+      if (mctx) {
+        mctx.fillStyle = 'white';
+        mctx.fillRect(0, 0, maskCanvas.width, maskCanvas.height);
+      }
+      maskCanvas.style.opacity = '0.5';
     };
     img.src = URL.createObjectURL(image);
     return () => {
@@ -56,18 +60,26 @@ export default function CanvasDisplay({ image }: { image: File | null }) {
   }, [image]);
 
   const handleSubmit = async () => {
-    if (!image || !maskRef.current) return;
+    if (!image || !maskRef.current || !baseRef.current) return;
     setSubmitting(true);
     setSubmitMsg('Processing...');
     setSubmitError('');
     try {
-      const blob = await new Promise<Blob | null>((resolve) =>
-        maskRef.current!.toBlob(resolve, 'image/png')
-      );
-      const maskFile = blob
-        ? new File([blob], 'mask.png', { type: 'image/png' })
+      const [maskBlob, imgBlob] = await Promise.all([
+        new Promise<Blob | null>((resolve) =>
+          maskRef.current!.toBlob(resolve, 'image/png')
+        ),
+        new Promise<Blob | null>((resolve) =>
+          baseRef.current!.toBlob(resolve, 'image/png')
+        ),
+      ]);
+      const maskFile = maskBlob
+        ? new File([maskBlob], 'mask.png', { type: 'image/png' })
         : undefined;
-      const result = await processImage(image, maskFile);
+      const imageFile = imgBlob
+        ? new File([imgBlob], 'image.png', { type: 'image/png' })
+        : image;
+      const result = await editImage(imageFile, 'Edit', maskFile);
       setSubmitMsg(result.detail || 'Processing complete');
     } catch (err) {
       setSubmitError((err as Error).message);

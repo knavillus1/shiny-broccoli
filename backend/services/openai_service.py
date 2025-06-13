@@ -3,7 +3,13 @@
 from __future__ import annotations
 
 import logging
+from io import BytesIO
 from typing import Any
+
+try:  # Pillow is optional in test environments
+    from PIL import Image
+except Exception:  # pragma: no cover - pillow may not be installed
+    Image = None  # type: ignore
 
 import openai
 
@@ -33,6 +39,17 @@ class OpenAIService:
         logger.debug("Models list response: %s", response)
         return response
 
+    def _ensure_png(self, data: bytes) -> bytes:
+        """Convert image bytes to PNG if not already."""
+        if Image is None:  # pragma: no cover - Pillow not installed
+            return data
+        img = Image.open(BytesIO(data))
+        if img.format != "PNG":
+            buf = BytesIO()
+            img.save(buf, format="PNG")
+            return buf.getvalue()
+        return data
+
     async def edit_image(
         self, image: bytes, mask: bytes | None, prompt: str
     ) -> dict[str, Any]:
@@ -49,9 +66,11 @@ class OpenAIService:
         """
         logger.info("Sending image edit request")
         try:
+            png_image = self._ensure_png(image)
+            png_mask = self._ensure_png(mask) if mask else None
             response = await self._client.images.edit(
-                image=image,
-                mask=mask,
+                image=png_image,
+                mask=png_mask,
                 prompt=prompt,
             )
         except Exception:  # pragma: no cover - network errors mocked in tests

@@ -15,13 +15,13 @@ describe('useCanvas', () => {
   it('clears the canvas', () => {
     const { result } = renderHook(() => useCanvas());
     const canvas = document.createElement('canvas');
-    const clearRect = vi.fn();
-    canvas.getContext = vi.fn(() => ({ clearRect } as unknown as CanvasRenderingContext2D));
+    const fillRect = vi.fn();
+    canvas.getContext = vi.fn(() => ({ fillRect, globalCompositeOperation: 'source-over', fillStyle: 'white' } as unknown as CanvasRenderingContext2D));
     result.current.canvasRef.current = canvas;
     act(() => {
       result.current.clear();
     });
-    expect(clearRect).toHaveBeenCalled();
+    expect(fillRect).toHaveBeenCalled();
   });
 
   it('updates brush size', () => {
