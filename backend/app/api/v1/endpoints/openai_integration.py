@@ -6,6 +6,7 @@ import logging
 import time
 
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException, status
+import openai
 
 from backend.services.openai_service import OpenAIService
 
@@ -48,6 +49,45 @@ async def edit_image(
         img_bytes = await image.read()
         mask_bytes = await mask.read() if mask else None
         result = await service.edit_image(img_bytes, mask_bytes, prompt)
+    except openai.BadRequestError as exc:  # pragma: no cover - network
+        logger.warning("OpenAI bad request: %s", exc)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(exc),
+        )
+    except (
+        openai.AuthenticationError,
+        openai.PermissionDeniedError,
+    ) as exc:  # pragma: no cover - network
+        logger.warning("OpenAI auth error: %s", exc)
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=str(exc),
+        )
+    except openai.RateLimitError as exc:  # pragma: no cover - network
+        logger.warning("OpenAI rate limit: %s", exc)
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail=str(exc),
+        )
+    except openai.APIConnectionError as exc:  # pragma: no cover - network
+        logger.warning("OpenAI connection error: %s", exc)
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail=str(exc),
+        )
+    except openai.APITimeoutError as exc:  # pragma: no cover - network
+        logger.warning("OpenAI timeout: %s", exc)
+        raise HTTPException(
+            status_code=status.HTTP_504_GATEWAY_TIMEOUT,
+            detail=str(exc),
+        )
+    except openai.APIError as exc:  # pragma: no cover - network
+        logger.warning("OpenAI API error: %s", exc)
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=str(exc),
+        )
     except Exception as exc:  # pragma: no cover - should not occur in tests
         logger.exception("OpenAI edit failed")
         raise HTTPException(
