@@ -9,6 +9,12 @@ export default function useCanvas() {
   const drawing = useRef(false);
   const [mode, setMode] = useState<'draw' | 'erase'>('draw');
   const toggleMode = () => setMode((m) => (m === 'draw' ? 'erase' : 'draw'));
+  const clear = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    ctx?.clearRect(0, 0, canvas.width, canvas.height);
+  };
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -49,5 +55,5 @@ export default function useCanvas() {
     };
   }, [mode]);
 
-  return { canvasRef, mode, toggleMode };
+  return { canvasRef, mode, toggleMode, clear };
 }

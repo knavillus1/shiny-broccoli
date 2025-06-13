@@ -86,6 +86,7 @@
 ### Existing Files Modified
 - `frontend/src/components/CanvasDisplay.tsx` - Enhanced with advanced mask tools and export functionality.
 - `frontend/src/hooks/useCanvas.ts` - Extended with undo/redo, advanced drawing tools, and mask export.
+- `frontend/src/hooks/useCanvas.test.tsx` - Tests for canvas hook functionality.
 - `frontend/src/pages/HomePage.tsx` - Integration of new components into complete workflow.
 - `frontend/src/services/apiClient.ts` - Added functions for OpenAI integration endpoints.
 - `backend/app/main.py` - Include new OpenAI integration router.
@@ -95,6 +96,7 @@
 - `frontend/package.json` - Add any required frontend dependencies for enhanced UI.
 - `.project-management/current-prd/tasks-prd-core-functionality-epic.md` - Task tracking updates.
 - `CHANGELOG.md` - Document Phase 2 implementation progress.
+- `frontend/src/components/CanvasDisplay.test.tsx` - Unit tests for CanvasDisplay component.
 
 ### Notes
 - OpenAI API key must be stored securely in environment variables
@@ -134,7 +136,7 @@
 - [ ] 4.0 Enhance Mask Drawing System (FR6-FR10, US2, US6)
   - [ ] 4.1 Create `MaskToolbar.tsx` component with brush size controls (small, medium, large)
   - [ ] 4.2 Implement rectangle and circle selection tools in addition to freehand drawing
-  - [ ] 4.3 Add "Clear Mask" functionality to reset the entire mask
+  - [x] 4.3 Add "Clear Mask" functionality to reset the entire mask
   - [ ] 4.4 Implement undo/redo system for mask operations
   - [ ] 4.5 Enhance `useCanvas.ts` hook with advanced drawing state management
   - [ ] 4.6 Add mask export functionality to generate proper PNG data for API
