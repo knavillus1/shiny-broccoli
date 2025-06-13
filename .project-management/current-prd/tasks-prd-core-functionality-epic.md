@@ -156,21 +156,21 @@
 - [x] 5.6 Create unit tests for prompt input validation and storage
 
 - [ ] 6.0 Build Results Display System (FR15-FR18, US3)
-  - [ ] 6.1 Create `ResultsDisplay.tsx` component for before/after comparison
+  - [x] 6.1 Create `ResultsDisplay.tsx` component for before/after comparison
   - [ ] 6.2 Implement side-by-side and overlay comparison modes
   - [ ] 6.3 Add download/save functionality for edited results
   - [ ] 6.4 Handle display of OpenAI error responses and fallback states
   - [ ] 6.5 Optimize image loading and display performance
-  - [ ] 6.6 Create unit tests for results display functionality
+  - [x] 6.6 Create unit tests for results display functionality
 
 - [ ] 7.0 Implement Progress and Error Handling (FR19-FR22, US5, US7)
-  - [ ] 7.1 Create `ProgressIndicator.tsx` component with loading animations
+  - [x] 7.1 Create `ProgressIndicator.tsx` component with loading animations
   - [ ] 7.2 Implement progress tracking for long-running API requests
   - [ ] 7.3 Add estimated completion time display
   - [x] 7.4 Create `ErrorBoundary.tsx` for graceful error recovery
   - [ ] 7.5 Implement retry functionality for failed requests
   - [ ] 7.6 Add user-friendly error messages for different failure scenarios
-  - [ ] 7.7 Create unit tests for progress and error handling components
+  - [x] 7.7 Create unit tests for progress and error handling components
 
 - [ ] 8.0 Frontend-Backend Integration for Complete Workflow (FR1-FR22, US1-US7)
   - [x] 8.1 Update `frontend/src/services/apiClient.ts` with OpenAI integration functions
