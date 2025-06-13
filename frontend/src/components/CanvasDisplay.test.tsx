@@ -21,6 +21,8 @@ HTMLCanvasElement.prototype.getContext = vi.fn(function () {
     moveTo: vi.fn(),
     lineTo: vi.fn(),
     stroke: vi.fn(),
+    getImageData: vi.fn(() => ({ data: new Uint8ClampedArray(1) })),
+    putImageData: vi.fn(),
   } as unknown as CanvasRenderingContext2D;
   contexts.push(ctx);
   return ctx;
@@ -80,6 +82,18 @@ describe('CanvasDisplay', () => {
     fireEvent.click(clearBtn);
     const called = contexts.some((ctx) => ctx.fillRect.mock.calls.length > 0);
     expect(called).toBe(true);
+  });
+
+  it('undoes and redoes mask actions', async () => {
+    const file = new File(['data'], 'test.png', { type: 'image/png' });
+    const { getByText } = render(<CanvasDisplay image={file} prompt="edit" />);
+    await waitFor(() => getByText('Clear Mask'));
+    fireEvent.click(getByText('Clear Mask'));
+    await waitFor(() => expect(getByText('Undo').getAttribute('disabled')).toBeNull());
+    fireEvent.click(getByText('Undo'));
+    await waitFor(() => expect(getByText('Redo').getAttribute('disabled')).toBeNull());
+    fireEvent.click(getByText('Redo'));
+    await waitFor(() => expect(getByText('Undo').getAttribute('disabled')).toBeNull());
   });
 
   it('returns the result via callback', async () => {
