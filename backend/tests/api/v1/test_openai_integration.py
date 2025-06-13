@@ -3,8 +3,11 @@ from backend.app.api.v1.endpoints import openai_integration
 
 
 class DummyService:
-    async def verify_connection(self):
-        return {"object": "list"}
+    async def edit_image(self, image: bytes, mask: bytes | None, prompt: str):
+        assert image == b"data"
+        assert mask is None
+        assert prompt == "edit"
+        return {"detail": "ok"}
 
 
 def patch_service(monkeypatch):
@@ -20,7 +23,7 @@ def test_edit_image(client, monkeypatch):
         data={"prompt": "edit"},
     )
     assert response.status_code == 200
-    assert response.json() == {"detail": "editing not implemented"}
+    assert response.json() == {"detail": "ok"}
 
 
 def test_edit_image_invalid_type(client, monkeypatch):

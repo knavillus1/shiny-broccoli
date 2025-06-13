@@ -45,8 +45,9 @@ async def edit_image(
     logger.info("/images/edit called")
     service = OpenAIService()
     try:
-        # Placeholder call until editing support is implemented
-        await service.verify_connection()
+        img_bytes = await image.read()
+        mask_bytes = await mask.read() if mask else None
+        result = await service.edit_image(img_bytes, mask_bytes, prompt)
     except Exception as exc:  # pragma: no cover - should not occur in tests
         logger.exception("OpenAI edit failed")
         raise HTTPException(
@@ -54,7 +55,7 @@ async def edit_image(
             detail=str(exc),
         )
     logger.info("/images/edit completed in %.3f", time.time() - start)
-    return {"detail": "editing not implemented"}
+    return result
 
 
 @router.get("/images/status/{request_id}")

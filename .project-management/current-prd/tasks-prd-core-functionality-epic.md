@@ -90,6 +90,8 @@
 - `frontend/src/pages/HomePage.tsx` - Integration of new components into complete workflow.
 - `frontend/src/services/apiClient.ts` - Added functions for OpenAI integration endpoints.
 - `backend/app/main.py` - Include new OpenAI integration router.
+- `backend/app/api/v1/endpoints/openai_integration.py` - OpenAI API integration endpoints.
+- `backend/services/openai_service.py` - Service for handling OpenAI API calls.
 - `backend/app/core/config.py` - Add OpenAI API key configuration.
 - `backend/requirements.txt` - Add OpenAI Python SDK and related dependencies.
 - `DEVELOPMENT.md` - Document OPENAI_API_KEY configuration.
@@ -97,6 +99,8 @@
 - `.project-management/current-prd/tasks-prd-core-functionality-epic.md` - Task tracking updates.
 - `CHANGELOG.md` - Document Phase 2 implementation progress.
 - `frontend/src/components/CanvasDisplay.test.tsx` - Unit tests for CanvasDisplay component.
+- `backend/tests/api/v1/test_openai_integration.py` - Unit tests for OpenAI integration endpoints.
+- `backend/tests/services/test_openai_service.py` - Unit tests for OpenAI service.
 
 ### Notes
 - OpenAI API key must be stored securely in environment variables
@@ -116,11 +120,11 @@
   - [x] 1.6 Update environment setup documentation for API key requirements
 
 - [ ] 2.0 Implement Core OpenAI Image Editing Integration (FR1, FR2, FR3)
-  - [ ] 2.1 Implement image editing function in `openai_service.py` using OpenAI SDK
+  - [c] 2.1 Implement image editing function in `openai_service.py` using OpenAI SDK
   - [ ] 2.2 Add proper image format conversion (canvas to PNG) for OpenAI compatibility
-  - [ ] 2.3 Handle OpenAI API responses including success, error, and timeout scenarios
+  - [c] 2.3 Handle OpenAI API responses including success, error, and timeout scenarios
   - [ ] 2.4 Implement request/response validation and error mapping
-  - [ ] 2.5 Add comprehensive unit tests for OpenAI service functions
+  - [c] 2.5 Add comprehensive unit tests for OpenAI service functions
   - [ ] 2.6 Test integration with various image sizes and mask complexities
 
 - [ ] 3.0 Create OpenAI API Endpoints (FR1-FR5, US5, US7)
