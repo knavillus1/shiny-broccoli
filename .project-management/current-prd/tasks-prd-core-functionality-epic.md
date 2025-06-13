@@ -159,7 +159,7 @@
   - [x] 6.1 Create `ResultsDisplay.tsx` component for before/after comparison
   - [x] 6.2 Implement side-by-side and overlay comparison modes
   - [x] 6.3 Add download/save functionality for edited results
-  - [ ] 6.4 Handle display of OpenAI error responses and fallback states
+  - [x] 6.4 Handle display of OpenAI error responses and fallback states
   - [ ] 6.5 Optimize image loading and display performance
   - [x] 6.6 Create unit tests for results display functionality
 
@@ -174,8 +174,8 @@
 
 - [ ] 8.0 Frontend-Backend Integration for Complete Workflow (FR1-FR22, US1-US7)
   - [x] 8.1 Update `frontend/src/services/apiClient.ts` with OpenAI integration functions
-  - [ ] 8.2 Connect `PromptInput.tsx` to validation and submission workflow
-  - [ ] 8.3 Integrate enhanced `CanvasDisplay.tsx` with mask export for API submission
+  - [x] 8.2 Connect `PromptInput.tsx` to validation and submission workflow
+  - [x] 8.3 Integrate enhanced `CanvasDisplay.tsx` with mask export for API submission
   - [ ] 8.4 Connect `ResultsDisplay.tsx` to receive and display API responses
   - [ ] 8.5 Implement complete edit workflow in `HomePage.tsx`
   - [ ] 8.6 Add proper loading states and error handling throughout the UI

@@ -15,6 +15,13 @@ describe('ResultsDisplay', () => {
     expect(getByText('No result')).toBeTruthy();
   });
 
+  it('displays error message when provided', () => {
+    const { getByText } = render(
+      <ResultsDisplay original={null} result={null} error="oops" />,
+    );
+    expect(getByText('Error: oops')).toBeTruthy();
+  });
+
   it('renders provided images', () => {
     const file = new File(['data'], 'orig.png', { type: 'image/png' });
     const { getAllByRole, getByText, getByLabelText } = render(
