@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 
 /**
  * Hook for canvas drawing interactions.
@@ -7,6 +7,8 @@ import { useRef, useEffect } from 'react';
 export default function useCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const drawing = useRef(false);
+  const [mode, setMode] = useState<'draw' | 'erase'>('draw');
+  const toggleMode = () => setMode((m) => (m === 'draw' ? 'erase' : 'draw'));
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -18,17 +20,20 @@ export default function useCanvas() {
       drawing.current = true;
       ctx.beginPath();
       ctx.moveTo(e.offsetX, e.offsetY);
+      canvas.style.cursor = 'crosshair';
     };
     const draw = (e: PointerEvent) => {
       if (!drawing.current) return;
       ctx.lineWidth = 5;
       ctx.lineCap = 'round';
       ctx.strokeStyle = 'red';
+      ctx.globalCompositeOperation = mode === 'erase' ? 'destination-out' : 'source-over';
       ctx.lineTo(e.offsetX, e.offsetY);
       ctx.stroke();
     };
     const stopDraw = () => {
       drawing.current = false;
+      canvas.style.cursor = 'default';
     };
 
     canvas.addEventListener('pointerdown', startDraw);
@@ -42,7 +47,7 @@ export default function useCanvas() {
       canvas.removeEventListener('pointerup', stopDraw);
       canvas.removeEventListener('pointerleave', stopDraw);
     };
-  }, []);
+  }, [mode]);
 
-  return { canvasRef };
+  return { canvasRef, mode, toggleMode };
 }
