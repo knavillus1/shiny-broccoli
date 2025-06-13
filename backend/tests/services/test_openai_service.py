@@ -50,3 +50,27 @@ def test_missing_key(monkeypatch):
 
     with pytest.raises(ValueError):
         service_module.OpenAIService()
+
+
+@pytest.mark.asyncio
+async def test_edit_image(monkeypatch):
+    calls = {}
+
+    class DummyImages:
+        async def edit(self, *, image, mask=None, prompt):
+            calls["image"] = image
+            calls["mask"] = mask
+            calls["prompt"] = prompt
+            return {"result": "ok"}
+
+    class Client(DummyClient):
+        def __init__(self, api_key: str) -> None:
+            super().__init__(api_key)
+            self.images = DummyImages()
+
+    service_module = load_service(monkeypatch, Client)
+    service = service_module.OpenAIService(api_key="k")
+    result = await service.edit_image(b"img", b"mask", "p")
+
+    assert result == {"result": "ok"}
+    assert calls == {"image": b"img", "mask": b"mask", "prompt": "p"}

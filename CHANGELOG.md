@@ -19,3 +19,4 @@
 2025-06-14 Added request validation for image edit endpoint with tests
 2025-06-13 Implemented PromptInput component with validation
 2025-06-14 Added clear mask functionality and tests
+2025-06-13 Added image editing service and endpoint implementation

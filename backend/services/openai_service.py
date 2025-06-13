@@ -32,3 +32,30 @@ class OpenAIService:
         response = await self._client.models.list()
         logger.debug("Models list response: %s", response)
         return response
+
+    async def edit_image(
+        self, image: bytes, mask: bytes | None, prompt: str
+    ) -> dict[str, Any]:
+        """Send an image edit request to OpenAI.
+
+        Parameters
+        ----------
+        image:
+            The base image data in bytes.
+        mask:
+            Optional mask image data in bytes.
+        prompt:
+            The editing prompt to apply.
+        """
+        logger.info("Sending image edit request")
+        try:
+            response = await self._client.images.edit(
+                image=image,
+                mask=mask,
+                prompt=prompt,
+            )
+        except Exception:  # pragma: no cover - network errors mocked in tests
+            logger.exception("OpenAI image edit failed")
+            raise
+        logger.debug("Image edit response: %s", response)
+        return response
