@@ -3,6 +3,8 @@ import sys
 import types
 import pytest
 import base64
+from io import BytesIO
+from PIL import Image
 
 
 class DummyModels:
@@ -60,7 +62,7 @@ def test_missing_key(monkeypatch):
 
 
 @pytest.mark.asyncio
-def test_edit_image(monkeypatch):
+async def test_edit_image(monkeypatch):
     # Minimal valid 1x1 PNG image (transparent)
     png_base64 = (
         "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+"
@@ -68,15 +70,84 @@ def test_edit_image(monkeypatch):
     )
     png_bytes = base64.b64decode(png_base64)
 
-    def factory(api_key: str) -> DummyClient:
+    def factory(api_key=None, **_):
         return DummyClient(api_key)
 
     service_module = load_service(monkeypatch, factory)
     service = service_module.OpenAIService(api_key="test-key")
-    # Use valid PNG bytes
-    result = service.edit_image(png_bytes, None, "prompt")
-    # If edit_image is async, await it
-    if hasattr(result, "__await__"):
-        import asyncio
-        result = asyncio.get_event_loop().run_until_complete(result)
+    result = await service.edit_image(png_bytes, None, "prompt")
     assert isinstance(result, dict)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "img_size,expected",
+    [
+        (100, 256),
+        (400, 512),
+        (800, 1024),
+    ],
+)
+async def test_edit_image_resizes_image(monkeypatch, img_size, expected):
+    buf = BytesIO()
+    Image.new("RGBA", (img_size, img_size)).save(buf, format="PNG")
+    img_bytes = buf.getvalue()
+
+    captured = {}
+
+    class TrackImages:
+        async def edit(self, **kwargs):
+            captured["size"] = kwargs["size"]
+            captured["img"] = Image.open(kwargs["image"]).size
+            return {"ok": True}
+
+    class TrackClient(DummyClient):
+        def __init__(self, key: str | None) -> None:
+            super().__init__(key)
+            self.images = TrackImages()
+
+    def factory(api_key=None, **_):
+        return TrackClient(api_key)
+
+    service_module = load_service(monkeypatch, factory)
+    service = service_module.OpenAIService(api_key="key")
+    result = await service.edit_image(img_bytes, None, "prompt")
+    assert result == {"ok": True}
+    assert captured["size"] == f"{expected}x{expected}"
+    assert captured["img"] == (expected, expected)
+
+
+@pytest.mark.asyncio
+async def test_edit_image_resizes_mask(monkeypatch):
+    img_buf = BytesIO()
+    Image.new("RGBA", (300, 300)).save(img_buf, format="PNG")
+    img_bytes = img_buf.getvalue()
+
+    mask_buf = BytesIO()
+    Image.new("L", (100, 100), color=255).save(mask_buf, format="PNG")
+    mask_bytes = mask_buf.getvalue()
+
+    captured = {}
+
+    class TrackImages:
+        async def edit(self, **kwargs):
+            captured["size"] = kwargs["size"]
+            captured["img"] = Image.open(kwargs["image"]).size
+            captured["mask"] = Image.open(kwargs["mask"]).size
+            return {"ok": True}
+
+    class TrackClient(DummyClient):
+        def __init__(self, key: str | None) -> None:
+            super().__init__(key)
+            self.images = TrackImages()
+
+    def factory(api_key=None, **_):
+        return TrackClient(api_key)
+
+    service_module = load_service(monkeypatch, factory)
+    service = service_module.OpenAIService(api_key="key")
+    result = await service.edit_image(img_bytes, mask_bytes, "prompt")
+    assert result == {"ok": True}
+    assert captured["size"] == "512x512"
+    assert captured["img"] == (512, 512)
+    assert captured["mask"] == (512, 512)
