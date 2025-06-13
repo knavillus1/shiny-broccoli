@@ -120,11 +120,11 @@
   - [x] 1.6 Update environment setup documentation for API key requirements
 
 - [ ] 2.0 Implement Core OpenAI Image Editing Integration (FR1, FR2, FR3)
-  - [c] 2.1 Implement image editing function in `openai_service.py` using OpenAI SDK
+  - [x] 2.1 Implement image editing function in `openai_service.py` using OpenAI SDK
   - [ ] 2.2 Add proper image format conversion (canvas to PNG) for OpenAI compatibility
-  - [c] 2.3 Handle OpenAI API responses including success, error, and timeout scenarios
+  - [x] 2.3 Handle OpenAI API responses including success, error, and timeout scenarios
   - [ ] 2.4 Implement request/response validation and error mapping
-  - [c] 2.5 Add comprehensive unit tests for OpenAI service functions
+  - [x] 2.5 Add comprehensive unit tests for OpenAI service functions
   - [ ] 2.6 Test integration with various image sizes and mask complexities
 
 - [ ] 3.0 Create OpenAI API Endpoints (FR1-FR5, US5, US7)
@@ -173,7 +173,7 @@
   - [ ] 7.7 Create unit tests for progress and error handling components
 
 - [ ] 8.0 Frontend-Backend Integration for Complete Workflow (FR1-FR22, US1-US7)
-  - [ ] 8.1 Update `frontend/src/services/apiClient.ts` with OpenAI integration functions
+  - [x] 8.1 Update `frontend/src/services/apiClient.ts` with OpenAI integration functions
   - [ ] 8.2 Connect `PromptInput.tsx` to validation and submission workflow
   - [ ] 8.3 Integrate enhanced `CanvasDisplay.tsx` with mask export for API submission
   - [ ] 8.4 Connect `ResultsDisplay.tsx` to receive and display API responses
