@@ -79,7 +79,7 @@
 - `frontend/src/components/ErrorBoundary.test.tsx` - Unit tests for `ErrorBoundary` component.
 - `frontend/src/services/apiClient.test.ts` - Unit tests for API client retry logic.
 - `backend/app/api/v1/endpoints/openai_integration.py` - OpenAI API integration endpoints.
-- `backend/services/openai_service.py` - Service for handling OpenAI API calls.
+- `backend/services/openai_service.py` - Service for handling OpenAI API calls with PNG compression.
 - `backend/app/logging.py` - Logging configuration utilities.
 - `backend/tests/api/v1/test_openai_integration.py` - Unit tests for OpenAI integration endpoints.
 - `backend/tests/unit/services/test_openai_service.py` - Unit tests for OpenAI service.
@@ -97,7 +97,7 @@
 - `frontend/src/components/MaskToolbar.tsx` - Toolbar for selecting mask brush size.
 - `backend/app/main.py` - Include new OpenAI integration router.
 - `backend/app/api/v1/endpoints/openai_integration.py` - OpenAI API integration endpoints.
-- `backend/services/openai_service.py` - Service for handling OpenAI API calls.
+- `backend/services/openai_service.py` - Service for handling OpenAI API calls with PNG compression.
 - `backend/services/chat_storage.py` - In-memory chat message storage.
 - `backend/app/core/config.py` - Add OpenAI API key configuration.
 - `backend/requirements.txt` - Add OpenAI Python SDK and related dependencies.
@@ -190,7 +190,7 @@
 
 - [ ] 9.0 Performance Optimization and Polish (SM1-SM7)
   - [ ] 9.1 Optimize canvas operations for smooth mask drawing performance
-  - [ ] 9.2 Implement image compression for large uploads to meet OpenAI size limits
+  - [x] 9.2 Implement image compression for large uploads to meet OpenAI size limits
   - [x] 9.3 Add client-side validation for image dimensions and format compatibility
   - [ ] 9.4 Optimize memory usage for large images and long editing sessions
   - [ ] 9.5 Test performance across different browsers and devices

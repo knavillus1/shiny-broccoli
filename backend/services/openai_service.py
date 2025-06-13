@@ -1,4 +1,4 @@
-"""OpenAI API client service."""
+"""OpenAI API client service with basic PNG optimization."""
 
 from __future__ import annotations
 
@@ -44,15 +44,13 @@ class OpenAIService:
             return dict(response)
 
     def _ensure_png(self, data: bytes) -> bytes:
-        """Convert image bytes to PNG if not already."""
+        """Return image data encoded as optimized PNG."""
         if Image is None:  # pragma: no cover - Pillow not installed
             return data
         img = Image.open(BytesIO(data))
-        if img.format != "PNG":
-            buf = BytesIO()
-            img.save(buf, format="PNG")
-            return buf.getvalue()
-        return data
+        buf = BytesIO()
+        img.save(buf, format="PNG", optimize=True)
+        return buf.getvalue()
 
     async def edit_image(
         self, image: bytes, mask: bytes | None, prompt: str, n: int = 1
@@ -91,7 +89,7 @@ class OpenAIService:
                     if orig_w != target_size or orig_h != target_size:
                         img_obj = img_obj.resize((target_size, target_size))
                         buf = BytesIO()
-                        img_obj.save(buf, format="PNG")
+                        img_obj.save(buf, format="PNG", optimize=True)
                         png_image = buf.getvalue()
 
                     width = height = target_size
@@ -102,7 +100,7 @@ class OpenAIService:
                         if m_obj.size[0] != target_size or m_obj.size[1] != target_size:
                             m_obj = m_obj.resize((target_size, target_size))
                             mbuf = BytesIO()
-                            m_obj.save(mbuf, format="PNG")
+                            m_obj.save(mbuf, format="PNG", optimize=True)
                             png_mask = mbuf.getvalue()
             else:  # pragma: no cover - Pillow not installed
                 # This case should ideally not happen if frontend validates
