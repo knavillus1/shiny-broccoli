@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .core.config import get_settings
 from .api.v1.endpoints.health import router as health_router
+from .api.v1.endpoints.images import router as images_router
 
 settings = get_settings()
 
@@ -17,6 +18,7 @@ app.add_middleware(
 )
 
 app.include_router(health_router, prefix="/api/v1")
+app.include_router(images_router, prefix="/api/v1")
 
 
 @app.get("/")
