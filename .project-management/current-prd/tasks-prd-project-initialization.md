@@ -66,6 +66,9 @@
 - `backend/tests/api/v1/test_health.py` - Tests the health endpoint.
 - `backend/.env.example` - Example environment variables file.
 - `backend/requirements.txt` - Updated dependencies.
+- `backend/start.sh` - Development script to run Uvicorn with auto-reload.
+- `frontend/.env.example` - Example Vite environment variables file.
+- `frontend/src/services/api.ts` - Fetch helper using `VITE_API_BASE_URL`.
 - `.gitignore` - Updated ignore patterns.
 
 ### Notes
@@ -108,13 +111,13 @@
   - [x] 2.4 Implement CORS middleware in `backend/app/main.py` to allow requests from `http://localhost:5173`.
   - [x] 2.5 Create `backend/app/api/v1/endpoints/health.py` with a GET `/health` endpoint that returns a simple JSON response (e.g., `{"status": "ok"}`).
   - [x] 2.6 Register the health endpoint router in `backend/app/main.py`.
-  - [ ] 2.7 Configure Uvicorn to run the FastAPI app on port 8000 with auto-reload for development (e.g., via a script in `package.json` or a helper script).
+  - [x] 2.7 Configure Uvicorn to run the FastAPI app on port 8000 with auto-reload for development (e.g., via a script in `package.json` or a helper script).
   - [x] 2.8 Create basic test setup in `backend/tests/` (e.g. `backend/tests/conftest.py`) and a test for the health endpoint in `backend/tests/api/v1/test_health.py`.
 - [ ] 3.0 Configure Project Environment and Core Setup 
   - [x] 3.1 Create a root `.gitignore` file, ensuring it covers `node_modules`, Python `__pycache__`, virtual environments (`.venv`, `venv`), `.env` files, OS-specific files (e.g., `.DS_Store`), and build artifacts.
   - [x] 3.2 Create `backend/.env.example` with a placeholder for `OPENAI_API_KEY=""`.
   - [x] 3.3 Implement environment variable loading in `backend/app/core/config.py` using Pydantic Settings to read from `.env`.
-  - [ ] 3.4 Ensure Vite frontend correctly handles environment variables (e.g., `VITE_API_BASE_URL`) via `.env` files in the `frontend` directory. Create `frontend/.env.example` if needed.
+  - [x] 3.4 Ensure Vite frontend correctly handles environment variables (e.g., `VITE_API_BASE_URL`) via `.env` files in the `frontend` directory. Create `frontend/.env.example` if needed.
 - [ ] 4.0 Establish Basic Full-Stack Connectivity & Verification
   - [ ] 4.1 Create `frontend/src/services/apiClient.ts` to handle API calls to the backend (e.g., using Axios, configured with `VITE_API_BASE_URL=http://localhost:8000/api/v1`).
   - [ ] 4.2 Create `frontend/src/components/HealthCheckDisplay.tsx` that calls the backend's `/health` endpoint via `apiClient.ts` and displays the status.
