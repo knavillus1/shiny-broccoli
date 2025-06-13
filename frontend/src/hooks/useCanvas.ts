@@ -5,12 +5,15 @@ import { useRef, useEffect, useState } from 'react';
  * Sets up pointer event handlers to allow freehand drawing.
  */
 export type BrushSize = 'small' | 'medium' | 'large';
+export type Tool = 'brush' | 'rectangle' | 'circle';
 
 export default function useCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const drawing = useRef(false);
+  const startPos = useRef<{ x: number; y: number } | null>(null);
   const [mode, setMode] = useState<'draw' | 'erase'>('draw');
   const [brushSize, setBrushSize] = useState<BrushSize>('medium');
+  const [tool, setTool] = useState<Tool>('brush');
   const toggleMode = () => setMode((m) => (m === 'draw' ? 'erase' : 'draw'));
 
   const fillWhite = (ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) => {
@@ -39,8 +42,11 @@ export default function useCanvas() {
 
     const startDraw = (e: PointerEvent) => {
       drawing.current = true;
-      ctx.beginPath();
-      ctx.moveTo(e.offsetX, e.offsetY);
+      startPos.current = { x: e.offsetX, y: e.offsetY };
+      if (tool === 'brush') {
+        ctx.beginPath();
+        ctx.moveTo(e.offsetX, e.offsetY);
+      }
       canvas.style.cursor = 'crosshair';
     };
     const draw = (e: PointerEvent) => {
@@ -51,15 +57,34 @@ export default function useCanvas() {
       if (mode === 'draw') {
         ctx.globalCompositeOperation = 'destination-out';
         ctx.strokeStyle = 'black';
+        ctx.fillStyle = 'black';
       } else {
         ctx.globalCompositeOperation = 'source-over';
         ctx.strokeStyle = 'white';
+        ctx.fillStyle = 'white';
       }
-      ctx.lineTo(e.offsetX, e.offsetY);
-      ctx.stroke();
+      if (tool === 'brush') {
+        ctx.lineTo(e.offsetX, e.offsetY);
+        ctx.stroke();
+      }
     };
-    const stopDraw = () => {
+    const stopDraw = (e: PointerEvent) => {
+      if (!drawing.current) return;
       drawing.current = false;
+      const start = startPos.current;
+      startPos.current = null;
+      if (tool === 'rectangle' && start) {
+        const w = e.offsetX - start.x;
+        const h = e.offsetY - start.y;
+        ctx.beginPath();
+        ctx.rect(start.x, start.y, w, h);
+        ctx.fill();
+      } else if (tool === 'circle' && start) {
+        const r = Math.hypot(e.offsetX - start.x, e.offsetY - start.y);
+        ctx.beginPath();
+        ctx.arc(start.x, start.y, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
       canvas.style.cursor = 'default';
     };
 
@@ -74,7 +99,16 @@ export default function useCanvas() {
       canvas.removeEventListener('pointerup', stopDraw);
       canvas.removeEventListener('pointerleave', stopDraw);
     };
-  }, [mode, brushSize]);
+  }, [mode, brushSize, tool]);
 
-  return { canvasRef, mode, toggleMode, clear, brushSize, setBrushSize };
+  return {
+    canvasRef,
+    mode,
+    toggleMode,
+    clear,
+    brushSize,
+    setBrushSize,
+    tool,
+    setTool,
+  };
 }

@@ -31,4 +31,12 @@ describe('useCanvas', () => {
     });
     expect(result.current.brushSize).toBe('large');
   });
+
+  it('updates drawing tool', () => {
+    const { result } = renderHook(() => useCanvas());
+    act(() => {
+      result.current.setTool('rectangle');
+    });
+    expect(result.current.tool).toBe('rectangle');
+  });
 });

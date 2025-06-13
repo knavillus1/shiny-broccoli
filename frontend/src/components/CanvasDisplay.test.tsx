@@ -63,6 +63,15 @@ describe('CanvasDisplay', () => {
     expect(large.checked).toBe(true);
   });
 
+  it('changes drawing tool using toolbar', async () => {
+    const file = new File(['data'], 'test.png', { type: 'image/png' });
+    const { getByLabelText } = render(<CanvasDisplay image={file} prompt="edit" />);
+    await waitFor(() => getByLabelText('rectangle'));
+    const rect = getByLabelText('rectangle') as HTMLInputElement;
+    fireEvent.click(rect);
+    expect(rect.checked).toBe(true);
+  });
+
   it('clears the mask canvas', async () => {
     const file = new File(['data'], 'test.png', { type: 'image/png' });
     const { getByText } = render(<CanvasDisplay image={file} prompt="edit" />);
