@@ -17,3 +17,4 @@
 2025-06-13 Added OpenAI edit endpoint and router
 2025-06-13 Added status endpoint and tests
 2025-06-14 Added request validation for image edit endpoint with tests
+2025-06-13 Implemented PromptInput component with validation
