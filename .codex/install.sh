@@ -1,6 +1,23 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Ensure required versions are available
+PY_VER=$(python3 --version 2>/dev/null || true)
+if [[ $PY_VER != 3.11* ]]; then
+  echo "Warning: Python 3.11 is recommended. Found: $PY_VER" >&2
+fi
+
+NODE_VER=$(node --version 2>/dev/null || true)
+if [[ -z $NODE_VER ]]; then
+  echo "Node.js is required but not found" >&2
+  exit 1
+fi
+NODE_MAJOR=${NODE_VER#v}
+NODE_MAJOR=${NODE_MAJOR%%.*}
+if (( NODE_MAJOR < 18 )); then
+  echo "Warning: Node.js 18+ is recommended. Found: $NODE_VER" >&2
+fi
+
 echo "Installing Python dependencies..."
 pip install -r backend/requirements.txt
 
