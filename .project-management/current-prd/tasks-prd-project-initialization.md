@@ -58,39 +58,15 @@
 
 ## Relevant Files
 
-### Proposed New Files
-- `frontend/src/App.tsx` - Main application component, sets up basic routing.
-- `frontend/src/App.test.tsx` - Unit tests for `App.tsx`.
-- `frontend/src/pages/HomePage.tsx` - A simple page to demonstrate routing and a button to trigger an API call.
-- `frontend/src/pages/HomePage.test.tsx` - Unit tests for `HomePage.tsx`.
-- `frontend/src/components/HealthCheckDisplay.tsx` - A component to display the status from the backend health check.
-- `frontend/src/components/HealthCheckDisplay.test.tsx` - Unit tests for `HealthCheckDisplay.tsx`.
-- `frontend/src/services/apiClient.ts` - Centralized Axios or Fetch client for frontend to backend communication.
-- `frontend/vite.config.ts` - Vite configuration file (if not already present or needs modification for port 5173).
-- `frontend/.eslintrc.cjs` - ESLint configuration file (or similar based on Vite template).
-- `frontend/tsconfig.json` - TypeScript configuration file (standard Vite/React TS setup).
-- `frontend/src/router.tsx` - React Router configuration.
-- `backend/app/` - Main directory for FastAPI application modules.
-- `backend/app/main.py` - FastAPI app initialization, CORS setup, and health check endpoint.
-- `backend/app/api/` - Directory for API routers.
-- `backend/app/api/v1/` - Directory for V1 of the API.
-- `backend/app/api/v1/endpoints/` - Directory for specific API endpoints.
-- `backend/app/api/v1/endpoints/health.py` - Contains the `/health` check endpoint logic.
-- `backend/app/core/` - Directory for core application settings and configurations.
-- `backend/app/core/config.py` - Pydantic-based settings management for environment variables (e.g., API keys, port).
-- `backend/.env.example` - Template for backend environment variables.
-- `backend/tests/` - Directory for backend tests.
-- `backend/tests/conftest.py` - Pytest configuration and fixtures.
-- `backend/tests/api/v1/test_health.py` - Unit/integration tests for the `/health` endpoint.
-- `.gitignore` (root level) - Ensure comprehensive coverage for Python, Node, OS-specific files, and .env files.
-- `README.md` (root level) - Project overview, setup instructions, development guide.
-
-### Existing Files Modified
-- `frontend/package.json` - Add dependencies: `axios` (or other HTTP client), `react-router-dom`. Update `dev` script for port 5173.
-- `frontend/src/main.tsx` (or `index.tsx`) - Integrate React Router.
-- `backend/requirements.txt` - Add dependencies: `fastapi`, `uvicorn[standard]`, `python-dotenv`, `pytest`, `httpx` (for testing).
-- `dev_init.sh` - Update or create to install all dependencies (frontend and backend) and run both development servers.
-- `.codex/install.sh` - Ensure Python 3.11 and Node.js (LTS) are installed.
+### Files Created or Modified
+- `backend/app/main.py` - FastAPI app initialization with CORS and router setup.
+- `backend/app/api/v1/endpoints/health.py` - Defines the `/health` endpoint.
+- `backend/app/core/config.py` - Application settings loaded from `.env`.
+- `backend/tests/conftest.py` - Pytest configuration providing a test client.
+- `backend/tests/api/v1/test_health.py` - Tests the health endpoint.
+- `backend/.env.example` - Example environment variables file.
+- `backend/requirements.txt` - Updated dependencies.
+- `.gitignore` - Updated ignore patterns.
 
 ### Notes
 
@@ -126,18 +102,18 @@
   - [ ] 1.7 Configure Vite (`frontend/vite.config.ts`) to run the dev server on port 5173 and ensure hot reloading is functional.
   - [ ] 1.8 Create a basic `App.test.tsx` to ensure the testing framework (Vitest or Jest) is configured and working.
 - [ ] 2.0 Initialize Backend Project (FastAPI + Python 3.11)
-  - [ ] 2.1 Create a `backend/app` directory for the FastAPI application.
-  - [ ] 2.2 Initialize a `backend/requirements.txt` file with `fastapi`, `uvicorn[standard]`, `python-dotenv`, `pytest`, `httpx`.
-  - [ ] 2.3 Create `backend/app/main.py` to initialize the FastAPI app.
-  - [ ] 2.4 Implement CORS middleware in `backend/app/main.py` to allow requests from `http://localhost:5173`.
-  - [ ] 2.5 Create `backend/app/api/v1/endpoints/health.py` with a GET `/health` endpoint that returns a simple JSON response (e.g., `{"status": "ok"}`).
-  - [ ] 2.6 Register the health endpoint router in `backend/app/main.py`.
+  - [x] 2.1 Create a `backend/app` directory for the FastAPI application.
+  - [x] 2.2 Initialize a `backend/requirements.txt` file with `fastapi`, `uvicorn[standard]`, `python-dotenv`, `pytest`, `httpx`.
+  - [x] 2.3 Create `backend/app/main.py` to initialize the FastAPI app.
+  - [x] 2.4 Implement CORS middleware in `backend/app/main.py` to allow requests from `http://localhost:5173`.
+  - [x] 2.5 Create `backend/app/api/v1/endpoints/health.py` with a GET `/health` endpoint that returns a simple JSON response (e.g., `{"status": "ok"}`).
+  - [x] 2.6 Register the health endpoint router in `backend/app/main.py`.
   - [ ] 2.7 Configure Uvicorn to run the FastAPI app on port 8000 with auto-reload for development (e.g., via a script in `package.json` or a helper script).
-  - [ ] 2.8 Create basic test setup in `backend/tests/` (e.g. `backend/tests/conftest.py`) and a test for the health endpoint in `backend/tests/api/v1/test_health.py`.
+  - [x] 2.8 Create basic test setup in `backend/tests/` (e.g. `backend/tests/conftest.py`) and a test for the health endpoint in `backend/tests/api/v1/test_health.py`.
 - [ ] 3.0 Configure Project Environment and Core Setup 
-  - [ ] 3.1 Create a root `.gitignore` file, ensuring it covers `node_modules`, Python `__pycache__`, virtual environments (`.venv`, `venv`), `.env` files, OS-specific files (e.g., `.DS_Store`), and build artifacts.
-  - [ ] 3.2 Create `backend/.env.example` with a placeholder for `OPENAI_API_KEY=""`.
-  - [ ] 3.3 Implement environment variable loading in `backend/app/core/config.py` using Pydantic Settings to read from `.env`.
+  - [x] 3.1 Create a root `.gitignore` file, ensuring it covers `node_modules`, Python `__pycache__`, virtual environments (`.venv`, `venv`), `.env` files, OS-specific files (e.g., `.DS_Store`), and build artifacts.
+  - [x] 3.2 Create `backend/.env.example` with a placeholder for `OPENAI_API_KEY=""`.
+  - [x] 3.3 Implement environment variable loading in `backend/app/core/config.py` using Pydantic Settings to read from `.env`.
   - [ ] 3.4 Ensure Vite frontend correctly handles environment variables (e.g., `VITE_API_BASE_URL`) via `.env` files in the `frontend` directory. Create `frontend/.env.example` if needed.
 - [ ] 4.0 Establish Basic Full-Stack Connectivity & Verification
   - [ ] 4.1 Create `frontend/src/services/apiClient.ts` to handle API calls to the backend (e.g., using Axios, configured with `VITE_API_BASE_URL=http://localhost:8000/api/v1`).
