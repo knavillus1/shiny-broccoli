@@ -123,7 +123,7 @@
   - [x] 2.1 Implement image editing function in `openai_service.py` using OpenAI SDK
   - [x] 2.2 Add proper image format conversion (canvas to PNG) for OpenAI compatibility
   - [x] 2.3 Handle OpenAI API responses including success, error, and timeout scenarios
-  - [ ] 2.4 Implement request/response validation and error mapping
+  - [c] 2.4 Implement request/response validation and error mapping
   - [x] 2.5 Add comprehensive unit tests for OpenAI service functions
   - [ ] 2.6 Test integration with various image sizes and mask complexities
 
@@ -133,7 +133,7 @@
   - [x] 3.3 Implement `GET /api/v1/images/status/{request_id}` for progress tracking
   - [x] 3.4 Add proper request validation for image, mask, and prompt data
   - [ ] 3.5 Implement async processing for long-running OpenAI requests
-  - [ ] 3.6 Add comprehensive error handling and status code mapping
+  - [c] 3.6 Add comprehensive error handling and status code mapping
   - [x] 3.7 Include the new OpenAI router in `backend/app/main.py`
   - [x] 3.8 Create unit tests for all OpenAI integration endpoints
 
@@ -152,13 +152,13 @@
 - [x] 5.2 Add prompt length validation and character counter
   - [x] 5.3 Implement recent prompts storage and quick reuse functionality
   - [x] 5.4 Add example prompts and guidance text for new users
-  - [ ] 5.5 Include prompt suggestions based on common editing tasks
+  - [c] 5.5 Include prompt suggestions based on common editing tasks
 - [x] 5.6 Create unit tests for prompt input validation and storage
 
 - [ ] 6.0 Build Results Display System (FR15-FR18, US3)
   - [x] 6.1 Create `ResultsDisplay.tsx` component for before/after comparison
   - [x] 6.2 Implement side-by-side and overlay comparison modes
-  - [ ] 6.3 Add download/save functionality for edited results
+  - [c] 6.3 Add download/save functionality for edited results
   - [ ] 6.4 Handle display of OpenAI error responses and fallback states
   - [ ] 6.5 Optimize image loading and display performance
   - [x] 6.6 Create unit tests for results display functionality
