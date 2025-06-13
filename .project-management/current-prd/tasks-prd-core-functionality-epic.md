@@ -90,6 +90,7 @@
 - `backend/app/main.py` - Include new OpenAI integration router.
 - `backend/app/core/config.py` - Add OpenAI API key configuration.
 - `backend/requirements.txt` - Add OpenAI Python SDK and related dependencies.
+- `DEVELOPMENT.md` - Document OPENAI_API_KEY configuration.
 - `frontend/package.json` - Add any required frontend dependencies for enhanced UI.
 - `.project-management/current-prd/tasks-prd-core-functionality-epic.md` - Task tracking updates.
 - `CHANGELOG.md` - Document Phase 2 implementation progress.
@@ -104,12 +105,12 @@
 ## Tasks
 
 - [ ] 1.0 Set Up OpenAI Integration Foundation (FR1, FR4, FR5)
-  - [ ] 1.1 Add OpenAI Python SDK to `backend/requirements.txt`
-  - [ ] 1.2 Update `backend/app/core/config.py` to include OpenAI API key from environment
-  - [ ] 1.3 Create `backend/services/openai_service.py` with basic API client setup
+  - [x] 1.1 Add OpenAI Python SDK to `backend/requirements.txt`
+  - [x] 1.2 Update `backend/app/core/config.py` to include OpenAI API key from environment
+  - [x] 1.3 Create `backend/services/openai_service.py` with basic API client setup
   - [ ] 1.4 Add proper logging configuration for OpenAI API requests and responses
-  - [ ] 1.5 Create unit tests for OpenAI service configuration and connection
-  - [ ] 1.6 Update environment setup documentation for API key requirements
+  - [x] 1.5 Create unit tests for OpenAI service configuration and connection
+  - [x] 1.6 Update environment setup documentation for API key requirements
 
 - [ ] 2.0 Implement Core OpenAI Image Editing Integration (FR1, FR2, FR3)
   - [ ] 2.1 Implement image editing function in `openai_service.py` using OpenAI SDK
