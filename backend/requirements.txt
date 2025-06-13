@@ -3,6 +3,7 @@ uvicorn[standard]
 python-dotenv
 pydantic-settings
 pytest
+pytest-asyncio
 flake8
 httpx
 python-multipart
