@@ -4,10 +4,13 @@ import { useRef, useEffect, useState } from 'react';
  * Hook for canvas drawing interactions.
  * Sets up pointer event handlers to allow freehand drawing.
  */
+export type BrushSize = 'small' | 'medium' | 'large';
+
 export default function useCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const drawing = useRef(false);
   const [mode, setMode] = useState<'draw' | 'erase'>('draw');
+  const [brushSize, setBrushSize] = useState<BrushSize>('medium');
   const toggleMode = () => setMode((m) => (m === 'draw' ? 'erase' : 'draw'));
   const clear = () => {
     const canvas = canvasRef.current;
@@ -30,7 +33,8 @@ export default function useCanvas() {
     };
     const draw = (e: PointerEvent) => {
       if (!drawing.current) return;
-      ctx.lineWidth = 5;
+      const widthMap = { small: 4, medium: 8, large: 12 } as const;
+      ctx.lineWidth = widthMap[brushSize];
       ctx.lineCap = 'round';
       ctx.strokeStyle = 'red';
       ctx.globalCompositeOperation = mode === 'erase' ? 'destination-out' : 'source-over';
@@ -53,7 +57,7 @@ export default function useCanvas() {
       canvas.removeEventListener('pointerup', stopDraw);
       canvas.removeEventListener('pointerleave', stopDraw);
     };
-  }, [mode]);
+  }, [mode, brushSize]);
 
-  return { canvasRef, mode, toggleMode, clear };
+  return { canvasRef, mode, toggleMode, clear, brushSize, setBrushSize };
 }
