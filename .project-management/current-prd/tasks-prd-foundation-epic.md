@@ -75,8 +75,9 @@
 - `dev_init.sh` - Potentially, if new dependencies or setup steps are needed.
 - `frontend/package.json` - If new frontend dependencies are added.
 - `backend/requirements.txt` - If new backend dependencies are added.
- - `frontend/src/components/CanvasDisplay.tsx` - Implemented image scaling logic and added JSDoc comments.
+  - `frontend/src/components/CanvasDisplay.tsx` - Integrated drawing hook and maintained image scaling logic.
 - `frontend/src/components/FileUpload.tsx` - Added JSDoc comments.
+- `frontend/src/hooks/useCanvas.ts` - Hook enabling basic brush drawing on the canvas.
 - `backend/app/api/v1/endpoints/images.py` - Added module and function docstrings.
 - `backend/services/image_processor.py` - Added module and function docstrings.
 - `backend/app/main.py` - Added module docstring.
@@ -99,11 +100,11 @@
 - [ ] 2.0 Develop Canvas Interface for Image Display and Basic Mask Drawing (FR5-FR9, US2, US3, US5). This task is informed by `/Users/kevinsullivan/code/shiny-broccoli/.project-management/closed-prd/prd-background/design-mock.html`.
   - [x] 2.1 Create `CanvasDisplay.tsx` component that receives an image and renders it on an HTML5 canvas. (Ref: FR5)
   - [x] 2.2 Implement proper image scaling to fit the canvas while maintaining aspect ratio. (Ref: FR5, Technical Considerations)
-  - [ ] 2.3 Implement a basic brush/pen tool for drawing on the canvas. (Ref: FR6)
+  - [x] 2.3 Implement a basic brush/pen tool for drawing on the canvas. (Ref: FR6)
   - [ ] 2.4 Add functionality to toggle between drawing and erasing modes. (Ref: FR7)
   - [ ] 2.5 Provide visual feedback during drawing (e.g., cursor change, stroke preview). (Ref: FR8)
   - [ ] 2.6 Ensure the drawn mask is a separate layer that can be toggled for visibility. (Ref: FR9)
-  - [ ] 2.7 Create `useCanvas.ts` hook to manage canvas state, drawing logic (brush, eraser), and mask data.
+  - [x] 2.7 Create `useCanvas.ts` hook to manage canvas state, drawing logic (brush, eraser), and mask data.
   - [ ] 2.8 Style the canvas and drawing controls area according to the design mock.
   - [ ] 2.9 Write unit tests for `CanvasDisplay.tsx` and `useCanvas.ts`.
 - [x] 3.0 Create Backend API Endpoints for Image Handling (FR10-FR14, US4).

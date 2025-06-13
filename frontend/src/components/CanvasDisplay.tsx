@@ -1,4 +1,5 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
+import useCanvas from '../hooks/useCanvas';
 
 /**
  * Displays an uploaded image on an HTML5 canvas.
@@ -7,7 +8,7 @@ import { useEffect, useRef } from 'react';
  */
 
 export default function CanvasDisplay({ image }: { image: File | null }) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { canvasRef } = useCanvas();
 
   useEffect(() => {
     const canvas = canvasRef.current;
