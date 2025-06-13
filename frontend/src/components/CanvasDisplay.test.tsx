@@ -45,7 +45,7 @@ global.URL.revokeObjectURL = vi.fn();
 describe('CanvasDisplay', () => {
   it('toggles mask visibility and submits', async () => {
     const file = new File(['data'], 'test.png', { type: 'image/png' });
-    const { getByText } = render(<CanvasDisplay image={file} />);
+    const { getByText } = render(<CanvasDisplay image={file} prompt="edit" />);
     await waitFor(() => getByText('Switch to Erase'));
     const toggle = getByText('Hide Mask');
     fireEvent.click(toggle);
@@ -56,7 +56,7 @@ describe('CanvasDisplay', () => {
 
   it('changes brush size using toolbar', async () => {
     const file = new File(['data'], 'test.png', { type: 'image/png' });
-    const { getByLabelText } = render(<CanvasDisplay image={file} />);
+    const { getByLabelText } = render(<CanvasDisplay image={file} prompt="edit" />);
     await waitFor(() => getByLabelText('Large'));
     const large = getByLabelText('Large') as HTMLInputElement;
     fireEvent.click(large);
@@ -65,7 +65,7 @@ describe('CanvasDisplay', () => {
 
   it('clears the mask canvas', async () => {
     const file = new File(['data'], 'test.png', { type: 'image/png' });
-    const { getByText } = render(<CanvasDisplay image={file} />);
+    const { getByText } = render(<CanvasDisplay image={file} prompt="edit" />);
     await waitFor(() => getByText('Clear Mask'));
     const clearBtn = getByText('Clear Mask');
     fireEvent.click(clearBtn);

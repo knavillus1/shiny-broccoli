@@ -3,12 +3,13 @@ import React, { useState } from 'react';
 interface Props {
   original: string | File | null;
   result: string | File | null;
+  error?: string;
 }
 
 /**
  * Displays before and after images side by side.
  */
-export default function ResultsDisplay({ original, result }: Props) {
+export default function ResultsDisplay({ original, result, error }: Props) {
   const [mode, setMode] = useState<'side-by-side' | 'overlay'>('side-by-side');
   const origUrl =
     typeof original === 'string'
@@ -46,7 +47,13 @@ export default function ResultsDisplay({ original, result }: Props) {
       {mode === 'side-by-side' ? (
         <div className="flex gap-4" aria-label="results-display" data-mode="side-by-side">
           {origUrl ? <img src={origUrl} alt="original" className="max-w-xs" /> : <div>No original</div>}
-          {resultUrl ? <img src={resultUrl} alt="result" className="max-w-xs" /> : <div>No result</div>}
+          {resultUrl ? (
+            <img src={resultUrl} alt="result" className="max-w-xs" />
+          ) : error ? (
+            <div className="text-red-600">Error: {error}</div>
+          ) : (
+            <div>No result</div>
+          )}
         </div>
       ) : (
         <div
@@ -65,6 +72,8 @@ export default function ResultsDisplay({ original, result }: Props) {
               alt="result"
               className="max-w-xs absolute left-0 top-0 opacity-50"
             />
+          ) : error ? (
+            <div className="absolute left-0 top-0 text-red-600">Error: {error}</div>
           ) : (
             <div className="absolute left-0 top-0">No result</div>
           )}

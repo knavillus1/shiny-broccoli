@@ -9,7 +9,13 @@ import { editImage } from '../services/apiClient';
  * @param image The image file to render, or null if none uploaded.
  */
 
-export default function CanvasDisplay({ image }: { image: File | null }) {
+export default function CanvasDisplay({
+  image,
+  prompt,
+}: {
+  image: File | null;
+  prompt: string;
+}) {
   const baseRef = useRef<HTMLCanvasElement>(null);
   const {
     canvasRef: maskRef,
@@ -79,7 +85,7 @@ export default function CanvasDisplay({ image }: { image: File | null }) {
       const imageFile = imgBlob
         ? new File([imgBlob], 'image.png', { type: 'image/png' })
         : image;
-      const result = await editImage(imageFile, 'Edit', maskFile);
+      const result = await editImage(imageFile, prompt || 'Edit', maskFile);
       setSubmitMsg(result.detail || 'Processing complete');
     } catch (err) {
       setSubmitError((err as Error).message);
