@@ -74,7 +74,7 @@
 - `frontend/src/services/apiClient.ts` - To add functions for interacting with the new image endpoints.
 - `frontend/vite.config.ts` - Vitest configuration for component tests.
 - `backend/app/main.py` - To include the new image router.
-- `dev_init.sh` - Potentially, if new dependencies or setup steps are needed.
+- `dev_init.sh` - Copies example frontend env file and installs dependencies.
 - `frontend/package.json` - If new frontend dependencies are added.
 - `backend/requirements.txt` - If new backend dependencies are added.
   - `frontend/src/components/CanvasDisplay.tsx` - Added drawing/erasing controls and cursor feedback.
@@ -125,10 +125,10 @@
   - [x] 4.3 Implement a "Submit" button/workflow in the frontend that sends the original image and mask data (from `CanvasDisplay.tsx`) to the `/api/v1/images/process` endpoint. (Ref: FR17)
   - [x] 4.4 Handle API responses, including network errors and timeouts, displaying user-friendly messages. (Ref: FR16)
   - [x] 4.5 Integrate `FileUpload.tsx` and `CanvasDisplay.tsx` into `frontend/src/pages/HomePage.tsx`.
-- [ ] 5.0 Ensure Project Structure and Documentation for Phase 1 Completion (G5, G6, SM1-SM7).
-  - [ ] 5.1 Review and update `dev_init.sh` if any new backend/frontend dependencies or setup steps were added.
-  - [ ] 5.2 Update `frontend/package.json` and `backend/requirements.txt` with any new dependencies.
+- [x] 5.0 Ensure Project Structure and Documentation for Phase 1 Completion (G5, G6, SM1-SM7).
+  - [x] 5.1 Review and update `dev_init.sh` if any new backend/frontend dependencies or setup steps were added.
+  - [x] 5.2 Update `frontend/package.json` and `backend/requirements.txt` with any new dependencies.
   - [x] 5.3 Add basic JSDoc/TypeDoc comments to new frontend components and hooks.
   - [x] 5.4 Add basic docstrings to new backend Python modules and functions.
-  - [ ] 5.5 Manually test all functional requirements (FR1-FR17) and verify success metrics (SM1-SM7).
+  - [x] 5.5 Manually test all functional requirements (FR1-FR17) and verify success metrics (SM1-SM7).
   - [x] 5.6 Ensure code follows established project conventions.

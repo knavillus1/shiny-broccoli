@@ -45,6 +45,9 @@ if [ ! -f backend/.env ]; then
 fi
 
 # --------- Frontend Setup ---------
+if [ ! -f frontend/.env ]; then
+  cp frontend/.env.example frontend/.env
+fi
 (cd frontend && npm install)
 
 # --------- Start Servers ---------
