@@ -91,6 +91,7 @@
 - `frontend/src/pages/HomePage.tsx` - Integration of new components into complete workflow.
 - `frontend/src/services/apiClient.ts` - Added functions for OpenAI integration endpoints.
 - `frontend/src/components/FileUpload.tsx` - Handles image uploads with validation and progress.
+- `frontend/src/components/FileUpload.test.tsx` - Unit tests for image upload validation.
 - `frontend/src/components/HealthCheckDisplay.tsx` - Displays backend health status.
 - `frontend/src/components/MaskToolbar.tsx` - Toolbar for selecting mask brush size.
 - `backend/app/main.py` - Include new OpenAI integration router.
@@ -189,7 +190,7 @@
 - [ ] 9.0 Performance Optimization and Polish (SM1-SM7)
   - [ ] 9.1 Optimize canvas operations for smooth mask drawing performance
   - [ ] 9.2 Implement image compression for large uploads to meet OpenAI size limits
-  - [ ] 9.3 Add client-side validation for image dimensions and format compatibility
+  - [x] 9.3 Add client-side validation for image dimensions and format compatibility
   - [ ] 9.4 Optimize memory usage for large images and long editing sessions
   - [ ] 9.5 Test performance across different browsers and devices
   - [ ] 9.6 Add performance monitoring and logging for optimization

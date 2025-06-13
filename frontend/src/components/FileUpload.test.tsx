@@ -45,4 +45,37 @@ describe('FileUpload', () => {
     await waitFor(() => expect(onUploaded).toHaveBeenCalledWith(file));
     expect(getByText('Upload successful')).toBeTruthy();
   });
+
+  it('rejects unsupported file type', async () => {
+    const { getByLabelText, getByText } = render(<FileUpload />);
+    const input = getByLabelText('Image:');
+    const file = new File(['data'], 'test.bmp', { type: 'image/bmp' });
+    await fireEvent.change(input, { target: { files: [file] } });
+    await waitFor(() => {
+      expect(getByText('Error: Unsupported file type')).toBeTruthy();
+    });
+  });
+
+  it('rejects images with invalid dimensions', async () => {
+    class InvalidImage {
+      onload: () => void = () => {};
+      onerror: () => void = () => {};
+      width = 300;
+      height = 200;
+      set src(_val: string) { this.onload(); }
+    }
+    // @ts-ignore
+    global.Image = InvalidImage;
+
+    const { getByLabelText, getByText } = render(<FileUpload />);
+    const input = getByLabelText('Image:');
+    const file = new File(['data'], 'bad.png', { type: 'image/png' });
+    await fireEvent.change(input, { target: { files: [file] } });
+    await waitFor(() => {
+      expect(getByText(/Invalid dimensions/)).toBeTruthy();
+    });
+    // Restore default
+    // @ts-ignore
+    global.Image = RealImage;
+  });
 });
