@@ -1,33 +1,57 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# NOTE TO Codex agent: If you are reading this, it means you are bootstraping a new project.
-# It is your responsibility to fill in the missing parts of this script, the headings below
-# are just a guide to help you with common development application startup tasks.
-# Remove these comments and complete the script as needed.
+# Development initialization script
+# Checks prerequisites, installs dependencies, and starts both backend and frontend.
 
+# --------- Helper Functions ---------
+require_python() {
+  local ver
+  if ! ver=$(python3 --version 2>/dev/null); then
+    echo "Python 3.11+ is required but not found" >&2
+    exit 1
+  fi
+  ver=${ver#Python }
+  if [[ $ver != 3.11* && $ver != 3.12* ]]; then
+    echo "Warning: expected Python 3.11.x, found $ver" >&2
+  fi
+}
 
+require_node() {
+  local ver
+  if ! ver=$(node --version 2>/dev/null); then
+    echo "Node.js 18+ is required but not found" >&2
+    exit 1
+  fi
+  ver=${ver#v}
+  major=${ver%%.*}
+  if (( major < 18 )); then
+    echo "Warning: expected Node.js 18+ (or 20), found $ver" >&2
+  fi
+}
 
-# Export optional debug environment variables if provided
+# --------- Checks ---------
+require_python
+require_node
 
-# Example CORS allowed origins for the backend (comma-separated)
-#: "${ALLOW_ORIGINS:=http://localhost:5173}"
-#export ALLOW_ORIGINS
+# --------- Backend Setup ---------
+if [ ! -d backend/.venv ]; then
+  python3 -m venv backend/.venv
+fi
+source backend/.venv/bin/activate
+pip install -r backend/requirements.txt
+if [ ! -f backend/.env ]; then
+  cp backend/.env.example backend/.env
+fi
 
-# Kill existing processes
+# --------- Frontend Setup ---------
+(cd frontend && npm install)
 
-# Create virtual environment if it doesn't exist
+# --------- Start Servers ---------
+uvicorn backend.app.main:app --reload --port 8000 &
+BACKEND_PID=$!
+(cd frontend && npm run dev) &
+FRONTEND_PID=$!
 
-# Activate virtual environment
-
-# Install  dependencies
-
-# Start backend in background
-
-# Start frontend in background
-
-# Wait briefly for servers to start
-
-# Open in default browser (macOS or Linux)
-
-#  Wait for servers to shut down manually
+trap 'kill $BACKEND_PID $FRONTEND_PID' INT TERM
+wait $FRONTEND_PID
