@@ -144,15 +144,15 @@
   - [x] 3.7 Include the new OpenAI router in `backend/app/main.py`
   - [x] 3.8 Create unit tests for all OpenAI integration endpoints
 
-- [ ] 4.0 Enhance Mask Drawing System (FR6-FR10, US2, US6)
+- [x] 4.0 Enhance Mask Drawing System (FR6-FR10, US2, US6)
   - [x] 4.1 Create `MaskToolbar.tsx` component with brush size controls (small, medium, large)
   - [x] 4.2 Implement rectangle and circle selection tools in addition to freehand drawing
   - [x] 4.3 Add "Clear Mask" functionality to reset the entire mask
-  - [ ] 4.4 Implement undo/redo system for mask operations
+  - [x] 4.4 Implement undo/redo system for mask operations
   - [x] 4.5 Enhance `useCanvas.ts` hook with advanced drawing state management
   - [x] 4.6 Add mask export functionality to generate proper PNG data for API
   - [x] 4.7 Update `CanvasDisplay.tsx` to integrate with new toolbar and tools
-  - [ ] 4.8 Create comprehensive unit tests for enhanced mask functionality
+  - [x] 4.8 Create comprehensive unit tests for enhanced mask functionality
 
 - [x] 5.0 Implement Prompt Engineering Interface (FR11-FR14, US1, US4)
 - [x] 5.1 Create `PromptInput.tsx` component with text area and validation

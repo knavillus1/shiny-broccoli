@@ -40,3 +40,4 @@
 2025-06-13 Optimized ResultsDisplay image handling and updated tests
 2025-06-13 Added rectangle and circle mask drawing tools
 2025-06-13 Added user guide documentation for editing workflow
+2025-06-13 Added undo/redo mask functionality with tests

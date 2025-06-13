@@ -16,7 +16,16 @@ describe('useCanvas', () => {
     const { result } = renderHook(() => useCanvas());
     const canvas = document.createElement('canvas');
     const fillRect = vi.fn();
-    canvas.getContext = vi.fn(() => ({ fillRect, globalCompositeOperation: 'source-over', fillStyle: 'white' } as unknown as CanvasRenderingContext2D));
+    canvas.getContext = vi.fn(
+      () =>
+        ({
+          fillRect,
+          getImageData: vi.fn(() => ({ data: new Uint8ClampedArray(1) })),
+          putImageData: vi.fn(),
+          globalCompositeOperation: 'source-over',
+          fillStyle: 'white',
+        } as unknown as CanvasRenderingContext2D),
+    );
     result.current.canvasRef.current = canvas;
     act(() => {
       result.current.clear();
@@ -38,5 +47,39 @@ describe('useCanvas', () => {
       result.current.setTool('rectangle');
     });
     expect(result.current.tool).toBe('rectangle');
+  });
+
+  it('supports undo and redo', () => {
+    const { result } = renderHook(() => useCanvas());
+    const canvas = document.createElement('canvas');
+    canvas.width = 10;
+    canvas.height = 10;
+    const putImageData = vi.fn();
+    const getImageData = vi.fn(() => ({ data: new Uint8ClampedArray(1) }));
+    canvas.getContext = vi.fn(() =>
+      ({
+        fillRect: vi.fn(),
+        getImageData,
+        putImageData,
+        globalCompositeOperation: 'source-over',
+        fillStyle: 'white',
+      } as unknown as CanvasRenderingContext2D),
+    );
+    result.current.canvasRef.current = canvas;
+
+    act(() => {
+      result.current.clear();
+    });
+    expect(result.current.canUndo).toBe(true);
+
+    act(() => {
+      result.current.undo();
+    });
+    expect(putImageData).toHaveBeenCalled();
+
+    act(() => {
+      result.current.redo();
+    });
+    expect(putImageData).toHaveBeenCalledTimes(2);
   });
 });

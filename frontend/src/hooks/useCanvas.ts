@@ -14,6 +14,9 @@ export default function useCanvas() {
   const [mode, setMode] = useState<'draw' | 'erase'>('draw');
   const [brushSize, setBrushSize] = useState<BrushSize>('medium');
   const [tool, setTool] = useState<Tool>('brush');
+  const history = useRef<ImageData[]>([]);
+  const redoStack = useRef<ImageData[]>([]);
+  const [, forceRender] = useState({});
   const toggleMode = () => setMode((m) => (m === 'draw' ? 'erase' : 'draw'));
 
   const fillWhite = (ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) => {
@@ -27,6 +30,9 @@ export default function useCanvas() {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+    history.current.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+    redoStack.current = [];
+    forceRender({});
     fillWhite(ctx, canvas);
   };
 
@@ -43,6 +49,11 @@ export default function useCanvas() {
     const startDraw = (e: PointerEvent) => {
       drawing.current = true;
       startPos.current = { x: e.offsetX, y: e.offsetY };
+      history.current.push(
+        ctx.getImageData(0, 0, canvas.width, canvas.height),
+      );
+      redoStack.current = [];
+      forceRender({});
       if (tool === 'brush') {
         ctx.beginPath();
         ctx.moveTo(e.offsetX, e.offsetY);
@@ -101,6 +112,28 @@ export default function useCanvas() {
     };
   }, [mode, brushSize, tool]);
 
+  const undo = () => {
+    const canvas = canvasRef.current;
+    if (!canvas || history.current.length === 0) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    const prev = history.current.pop()!;
+    redoStack.current.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+    ctx.putImageData(prev, 0, 0);
+    forceRender({});
+  };
+
+  const redo = () => {
+    const canvas = canvasRef.current;
+    if (!canvas || redoStack.current.length === 0) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    const next = redoStack.current.pop()!;
+    history.current.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+    ctx.putImageData(next, 0, 0);
+    forceRender({});
+  };
+
   return {
     canvasRef,
     mode,
@@ -110,5 +143,9 @@ export default function useCanvas() {
     setBrushSize,
     tool,
     setTool,
+    undo,
+    redo,
+    canUndo: history.current.length > 0,
+    canRedo: redoStack.current.length > 0,
   };
 }

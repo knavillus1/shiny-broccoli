@@ -24,6 +24,10 @@ export default function CanvasDisplay({ image, prompt, onResult, onError }: Prop
     mode,
     toggleMode,
     clear,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
     brushSize,
     setBrushSize,
     tool,
@@ -132,6 +136,22 @@ export default function CanvasDisplay({ image, prompt, onResult, onError }: Prop
               className="px-2 py-1 border rounded"
             >
               Clear Mask
+            </button>
+            <button
+              type="button"
+              onClick={undo}
+              disabled={!canUndo}
+              className="px-2 py-1 border rounded"
+            >
+              Undo
+            </button>
+            <button
+              type="button"
+              onClick={redo}
+              disabled={!canRedo}
+              className="px-2 py-1 border rounded"
+            >
+              Redo
             </button>
             <span className="text-sm text-gray-600">Mode: {mode}</span>
             <span className="text-sm text-gray-600">Tool: {tool}</span>
