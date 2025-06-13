@@ -150,8 +150,8 @@
 - [ ] 5.0 Implement Prompt Engineering Interface (FR11-FR14, US1, US4)
 - [x] 5.1 Create `PromptInput.tsx` component with text area and validation
 - [x] 5.2 Add prompt length validation and character counter
-  - [ ] 5.3 Implement recent prompts storage and quick reuse functionality
-  - [ ] 5.4 Add example prompts and guidance text for new users
+  - [x] 5.3 Implement recent prompts storage and quick reuse functionality
+  - [x] 5.4 Add example prompts and guidance text for new users
   - [ ] 5.5 Include prompt suggestions based on common editing tasks
 - [x] 5.6 Create unit tests for prompt input validation and storage
 
