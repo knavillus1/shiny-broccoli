@@ -145,7 +145,7 @@
 
 - [ ] 4.0 Enhance Mask Drawing System (FR6-FR10, US2, US6)
   - [x] 4.1 Create `MaskToolbar.tsx` component with brush size controls (small, medium, large)
-  - [ ] 4.2 Implement rectangle and circle selection tools in addition to freehand drawing
+  - [x] 4.2 Implement rectangle and circle selection tools in addition to freehand drawing
   - [x] 4.3 Add "Clear Mask" functionality to reset the entire mask
   - [ ] 4.4 Implement undo/redo system for mask operations
   - [x] 4.5 Enhance `useCanvas.ts` hook with advanced drawing state management
@@ -161,7 +161,7 @@
   - [x] 5.5 Include prompt suggestions based on common editing tasks
 - [x] 5.6 Create unit tests for prompt input validation and storage
 
-- [ ] 6.0 Build Results Display System (FR15-FR18, US3)
+- [x] 6.0 Build Results Display System (FR15-FR18, US3)
   - [x] 6.1 Create `ResultsDisplay.tsx` component for before/after comparison
   - [x] 6.2 Implement side-by-side and overlay comparison modes
   - [x] 6.3 Add download/save functionality for edited results

@@ -26,6 +26,8 @@ export default function CanvasDisplay({ image, prompt, onResult, onError }: Prop
     clear,
     brushSize,
     setBrushSize,
+    tool,
+    setTool,
   } = useCanvas();
   const [maskVisible, setMaskVisible] = useState(true);
   const [submitMsg, setSubmitMsg] = useState('');
@@ -104,7 +106,12 @@ export default function CanvasDisplay({ image, prompt, onResult, onError }: Prop
       {image ? (
         <>
           <div className="mb-2 flex items-center gap-2">
-            <MaskToolbar brushSize={brushSize} setBrushSize={setBrushSize} />
+            <MaskToolbar
+              brushSize={brushSize}
+              setBrushSize={setBrushSize}
+              tool={tool}
+              setTool={setTool}
+            />
             <button
               type="button"
               onClick={toggleMode}
@@ -127,6 +134,7 @@ export default function CanvasDisplay({ image, prompt, onResult, onError }: Prop
               Clear Mask
             </button>
             <span className="text-sm text-gray-600">Mode: {mode}</span>
+            <span className="text-sm text-gray-600">Tool: {tool}</span>
           </div>
           <div className="relative inline-block">
             <canvas ref={baseRef} className="border block" />
