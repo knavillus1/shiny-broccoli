@@ -1,3 +1,5 @@
+"""Image upload and processing API endpoints."""
+
 import logging
 import time
 from fastapi import APIRouter, UploadFile, File, HTTPException, status
@@ -17,6 +19,8 @@ router = APIRouter()
 
 
 def _validate_file(file: UploadFile) -> None:
+    """Validate uploaded file content type."""
+
     if file.content_type not in ALLOWED_TYPES:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -26,6 +30,7 @@ def _validate_file(file: UploadFile) -> None:
 
 @router.post("/images/upload")
 async def upload_image(file: UploadFile = File(...)):
+    """Upload an image and return a confirmation response."""
     start = time.time()
     logger.info("/images/upload called")
     _validate_file(file)
@@ -39,6 +44,7 @@ async def upload_image(file: UploadFile = File(...)):
 async def process_endpoint(
     file: UploadFile = File(...), mask: UploadFile | None = File(None)
 ):
+    """Process an image with an optional mask."""
     start = time.time()
     logger.info("/images/process called")
     _validate_file(file)
