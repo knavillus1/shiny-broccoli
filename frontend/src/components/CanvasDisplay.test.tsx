@@ -72,4 +72,15 @@ describe('CanvasDisplay', () => {
     const called = contexts.some((ctx) => ctx.fillRect.mock.calls.length > 0);
     expect(called).toBe(true);
   });
+
+  it('returns the result via callback', async () => {
+    const file = new File(['data'], 'test.png', { type: 'image/png' });
+    const onResult = vi.fn();
+    const { getByText } = render(
+      <CanvasDisplay image={file} prompt="edit" onResult={onResult} />,
+    );
+    await waitFor(() => getByText('Submit'));
+    fireEvent.click(getByText('Submit'));
+    await waitFor(() => expect(onResult).toHaveBeenCalled());
+  });
 });
