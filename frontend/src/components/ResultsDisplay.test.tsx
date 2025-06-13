@@ -5,9 +5,11 @@ import ResultsDisplay from './ResultsDisplay';
 describe('ResultsDisplay', () => {
   beforeAll(() => {
     global.URL.createObjectURL = vi.fn(() => 'blob:url');
+    global.URL.revokeObjectURL = vi.fn();
   });
   afterEach(() => {
     cleanup();
+    vi.clearAllMocks();
   });
   it('shows placeholders when no images provided', () => {
     const { getByText } = render(<ResultsDisplay original={null} result={null} />);
@@ -43,5 +45,14 @@ describe('ResultsDisplay', () => {
     const link = getByLabelText('download-result') as HTMLAnchorElement;
     expect(link.href).toContain('blob:url');
     expect(link.getAttribute('download')).toBe('result.png');
+  });
+
+  it('revokes object URLs on unmount', () => {
+    const file = new File(['data'], 'res.png', { type: 'image/png' });
+    const { unmount } = render(
+      <ResultsDisplay original={file} result={file} />
+    );
+    unmount();
+    expect(URL.revokeObjectURL).toHaveBeenCalledTimes(2);
   });
 });
