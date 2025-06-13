@@ -7,3 +7,4 @@
 2025-06-13 Added FileUpload component with validation and tests
 2025-06-13 Added CanvasDisplay component and integrated into HomePage
 2025-06-13 Added documentation comments to frontend and backend modules
+2025-06-13 Implemented canvas image scaling
