@@ -115,7 +115,7 @@
   - [x] 4.2 Connect `FileUpload.tsx` to call the `/api/v1/images/upload` endpoint. (Ref: FR15)
   - [ ] 4.3 Implement a "Submit" button/workflow in the frontend that sends the original image and mask data (from `CanvasDisplay.tsx`) to the `/api/v1/images/process` endpoint. (Ref: FR17)
   - [ ] 4.4 Handle API responses, including network errors and timeouts, displaying user-friendly messages. (Ref: FR16)
-  - [c] 4.5 Integrate `FileUpload.tsx` and `CanvasDisplay.tsx` into `frontend/src/pages/HomePage.tsx`.
+  - [x] 4.5 Integrate `FileUpload.tsx` and `CanvasDisplay.tsx` into `frontend/src/pages/HomePage.tsx`.
 - [ ] 5.0 Ensure Project Structure and Documentation for Phase 1 Completion (G5, G6, SM1-SM7).
   - [ ] 5.1 Review and update `dev_init.sh` if any new backend/frontend dependencies or setup steps were added.
   - [ ] 5.2 Update `frontend/package.json` and `backend/requirements.txt` with any new dependencies.

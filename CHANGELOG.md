@@ -5,3 +5,4 @@
 2025-06-13 Added image upload endpoints and tests
 2025-06-13 Added API client functions for image upload and processing
 2025-06-13 Added FileUpload component with validation and tests
+2025-06-13 Added CanvasDisplay component and integrated into HomePage
