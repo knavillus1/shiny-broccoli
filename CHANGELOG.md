@@ -13,3 +13,4 @@
 2025-06-13 Added mask layer toggle, submit workflow, and canvas tests
 2025-06-13 Completed setup review tasks
 2025-06-14 Added OpenAI service skeleton and tests
+2025-06-14 Added logging configuration for OpenAI service

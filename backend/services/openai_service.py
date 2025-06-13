@@ -21,11 +21,14 @@ class OpenAIService:
         if not key:
             raise ValueError("OpenAI API key is not configured")
         self._client = openai.AsyncOpenAI(api_key=key)
+        logger.debug("OpenAI client initialized")
 
     async def verify_connection(self) -> dict[str, Any]:
         """Perform a trivial API call to verify credentials.
 
         The call is mocked during tests and does not require network access.
         """
-        logger.debug("Verifying OpenAI credentials")
-        return await self._client.models.list()
+        logger.info("Verifying OpenAI credentials")
+        response = await self._client.models.list()
+        logger.debug("Models list response: %s", response)
+        return response
