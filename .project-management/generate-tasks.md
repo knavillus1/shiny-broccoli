@@ -5,6 +5,11 @@
 
 To guide an AI assistant in creating a detailed, step-by-step task list in Markdown format based on an existing Product Requirements Document (PRD). The task list should guide a developer through implementation.
 
+## Input file:
+Find the prd file in this location:
+- **Location:** `/.project-management/current-prd/prd-*-.md` 
+If the prd file references other files, analyze them too
+
 ## Output file : details of the new file you will create
 
 - **Format:** Markdown (`.md`)
