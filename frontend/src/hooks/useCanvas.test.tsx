@@ -23,4 +23,12 @@ describe('useCanvas', () => {
     });
     expect(clearRect).toHaveBeenCalled();
   });
+
+  it('updates brush size', () => {
+    const { result } = renderHook(() => useCanvas());
+    act(() => {
+      result.current.setBrushSize('large');
+    });
+    expect(result.current.brushSize).toBe('large');
+  });
 });

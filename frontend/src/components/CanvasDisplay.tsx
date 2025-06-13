@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import useCanvas from '../hooks/useCanvas';
+import MaskToolbar from './MaskToolbar';
 import { processImage } from '../services/apiClient';
 
 /**
@@ -10,7 +11,14 @@ import { processImage } from '../services/apiClient';
 
 export default function CanvasDisplay({ image }: { image: File | null }) {
   const baseRef = useRef<HTMLCanvasElement>(null);
-  const { canvasRef: maskRef, mode, toggleMode, clear } = useCanvas();
+  const {
+    canvasRef: maskRef,
+    mode,
+    toggleMode,
+    clear,
+    brushSize,
+    setBrushSize,
+  } = useCanvas();
   const [maskVisible, setMaskVisible] = useState(true);
   const [submitMsg, setSubmitMsg] = useState('');
   const [submitError, setSubmitError] = useState('');
@@ -73,6 +81,7 @@ export default function CanvasDisplay({ image }: { image: File | null }) {
       {image ? (
         <>
           <div className="mb-2 flex items-center gap-2">
+            <MaskToolbar brushSize={brushSize} setBrushSize={setBrushSize} />
             <button
               type="button"
               onClick={toggleMode}

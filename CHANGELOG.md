@@ -21,3 +21,4 @@
 2025-06-14 Added clear mask functionality and tests
 2025-06-13 Added image editing service and endpoint implementation
 2025-06-15 Added OpenAI edit API client functions and updated tasks
+2025-06-15 Added mask toolbar with brush size controls

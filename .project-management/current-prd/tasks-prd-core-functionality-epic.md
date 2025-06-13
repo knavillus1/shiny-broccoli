@@ -69,7 +69,7 @@
 ### Proposed New Files
 - `frontend/src/components/PromptInput.tsx` - Component for entering and managing editing prompts.
 - `frontend/src/components/PromptInput.test.tsx` - Unit tests for `PromptInput` component.
-- `frontend/src/components/MaskToolbar.tsx` - Advanced drawing tools with brush sizes, shapes, undo/redo.
+- `frontend/src/components/MaskToolbar.tsx` - Toolbar component with brush size controls.
 - `frontend/src/components/MaskToolbar.test.tsx` - Unit tests for `MaskToolbar` component.
 - `frontend/src/components/ResultsDisplay.tsx` - Before/after image comparison display.
 - `frontend/src/components/ResultsDisplay.test.tsx` - Unit tests for `ResultsDisplay` component.
@@ -138,13 +138,13 @@
   - [x] 3.8 Create unit tests for all OpenAI integration endpoints
 
 - [ ] 4.0 Enhance Mask Drawing System (FR6-FR10, US2, US6)
-  - [ ] 4.1 Create `MaskToolbar.tsx` component with brush size controls (small, medium, large)
+  - [x] 4.1 Create `MaskToolbar.tsx` component with brush size controls (small, medium, large)
   - [ ] 4.2 Implement rectangle and circle selection tools in addition to freehand drawing
   - [x] 4.3 Add "Clear Mask" functionality to reset the entire mask
   - [ ] 4.4 Implement undo/redo system for mask operations
-  - [ ] 4.5 Enhance `useCanvas.ts` hook with advanced drawing state management
+  - [x] 4.5 Enhance `useCanvas.ts` hook with advanced drawing state management
   - [ ] 4.6 Add mask export functionality to generate proper PNG data for API
-  - [ ] 4.7 Update `CanvasDisplay.tsx` to integrate with new toolbar and tools
+  - [x] 4.7 Update `CanvasDisplay.tsx` to integrate with new toolbar and tools
   - [ ] 4.8 Create comprehensive unit tests for enhanced mask functionality
 
 - [ ] 5.0 Implement Prompt Engineering Interface (FR11-FR14, US1, US4)

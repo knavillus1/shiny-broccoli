@@ -53,6 +53,15 @@ describe('CanvasDisplay', () => {
     await waitFor(() => getByText('ok'));
   });
 
+  it('changes brush size using toolbar', async () => {
+    const file = new File(['data'], 'test.png', { type: 'image/png' });
+    const { getByLabelText } = render(<CanvasDisplay image={file} />);
+    await waitFor(() => getByLabelText('Large'));
+    const large = getByLabelText('Large') as HTMLInputElement;
+    fireEvent.click(large);
+    expect(large.checked).toBe(true);
+  });
+
   it('clears the mask canvas', async () => {
     const file = new File(['data'], 'test.png', { type: 'image/png' });
     const { getByText } = render(<CanvasDisplay image={file} />);
