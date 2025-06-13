@@ -59,6 +59,7 @@
 ## Relevant Files
 ### Proposed New Files
 - `frontend/src/components/FileUpload.tsx` - Component for handling file uploads.
+- `frontend/src/components/FileUpload.test.tsx` - Unit tests for `FileUpload` component.
 - `frontend/src/components/CanvasDisplay.tsx` - Component for displaying the image and handling drawing.
 - `frontend/src/hooks/useCanvas.ts` - Hook for managing canvas state and drawing logic.
 - `backend/app/api/v1/endpoints/images.py` - API endpoints for image upload and processing.
@@ -69,6 +70,7 @@
 - `.project-management/current-prd/tasks-prd-foundation-epic.md` - Task tracking updates.
 - `frontend/src/pages/HomePage.tsx` - To integrate the new `FileUpload` and `CanvasDisplay` components.
 - `frontend/src/services/apiClient.ts` - To add functions for interacting with the new image endpoints.
+- `frontend/vite.config.ts` - Vitest configuration for component tests.
 - `backend/app/main.py` - To include the new image router.
 - `dev_init.sh` - Potentially, if new dependencies or setup steps are needed.
 - `frontend/package.json` - If new frontend dependencies are added.
@@ -82,12 +84,12 @@
 ## Tasks
 
 - [ ] 1.0 Implement Frontend File Upload Functionality (FR1-FR4, US1, US5). This task is informed by `/Users/kevinsullivan/code/shiny-broccoli/.project-management/closed-prd/prd-background/design-mock.html`.
-  - [ ] 1.1 Create `FileUpload.tsx` component with a file input element. (Ref: FR1, Design Mock)
-  - [ ] 1.2 Implement client-side validation for image formats (JPEG, PNG, GIF, WebP) and size (max 10MB). (Ref: FR2)
-  - [ ] 1.3 Display upload progress, success, and error messages to the user. (Ref: FR3)
+  - [x] 1.1 Create `FileUpload.tsx` component with a file input element. (Ref: FR1, Design Mock)
+  - [x] 1.2 Implement client-side validation for image formats (JPEG, PNG, GIF, WebP) and size (max 10MB). (Ref: FR2)
+  - [x] 1.3 Display upload progress, success, and error messages to the user. (Ref: FR3)
   - [ ] 1.4 On successful upload, pass the image data to the canvas component. (Ref: FR4)
-  - [ ] 1.5 Style the file upload area according to the design mock.
-  - [ ] 1.6 Write unit tests for `FileUpload.tsx`.
+  - [x] 1.5 Style the file upload area according to the design mock.
+  - [x] 1.6 Write unit tests for `FileUpload.tsx`.
 - [ ] 2.0 Develop Canvas Interface for Image Display and Basic Mask Drawing (FR5-FR9, US2, US3, US5). This task is informed by `/Users/kevinsullivan/code/shiny-broccoli/.project-management/closed-prd/prd-background/design-mock.html`.
   - [ ] 2.1 Create `CanvasDisplay.tsx` component that receives an image and renders it on an HTML5 canvas. (Ref: FR5)
   - [ ] 2.2 Implement proper image scaling to fit the canvas while maintaining aspect ratio. (Ref: FR5, Technical Considerations)
@@ -110,10 +112,10 @@
   - [x] 3.9 Write unit tests for the image API endpoints in `backend/tests/api/v1/test_images.py`.
 - [ ] 4.0 Integrate Frontend with Backend for Image Workflow (FR15-FR17, US4).
   - [x] 4.1 Update `frontend/src/services/apiClient.ts` to include functions for `/api/v1/images/upload` and `/api/v1/images/process`.
-  - [ ] 4.2 Connect `FileUpload.tsx` to call the `/api/v1/images/upload` endpoint. (Ref: FR15)
+  - [x] 4.2 Connect `FileUpload.tsx` to call the `/api/v1/images/upload` endpoint. (Ref: FR15)
   - [ ] 4.3 Implement a "Submit" button/workflow in the frontend that sends the original image and mask data (from `CanvasDisplay.tsx`) to the `/api/v1/images/process` endpoint. (Ref: FR17)
   - [ ] 4.4 Handle API responses, including network errors and timeouts, displaying user-friendly messages. (Ref: FR16)
-  - [ ] 4.5 Integrate `FileUpload.tsx` and `CanvasDisplay.tsx` into `frontend/src/pages/HomePage.tsx`.
+  - [c] 4.5 Integrate `FileUpload.tsx` and `CanvasDisplay.tsx` into `frontend/src/pages/HomePage.tsx`.
 - [ ] 5.0 Ensure Project Structure and Documentation for Phase 1 Completion (G5, G6, SM1-SM7).
   - [ ] 5.1 Review and update `dev_init.sh` if any new backend/frontend dependencies or setup steps were added.
   - [ ] 5.2 Update `frontend/package.json` and `backend/requirements.txt` with any new dependencies.
