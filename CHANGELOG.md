@@ -33,3 +33,4 @@
 2025-06-16 Documented Phase 2 implementation summary
 2025-06-13 Connected results display to API workflow
 2025-06-13 Added OpenAI error mapping for edit endpoint
+2025-06-13 Added retry logic to api client with tests
