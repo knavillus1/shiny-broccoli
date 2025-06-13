@@ -13,6 +13,9 @@ Create a virtual environment in `backend/.venv` and install requirements:
 python3 -m venv backend/.venv
 source backend/.venv/bin/activate
 pip install -r backend/requirements.txt
+
+# Configure environment variables
+cp backend/.env.example backend/.env  # edit OPENAI_API_KEY with your key
 ```
 
 Start the server using Uvicorn:
