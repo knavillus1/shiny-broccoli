@@ -77,6 +77,7 @@
 - `frontend/src/components/ProgressIndicator.test.tsx` - Unit tests for `ProgressIndicator` component.
 - `frontend/src/components/ErrorBoundary.tsx` - Error handling and recovery component.
 - `frontend/src/components/ErrorBoundary.test.tsx` - Unit tests for `ErrorBoundary` component.
+- `frontend/src/services/apiClient.test.ts` - Unit tests for API client retry logic.
 - `backend/app/api/v1/endpoints/openai_integration.py` - OpenAI API integration endpoints.
 - `backend/services/openai_service.py` - Service for handling OpenAI API calls.
 - `backend/app/logging.py` - Logging configuration utilities.
@@ -147,7 +148,7 @@
   - [x] 4.7 Update `CanvasDisplay.tsx` to integrate with new toolbar and tools
   - [ ] 4.8 Create comprehensive unit tests for enhanced mask functionality
 
-- [ ] 5.0 Implement Prompt Engineering Interface (FR11-FR14, US1, US4)
+- [x] 5.0 Implement Prompt Engineering Interface (FR11-FR14, US1, US4)
 - [x] 5.1 Create `PromptInput.tsx` component with text area and validation
 - [x] 5.2 Add prompt length validation and character counter
   - [x] 5.3 Implement recent prompts storage and quick reuse functionality
@@ -168,7 +169,7 @@
   - [ ] 7.2 Implement progress tracking for long-running API requests
   - [ ] 7.3 Add estimated completion time display
   - [x] 7.4 Create `ErrorBoundary.tsx` for graceful error recovery
-  - [ ] 7.5 Implement retry functionality for failed requests
+  - [x] 7.5 Implement retry functionality for failed requests
   - [ ] 7.6 Add user-friendly error messages for different failure scenarios
   - [x] 7.7 Create unit tests for progress and error handling components
 
