@@ -3,11 +3,14 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from .logging import setup_logging
+
 from .core.config import get_settings
 from .api.v1.endpoints.health import router as health_router
 from .api.v1.endpoints.images import router as images_router
 
 settings = get_settings()
+setup_logging()
 
 app = FastAPI(title="Shiny Broccoli API")
 

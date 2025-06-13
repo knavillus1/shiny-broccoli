@@ -79,6 +79,7 @@
 - `frontend/src/components/ErrorBoundary.test.tsx` - Unit tests for `ErrorBoundary` component.
 - `backend/app/api/v1/endpoints/openai_integration.py` - OpenAI API integration endpoints.
 - `backend/services/openai_service.py` - Service for handling OpenAI API calls.
+- `backend/app/logging.py` - Logging configuration utilities.
 - `backend/tests/api/v1/test_openai_integration.py` - Unit tests for OpenAI integration endpoints.
 - `backend/tests/services/test_openai_service.py` - Unit tests for OpenAI service.
 
@@ -104,11 +105,11 @@
 
 ## Tasks
 
-- [ ] 1.0 Set Up OpenAI Integration Foundation (FR1, FR4, FR5)
+- [x] 1.0 Set Up OpenAI Integration Foundation (FR1, FR4, FR5)
   - [x] 1.1 Add OpenAI Python SDK to `backend/requirements.txt`
   - [x] 1.2 Update `backend/app/core/config.py` to include OpenAI API key from environment
   - [x] 1.3 Create `backend/services/openai_service.py` with basic API client setup
-  - [ ] 1.4 Add proper logging configuration for OpenAI API requests and responses
+  - [x] 1.4 Add proper logging configuration for OpenAI API requests and responses
   - [x] 1.5 Create unit tests for OpenAI service configuration and connection
   - [x] 1.6 Update environment setup documentation for API key requirements
 
