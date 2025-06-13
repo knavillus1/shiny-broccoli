@@ -10,3 +10,4 @@
 2025-06-13 Implemented canvas image scaling
 2025-06-13 Added drawing hook and basic brush functionality
 2025-06-13 Added erase mode toggle and canvas styling
+2025-06-13 Added mask layer toggle, submit workflow, and canvas tests
