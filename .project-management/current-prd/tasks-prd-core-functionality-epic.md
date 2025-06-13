@@ -82,7 +82,7 @@
 - `backend/services/openai_service.py` - Service for handling OpenAI API calls.
 - `backend/app/logging.py` - Logging configuration utilities.
 - `backend/tests/api/v1/test_openai_integration.py` - Unit tests for OpenAI integration endpoints.
-- `backend/tests/services/test_openai_service.py` - Unit tests for OpenAI service.
+- `backend/tests/unit/services/test_openai_service.py` - Unit tests for OpenAI service.
 
 ### Existing Files Modified
 - `frontend/src/components/CanvasDisplay.tsx` - Enhanced with advanced mask tools and export functionality.
@@ -106,7 +106,7 @@
 - `CHANGELOG.md` - Document Phase 2 implementation progress.
 - `frontend/src/components/CanvasDisplay.test.tsx` - Unit tests for CanvasDisplay component.
 - `backend/tests/api/v1/test_openai_integration.py` - Unit tests for OpenAI integration endpoints.
-- `backend/tests/services/test_openai_service.py` - Unit tests for OpenAI service.
+- `backend/tests/unit/services/test_openai_service.py` - Unit tests for OpenAI service.
 
 ### Notes
 - OpenAI API key must be stored securely in environment variables
@@ -125,13 +125,13 @@
   - [x] 1.5 Create unit tests for OpenAI service configuration and connection
   - [x] 1.6 Update environment setup documentation for API key requirements
 
-- [ ] 2.0 Implement Core OpenAI Image Editing Integration (FR1, FR2, FR3)
+- [x] 2.0 Implement Core OpenAI Image Editing Integration (FR1, FR2, FR3)
   - [x] 2.1 Implement image editing function in `openai_service.py` using OpenAI SDK
   - [x] 2.2 Add proper image format conversion (canvas to PNG) for OpenAI compatibility
   - [x] 2.3 Handle OpenAI API responses including success, error, and timeout scenarios
   - [x] 2.4 Implement request/response validation and error mapping
   - [x] 2.5 Add comprehensive unit tests for OpenAI service functions
-  - [ ] 2.6 Test integration with various image sizes and mask complexities
+  - [x] 2.6 Test integration with various image sizes and mask complexities
 
 - [ ] 3.0 Create OpenAI API Endpoints (FR1-FR5, US5, US7)
   - [x] 3.1 Create `backend/app/api/v1/endpoints/openai_integration.py`
