@@ -35,3 +35,11 @@ async def edit_image(
         )
     logger.info("/images/edit completed in %.3f", time.time() - start)
     return {"detail": "editing not implemented"}
+
+
+@router.get("/images/status/{request_id}")
+async def get_status(request_id: str) -> dict[str, str]:
+    """Return the processing status for an image edit request."""
+    logger.info("/images/status called for %s", request_id)
+    # Placeholder implementation until async processing is added
+    return {"request_id": request_id, "status": "pending"}
