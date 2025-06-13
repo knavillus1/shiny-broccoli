@@ -23,3 +23,4 @@
 2025-06-15 Added OpenAI edit API client functions and updated tasks
 2025-06-15 Added mask toolbar with brush size controls
 2025-06-15 Added prompt history with example suggestions
+2025-06-15 Improved mask export and PNG conversion for OpenAI edits

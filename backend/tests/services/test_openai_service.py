@@ -70,6 +70,7 @@ async def test_edit_image(monkeypatch):
 
     service_module = load_service(monkeypatch, Client)
     service = service_module.OpenAIService(api_key="k")
+    monkeypatch.setattr(service, "_ensure_png", lambda d: d)
     result = await service.edit_image(b"img", b"mask", "p")
 
     assert result == {"result": "ok"}

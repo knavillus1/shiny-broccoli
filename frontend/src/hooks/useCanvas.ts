@@ -12,11 +12,19 @@ export default function useCanvas() {
   const [mode, setMode] = useState<'draw' | 'erase'>('draw');
   const [brushSize, setBrushSize] = useState<BrushSize>('medium');
   const toggleMode = () => setMode((m) => (m === 'draw' ? 'erase' : 'draw'));
+
+  const fillWhite = (ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) => {
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  };
+
   const clear = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    ctx?.clearRect(0, 0, canvas.width, canvas.height);
+    if (!ctx) return;
+    fillWhite(ctx, canvas);
   };
 
   useEffect(() => {
@@ -24,6 +32,10 @@ export default function useCanvas() {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+
+    // Initialize mask with white so opaque regions are preserved
+    fillWhite(ctx, canvas);
+    canvas.style.opacity = '0.5';
 
     const startDraw = (e: PointerEvent) => {
       drawing.current = true;
@@ -36,8 +48,13 @@ export default function useCanvas() {
       const widthMap = { small: 4, medium: 8, large: 12 } as const;
       ctx.lineWidth = widthMap[brushSize];
       ctx.lineCap = 'round';
-      ctx.strokeStyle = 'red';
-      ctx.globalCompositeOperation = mode === 'erase' ? 'destination-out' : 'source-over';
+      if (mode === 'draw') {
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.strokeStyle = 'black';
+      } else {
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.strokeStyle = 'white';
+      }
       ctx.lineTo(e.offsetX, e.offsetY);
       ctx.stroke();
     };

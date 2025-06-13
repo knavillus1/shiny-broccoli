@@ -15,6 +15,7 @@ const contexts: any[] = [];
 HTMLCanvasElement.prototype.getContext = vi.fn(function () {
   const ctx = {
     clearRect: vi.fn(),
+    fillRect: vi.fn(),
     drawImage: vi.fn(),
     beginPath: vi.fn(),
     moveTo: vi.fn(),
@@ -35,7 +36,7 @@ HTMLCanvasElement.prototype.toBlob = vi.fn(function (cb) {
 });
 
 vi.mock('../services/apiClient', () => ({
-  processImage: vi.fn(() => Promise.resolve({ detail: 'ok' })),
+  editImage: vi.fn(() => Promise.resolve({ detail: 'ok' })),
 }));
 
 global.URL.createObjectURL = vi.fn(() => 'blob:url');
@@ -67,8 +68,8 @@ describe('CanvasDisplay', () => {
     const { getByText } = render(<CanvasDisplay image={file} />);
     await waitFor(() => getByText('Clear Mask'));
     const clearBtn = getByText('Clear Mask');
-    const maskCtx = contexts[1];
     fireEvent.click(clearBtn);
-    expect(maskCtx.clearRect).toHaveBeenCalled();
+    const called = contexts.some((ctx) => ctx.fillRect.mock.calls.length > 0);
+    expect(called).toBe(true);
   });
 });

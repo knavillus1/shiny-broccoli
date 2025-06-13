@@ -8,3 +8,4 @@ flake8
 httpx
 python-multipart
 openai
+Pillow
