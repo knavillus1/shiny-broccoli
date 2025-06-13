@@ -1,5 +1,11 @@
 import { useEffect, useRef } from 'react';
 
+/**
+ * Displays an uploaded image on an HTML5 canvas.
+ *
+ * @param image The image file to render, or null if none uploaded.
+ */
+
 export default function CanvasDisplay({ image }: { image: File | null }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 

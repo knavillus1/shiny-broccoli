@@ -1,6 +1,12 @@
 import { useState, ChangeEvent, FormEvent } from 'react';
 import { uploadImage } from '../services/apiClient';
 
+/**
+ * Handles image selection and upload to the backend.
+ *
+ * @param onUploaded Callback invoked with the uploaded file on success.
+ */
+
 const ACCEPTED_TYPES = [
   'image/jpeg',
   'image/png',
