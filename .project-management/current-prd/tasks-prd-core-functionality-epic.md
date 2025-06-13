@@ -142,12 +142,12 @@
   - [ ] 4.8 Create comprehensive unit tests for enhanced mask functionality
 
 - [ ] 5.0 Implement Prompt Engineering Interface (FR11-FR14, US1, US4)
-  - [ ] 5.1 Create `PromptInput.tsx` component with text area and validation
-  - [ ] 5.2 Add prompt length validation and character counter
+- [x] 5.1 Create `PromptInput.tsx` component with text area and validation
+- [x] 5.2 Add prompt length validation and character counter
   - [ ] 5.3 Implement recent prompts storage and quick reuse functionality
   - [ ] 5.4 Add example prompts and guidance text for new users
   - [ ] 5.5 Include prompt suggestions based on common editing tasks
-  - [ ] 5.6 Create unit tests for prompt input validation and storage
+- [x] 5.6 Create unit tests for prompt input validation and storage
 
 - [ ] 6.0 Build Results Display System (FR15-FR18, US3)
   - [ ] 6.1 Create `ResultsDisplay.tsx` component for before/after comparison
