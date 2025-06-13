@@ -5,18 +5,43 @@ from __future__ import annotations
 import logging
 import time
 
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException, status
+from fastapi import (
+    APIRouter,
+    UploadFile,
+    File,
+    Form,
+    HTTPException,
+    status,
+    BackgroundTasks,
+)
 import openai
+from uuid import uuid4
 
 from backend.services.openai_service import OpenAIService
+from backend.services import task_manager
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
 
+async def _process_request(
+    request_id: str, image: bytes, mask: bytes | None, prompt: str
+) -> None:
+    """Background task to send edit request to OpenAI."""
+    service = OpenAIService()
+    try:
+        result = await service.edit_image(image, mask, prompt)
+    except Exception as exc:  # pragma: no cover - network errors handled in tests
+        logger.exception("OpenAI edit failed")
+        task_manager.set_error(request_id, str(exc))
+    else:
+        task_manager.set_result(request_id, result)
+
+
 @router.post("/images/edit")
 async def edit_image(
+    background_tasks: BackgroundTasks,
     image: UploadFile = File(...),
     mask: UploadFile | None = File(None),
     prompt: str = Form(""),
@@ -44,11 +69,14 @@ async def edit_image(
         )
     start = time.time()
     logger.info("/images/edit called")
-    service = OpenAIService()
     try:
         img_bytes = await image.read()
         mask_bytes = await mask.read() if mask else None
-        result = await service.edit_image(img_bytes, mask_bytes, prompt)
+        request_id = uuid4().hex
+        task_manager.create_task(request_id)
+        background_tasks.add_task(
+            _process_request, request_id, img_bytes, mask_bytes, prompt
+        )
     except openai.BadRequestError as exc:  # pragma: no cover - network
         logger.warning("OpenAI bad request: %s", exc)
         raise HTTPException(
@@ -94,13 +122,23 @@ async def edit_image(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=str(exc),
         )
-    logger.info("/images/edit completed in %.3f", time.time() - start)
-    return result
+    logger.info("/images/edit queued in %.3f", time.time() - start)
+    return {"request_id": request_id}
 
 
 @router.get("/images/status/{request_id}")
-async def get_status(request_id: str) -> dict[str, str]:
+async def get_status(request_id: str) -> dict[str, object]:
     """Return the processing status for an image edit request."""
     logger.info("/images/status called for %s", request_id)
-    # Placeholder implementation until async processing is added
-    return {"request_id": request_id, "status": "pending"}
+    record = task_manager.get_task(request_id)
+    if record is None:
+        raise HTTPException(status_code=404, detail="Request not found")
+    response: dict[str, object] = {
+        "request_id": request_id,
+        "status": record.status,
+    }
+    if record.result is not None:
+        response["result"] = record.result
+    if record.error is not None:
+        response["error"] = record.error
+    return response
