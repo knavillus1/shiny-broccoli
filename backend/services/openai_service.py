@@ -74,9 +74,55 @@ class OpenAIService:
         try:
             png_image = self._ensure_png(image)
             png_mask = self._ensure_png(mask) if mask else None
-            # Open image to get size
-            with Image.open(BytesIO(png_image)) as img_obj:
-                width, height = img_obj.size
+
+            # Open image to get size and ensure supported dimensions
+            if Image is not None:
+                with Image.open(BytesIO(png_image)) as img_obj:
+                    orig_w, orig_h = img_obj.size
+                    # choose supported target size
+                    supported_sizes = (256, 512, 1024)
+                    target_size = 1024  # Default to largest if image is bigger
+                    for s in supported_sizes:
+                        if max(orig_w, orig_h) <= s:
+                            target_size = s
+                            break
+
+                    # Resize image to square if not already
+                    if orig_w != target_size or orig_h != target_size:
+                        img_obj = img_obj.resize((target_size, target_size))
+                        buf = BytesIO()
+                        img_obj.save(buf, format="PNG")
+                        png_image = buf.getvalue()
+
+                    width = height = target_size
+
+                # Resize mask to match if present
+                if png_mask:
+                    with Image.open(BytesIO(png_mask)) as m_obj:
+                        if m_obj.size[0] != target_size or m_obj.size[1] != target_size:
+                            m_obj = m_obj.resize((target_size, target_size))
+                            mbuf = BytesIO()
+                            m_obj.save(mbuf, format="PNG")
+                            png_mask = mbuf.getvalue()
+            else:  # pragma: no cover - Pillow not installed
+                # This case should ideally not happen if frontend validates
+                # but as a fallback, try to get dimensions if possible
+                # This might still fail if PIL is not there and image is not PNG with size info
+                try:
+                    # A simple way to get dimensions for PNG without full PIL
+                    # This is a placeholder and might not work for all PNGs
+                    # A more robust solution would be needed if PIL is truly optional here
+                    if png_image.startswith(b'\\x89PNG\\r\\n\\x1a\\n') and png_image[12:16] == b'IHDR':
+                        import struct
+                        width, height = struct.unpack('>LL', png_image[16:24])
+                    else:  # Fallback or if not PNG, this will likely lead to API error
+                        # but we proceed with original bytes if no PIL
+                        pass  # width and height will be unassigned, API will likely error
+                except Exception:  # pragma: no cover
+                    # If we can't determine size and PIL is not there, we can't resize.
+                    # The API will likely reject it if not already a supported size.
+                    pass
+
             # Prepare file-like objects for OpenAI API
             image_file = BytesIO(png_image)
             image_file.name = "image.png"
