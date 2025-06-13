@@ -51,7 +51,7 @@ class OpenAIService:
         return data
 
     async def edit_image(
-        self, image: bytes, mask: bytes | None, prompt: str
+        self, image: bytes, mask: bytes | None, prompt: str, n: int = 1
     ) -> dict[str, Any]:
         """Send an image edit request to OpenAI.
 
@@ -63,15 +63,29 @@ class OpenAIService:
             Optional mask image data in bytes.
         prompt:
             The editing prompt to apply.
+        n:
+            Number of images to generate (default 1).
         """
         logger.info("Sending image edit request")
         try:
             png_image = self._ensure_png(image)
             png_mask = self._ensure_png(mask) if mask else None
+            # Open image to get size
+            with Image.open(BytesIO(png_image)) as img_obj:
+                width, height = img_obj.size
+            # Prepare file-like objects for OpenAI API
+            image_file = BytesIO(png_image)
+            image_file.name = "image.png"
+            mask_file = BytesIO(png_mask) if png_mask else None
+            if mask_file:
+                mask_file.name = "mask.png"
             response = await self._client.images.edit(
-                image=png_image,
-                mask=png_mask,
+                model="dall-e-2",
+                image=image_file,
+                mask=mask_file,
                 prompt=prompt,
+                n=n,
+                size=f"{width}x{height}",
             )
         except Exception:  # pragma: no cover - network errors mocked in tests
             logger.exception("OpenAI image edit failed")
