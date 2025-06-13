@@ -50,7 +50,7 @@
 │       ├── hooks
 │       │   └── useChat.ts
 │       └── services
-│           └── api.ts
+│           └── apiClient.ts
 ├── LICENSE
 ├── README.md
 └── run_tests.sh
@@ -68,8 +68,16 @@
 - `backend/requirements.txt` - Updated dependencies.
 - `backend/start.sh` - Development script to run Uvicorn with auto-reload.
 - `frontend/.env.example` - Example Vite environment variables file.
-- `frontend/src/services/api.ts` - Fetch helper using `VITE_API_BASE_URL`.
 - `.gitignore` - Updated ignore patterns.
+- `frontend/vite.config.ts` - Vite configuration with React plugin and dev server port.
+- `frontend/src/App.tsx` - Root React component integrating the router.
+- `frontend/src/main.tsx` - Vite entry point rendering the app.
+- `frontend/src/router.tsx` - Defines application routes.
+- `frontend/src/pages/HomePage.tsx` - Simple landing page component.
+- `frontend/src/services/apiClient.ts` - Helper for backend API calls.
+- `frontend/src/components/HealthCheckDisplay.tsx` - Displays backend health status.
+- `frontend/eslint.config.js` - Updated ESLint rules for TypeScript.
+- `frontend/.prettierrc` - Prettier configuration.
 
 ### Notes
 
@@ -96,14 +104,14 @@
 ## Tasks
 
 - [ ] 1.0 Initialize Frontend Project (Vite + React + TypeScript). This task is informed by the design mock-up found at `/Users/kevinsullivan/code/shiny-broccoli/.project-management/current-prd/prd-background/design-mock.html`.
-  - [ ] 1.1 Set up a new Vite project with the React TypeScript template in the `frontend` directory.
-  - [ ] 1.2 Install necessary dependencies: `react-router-dom`, `axios` (or preferred HTTP client).
-  - [ ] 1.3 Configure ESLint and Prettier for code quality and consistency (e.g., create/update `frontend/.eslintrc.cjs`, `frontend/.prettierrc`). Ensure TypeScript linting rules are active.
-  - [ ] 1.4 Create basic directory structure: `frontend/src/pages`, `frontend/src/components`, `frontend/src/services`, `frontend/src/router.tsx`.
-  - [ ] 1.5 Implement basic routing in `frontend/src/router.tsx` and integrate it into `frontend/src/App.tsx` and `frontend/src/main.tsx`.
-  - [ ] 1.6 Create a simple `HomePage.tsx` component in `frontend/src/pages/`.
-  - [ ] 1.7 Configure Vite (`frontend/vite.config.ts`) to run the dev server on port 5173 and ensure hot reloading is functional.
-  - [ ] 1.8 Create a basic `App.test.tsx` to ensure the testing framework (Vitest or Jest) is configured and working.
+  - [x] 1.1 Set up a new Vite project with the React TypeScript template in the `frontend` directory.
+  - [x] 1.2 Install necessary dependencies: `react-router-dom`, `axios` (or preferred HTTP client).
+  - [x] 1.3 Configure ESLint and Prettier for code quality and consistency (e.g., create/update `frontend/.eslintrc.cjs`, `frontend/.prettierrc`). Ensure TypeScript linting rules are active.
+  - [x] 1.4 Create basic directory structure: `frontend/src/pages`, `frontend/src/components`, `frontend/src/services`, `frontend/src/router.tsx`.
+  - [x] 1.5 Implement basic routing in `frontend/src/router.tsx` and integrate it into `frontend/src/App.tsx` and `frontend/src/main.tsx`.
+  - [x] 1.6 Create a simple `HomePage.tsx` component in `frontend/src/pages/`.
+  - [x] 1.7 Configure Vite (`frontend/vite.config.ts`) to run the dev server on port 5173 and ensure hot reloading is functional.
+  - [x] 1.8 Create a basic `App.test.tsx` to ensure the testing framework (Vitest or Jest) is configured and working.
 - [ ] 2.0 Initialize Backend Project (FastAPI + Python 3.11)
   - [x] 2.1 Create a `backend/app` directory for the FastAPI application.
   - [x] 2.2 Initialize a `backend/requirements.txt` file with `fastapi`, `uvicorn[standard]`, `python-dotenv`, `pytest`, `httpx`.
@@ -119,10 +127,10 @@
   - [x] 3.3 Implement environment variable loading in `backend/app/core/config.py` using Pydantic Settings to read from `.env`.
   - [x] 3.4 Ensure Vite frontend correctly handles environment variables (e.g., `VITE_API_BASE_URL`) via `.env` files in the `frontend` directory. Create `frontend/.env.example` if needed.
 - [ ] 4.0 Establish Basic Full-Stack Connectivity & Verification
-  - [ ] 4.1 Create `frontend/src/services/apiClient.ts` to handle API calls to the backend (e.g., using Axios, configured with `VITE_API_BASE_URL=http://localhost:8000/api/v1`).
-  - [ ] 4.2 Create `frontend/src/components/HealthCheckDisplay.tsx` that calls the backend's `/health` endpoint via `apiClient.ts` and displays the status.
-  - [ ] 4.3 Add the `HealthCheckDisplay` component to `HomePage.tsx`.
-  - [ ] 4.4 Verify that the frontend successfully calls the backend and displays the health status.
+  - [x] 4.1 Create `frontend/src/services/apiClient.ts` to handle API calls to the backend (e.g., using Axios, configured with `VITE_API_BASE_URL=http://localhost:8000/api/v1`).
+  - [x] 4.2 Create `frontend/src/components/HealthCheckDisplay.tsx` that calls the backend's `/health` endpoint via `apiClient.ts` and displays the status.
+  - [x] 4.3 Add the `HealthCheckDisplay` component to `HomePage.tsx`.
+  - [x] 4.4 Verify that the frontend successfully calls the backend and displays the health status.
 - [ ] 5.0 Finalize Development Tooling, Scripts, and Documentation
   - [ ] 5.1 Create/Update `dev_init.sh` script in the root directory to:
     - [ ] 5.1.1 Check for Python 3.11 and Node LTS.
