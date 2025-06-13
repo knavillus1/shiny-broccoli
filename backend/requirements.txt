@@ -5,3 +5,4 @@ pydantic-settings
 pytest
 flake8
 httpx
+python-multipart
