@@ -21,6 +21,26 @@ async def edit_image(
     prompt: str = Form(""),
 ):
     """Edit an image using OpenAI's API."""
+    if image.content_type not in {"image/png", "image/jpeg", "image/jpg"}:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Unsupported image format",
+        )
+    if mask is not None and mask.content_type not in {"image/png"}:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Mask must be PNG",
+        )
+    if not prompt.strip():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Prompt is required",
+        )
+    if len(prompt) > 1000:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Prompt too long",
+        )
     start = time.time()
     logger.info("/images/edit called")
     service = OpenAIService()

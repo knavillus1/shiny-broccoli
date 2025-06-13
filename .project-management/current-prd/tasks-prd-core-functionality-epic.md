@@ -125,7 +125,7 @@
   - [x] 3.1 Create `backend/app/api/v1/endpoints/openai_integration.py`
   - [x] 3.2 Implement `POST /api/v1/images/edit` endpoint for OpenAI image editing
   - [x] 3.3 Implement `GET /api/v1/images/status/{request_id}` for progress tracking
-  - [ ] 3.4 Add proper request validation for image, mask, and prompt data
+  - [x] 3.4 Add proper request validation for image, mask, and prompt data
   - [ ] 3.5 Implement async processing for long-running OpenAI requests
   - [ ] 3.6 Add comprehensive error handling and status code mapping
   - [x] 3.7 Include the new OpenAI router in `backend/app/main.py`
