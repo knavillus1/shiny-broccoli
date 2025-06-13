@@ -37,7 +37,11 @@ class OpenAIService:
         logger.info("Verifying OpenAI credentials")
         response = await self._client.models.list()
         logger.debug("Models list response: %s", response)
-        return response
+        # Convert response to dict for consistency
+        try:
+            return response.to_dict()
+        except Exception:
+            return dict(response)
 
     def _ensure_png(self, data: bytes) -> bytes:
         """Convert image bytes to PNG if not already."""
@@ -91,4 +95,4 @@ class OpenAIService:
             logger.exception("OpenAI image edit failed")
             raise
         logger.debug("Image edit response: %s", response)
-        return response
+        return response.to_dict()
