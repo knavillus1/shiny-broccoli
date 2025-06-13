@@ -90,9 +90,13 @@
 - `frontend/src/hooks/useCanvas.test.tsx` - Tests for canvas hook functionality.
 - `frontend/src/pages/HomePage.tsx` - Integration of new components into complete workflow.
 - `frontend/src/services/apiClient.ts` - Added functions for OpenAI integration endpoints.
+- `frontend/src/components/FileUpload.tsx` - Handles image uploads with validation and progress.
+- `frontend/src/components/HealthCheckDisplay.tsx` - Displays backend health status.
+- `frontend/src/components/MaskToolbar.tsx` - Toolbar for selecting mask brush size.
 - `backend/app/main.py` - Include new OpenAI integration router.
 - `backend/app/api/v1/endpoints/openai_integration.py` - OpenAI API integration endpoints.
 - `backend/services/openai_service.py` - Service for handling OpenAI API calls.
+- `backend/services/chat_storage.py` - In-memory chat message storage.
 - `backend/app/core/config.py` - Add OpenAI API key configuration.
 - `backend/requirements.txt` - Add OpenAI Python SDK and related dependencies.
 - `DEVELOPMENT.md` - Document OPENAI_API_KEY configuration.
@@ -170,7 +174,7 @@
   - [ ] 7.3 Add estimated completion time display
   - [x] 7.4 Create `ErrorBoundary.tsx` for graceful error recovery
   - [x] 7.5 Implement retry functionality for failed requests
-  - [ ] 7.6 Add user-friendly error messages for different failure scenarios
+  - [x] 7.6 Add user-friendly error messages for different failure scenarios
   - [x] 7.7 Create unit tests for progress and error handling components
 
 - [ ] 8.0 Frontend-Backend Integration for Complete Workflow (FR1-FR22, US1-US7)
@@ -179,7 +183,7 @@
   - [x] 8.3 Integrate enhanced `CanvasDisplay.tsx` with mask export for API submission
   - [x] 8.4 Connect `ResultsDisplay.tsx` to receive and display API responses
   - [ ] 8.5 Implement complete edit workflow in `HomePage.tsx`
-  - [ ] 8.6 Add proper loading states and error handling throughout the UI
+  - [x] 8.6 Add proper loading states and error handling throughout the UI
   - [ ] 8.7 Test end-to-end functionality with real OpenAI API calls
 
 - [ ] 9.0 Performance Optimization and Polish (SM1-SM7)
@@ -194,8 +198,8 @@
   - [ ] 10.1 Create comprehensive integration tests for the complete editing workflow
   - [ ] 10.2 Test error scenarios including API failures, network issues, and invalid inputs
   - [ ] 10.3 Verify all functional requirements (FR1-FR22) through manual testing
-  - [ ] 10.4 Add JSDoc comments to all new frontend components and hooks
-  - [ ] 10.5 Add docstrings to all new backend modules and functions
+  - [x] 10.4 Add JSDoc comments to all new frontend components and hooks
+  - [x] 10.5 Add docstrings to all new backend modules and functions
   - [x] 10.6 Update `CHANGELOG.md` with Phase 2 implementation summary
   - [ ] 10.7 Create user guide documentation for the complete editing workflow
   - [ ] 10.8 Test that Kevin's son can independently use the full system

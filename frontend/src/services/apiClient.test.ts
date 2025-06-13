@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { fetchWithRetry } from './apiClient';
+import { fetchWithRetry, editImage } from './apiClient';
 
 const responseData = { status: 'ok' };
 
@@ -36,5 +36,24 @@ describe('fetchWithRetry', () => {
     global.fetch = mockFetch as unknown as typeof fetch;
     await expect(fetchWithRetry('url', {}, 2, 0)).rejects.toThrow('fail');
     expect(mockFetch).toHaveBeenCalledTimes(3);
+  });
+});
+
+describe('error mapping', () => {
+  const originalFetch = global.fetch;
+
+  afterEach(() => {
+    global.fetch = originalFetch;
+    vi.clearAllMocks();
+  });
+
+  it('maps 429 response to friendly message', async () => {
+    const res = new Response(JSON.stringify({ detail: 'Rate limit' }), {
+      status: 429,
+      headers: { 'Content-Type': 'application/json' },
+    });
+    global.fetch = vi.fn().mockResolvedValue(res) as unknown as typeof fetch;
+    const file = new File(['data'], 'img.png', { type: 'image/png' });
+    await expect(editImage(file, 'prompt')).rejects.toThrow('Too many requests');
   });
 });

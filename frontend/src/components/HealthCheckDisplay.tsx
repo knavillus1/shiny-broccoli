@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react';
 import { fetchHealth } from '../services/apiClient';
 
+/**
+ * Display backend health status with basic loading and error handling.
+ */
+
 export default function HealthCheckDisplay() {
   const [status, setStatus] = useState<string>('');
   const [error, setError] = useState<string>('');
