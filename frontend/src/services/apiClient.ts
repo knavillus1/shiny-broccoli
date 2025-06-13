@@ -1,6 +1,31 @@
 export const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1';
 
+async function parseError(response: Response): Promise<string> {
+  let detail = '';
+  try {
+    const data = await response.json();
+    detail = (data as any).detail || '';
+  } catch {
+    // ignore
+  }
+  switch (response.status) {
+    case 400:
+      return detail || 'Bad request';
+    case 401:
+      return detail || 'Unauthorized. Check API key.';
+    case 429:
+      return 'Too many requests. Please try again later.';
+    case 502:
+    case 503:
+      return 'Server unavailable. Please try again later.';
+    case 504:
+      return 'Server timeout. Please retry.';
+    default:
+      return detail || response.statusText || 'Request failed';
+  }
+}
+
 export async function fetchWithRetry(
   input: RequestInfo,
   init?: RequestInit,
@@ -26,7 +51,7 @@ export async function fetchWithRetry(
 export async function fetchHealth() {
   const response = await fetchWithRetry(`${API_BASE_URL}/health`);
   if (!response.ok) {
-    throw new Error('Network response was not ok');
+    throw new Error(await parseError(response));
   }
   return response.json();
 }
@@ -39,7 +64,7 @@ export async function uploadImage(file: File) {
     body,
   });
   if (!response.ok) {
-    throw new Error('Image upload failed');
+    throw new Error(await parseError(response));
   }
   return response.json();
 }
@@ -53,7 +78,7 @@ export async function processImage(file: File, mask?: File) {
     body,
   });
   if (!response.ok) {
-    throw new Error('Image processing failed');
+    throw new Error(await parseError(response));
   }
   return response.json();
 }
@@ -72,7 +97,7 @@ export async function editImage(
     body,
   });
   if (!response.ok) {
-    throw new Error('OpenAI image edit failed');
+    throw new Error(await parseError(response));
   }
   return response.json();
 }
@@ -82,7 +107,7 @@ export async function fetchEditStatus(requestId: string) {
     `${API_BASE_URL}/images/status/${requestId}`,
   );
   if (!response.ok) {
-    throw new Error('Failed to fetch status');
+    throw new Error(await parseError(response));
   }
   return response.json();
 }

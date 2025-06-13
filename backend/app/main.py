@@ -30,4 +30,6 @@ app.include_router(openai_router, prefix="/api/v1")
 
 @app.get("/")
 def read_root():
+    """Simple index route used for smoke tests."""
+
     return {"message": "Welcome"}

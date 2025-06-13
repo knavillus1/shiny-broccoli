@@ -107,17 +107,20 @@ class OpenAIService:
             else:  # pragma: no cover - Pillow not installed
                 # This case should ideally not happen if frontend validates
                 # but as a fallback, try to get dimensions if possible
-                # This might still fail if PIL is not there and image is not PNG with size info
+                # This might still fail if PIL is missing and image lacks size info
                 try:
                     # A simple way to get dimensions for PNG without full PIL
                     # This is a placeholder and might not work for all PNGs
-                    # A more robust solution would be needed if PIL is truly optional here
-                    if png_image.startswith(b'\\x89PNG\\r\\n\\x1a\\n') and png_image[12:16] == b'IHDR':
+                    # A more robust solution would be needed if PIL is optional
+                    if (
+                        png_image.startswith(b'\x89PNG\r\n\x1a\n')
+                        and png_image[12:16] == b'IHDR'
+                    ):
                         import struct
                         width, height = struct.unpack('>LL', png_image[16:24])
-                    else:  # Fallback or if not PNG, this will likely lead to API error
-                        # but we proceed with original bytes if no PIL
-                        pass  # width and height will be unassigned, API will likely error
+                    else:  # Fallback when PNG header is missing
+                        # Proceed with original bytes if no PIL
+                        pass  # width/height may be missing; API might error
                 except Exception:  # pragma: no cover
                     # If we can't determine size and PIL is not there, we can't resize.
                     # The API will likely reject it if not already a supported size.

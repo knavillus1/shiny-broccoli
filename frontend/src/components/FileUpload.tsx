@@ -1,5 +1,6 @@
 import { useState, ChangeEvent, FormEvent } from 'react';
 import { uploadImage } from '../services/apiClient';
+import ProgressIndicator from './ProgressIndicator';
 
 /**
  * Handles image selection and upload to the backend.
@@ -84,6 +85,7 @@ export default function FileUpload({ onUploaded }: { onUploaded?: (file: File) =
       <button type="submit" disabled={!file || uploading} className="ml-2 px-2 py-1 border rounded">
         Upload
       </button>
+      {uploading && <ProgressIndicator message="Uploading..." />}
       {message && <div className="mt-2 text-green-600">{message}</div>}
       {error && <div className="mt-2 text-red-600">Error: {error}</div>}
     </form>

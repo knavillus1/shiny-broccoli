@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import useCanvas from '../hooks/useCanvas';
 import MaskToolbar from './MaskToolbar';
+import ProgressIndicator from './ProgressIndicator';
 import { editImage } from '../services/apiClient';
 
 /**
@@ -142,8 +143,11 @@ export default function CanvasDisplay({ image, prompt, onResult, onError }: Prop
           >
             Submit
           </button>
+          {submitting && <ProgressIndicator message="Processing..." />}
           {submitMsg && <div className="mt-2 text-green-600">{submitMsg}</div>}
-          {submitError && <div className="mt-2 text-red-600">Error: {submitError}</div>}
+          {submitError && (
+            <div className="mt-2 text-red-600">Error: {submitError}</div>
+          )}
         </>
       ) : (
         <div>No image uploaded yet.</div>

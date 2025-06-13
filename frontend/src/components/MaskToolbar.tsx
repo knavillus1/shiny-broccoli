@@ -1,5 +1,9 @@
 import React from 'react';
 
+/**
+ * Toolbar for selecting the brush size used when drawing the mask.
+ */
+
 export type BrushSize = 'small' | 'medium' | 'large';
 
 interface Props {
