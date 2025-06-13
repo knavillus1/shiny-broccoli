@@ -3,10 +3,13 @@ import HealthCheckDisplay from '../components/HealthCheckDisplay';
 import FileUpload from '../components/FileUpload';
 import CanvasDisplay from '../components/CanvasDisplay';
 import PromptInput from '../components/PromptInput';
+import ResultsDisplay from '../components/ResultsDisplay';
 
 export default function HomePage() {
   const [image, setImage] = useState<File | null>(null);
   const [prompt, setPrompt] = useState('');
+  const [result, setResult] = useState<File | null>(null);
+  const [error, setError] = useState('');
   const handlePrompt = (p: string) => setPrompt(p);
   return (
     <div>
@@ -16,7 +19,19 @@ export default function HomePage() {
         <FileUpload onUploaded={setImage} />
       </div>
       <PromptInput onSubmit={handlePrompt} />
-      <CanvasDisplay image={image} prompt={prompt} />
+      <CanvasDisplay
+        image={image}
+        prompt={prompt}
+        onResult={setResult}
+        onError={setError}
+      />
+      {image && (
+        <ResultsDisplay
+          original={image}
+          result={result}
+          error={error || undefined}
+        />
+      )}
     </div>
   );
 }
