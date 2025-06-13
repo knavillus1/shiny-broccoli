@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface Props {
   original: string | File | null;
@@ -11,18 +11,36 @@ interface Props {
  */
 export default function ResultsDisplay({ original, result, error }: Props) {
   const [mode, setMode] = useState<'side-by-side' | 'overlay'>('side-by-side');
-  const origUrl =
-    typeof original === 'string'
-      ? original
-      : original
-      ? URL.createObjectURL(original)
-      : null;
-  const resultUrl =
-    typeof result === 'string'
-      ? result
-      : result
-      ? URL.createObjectURL(result)
-      : null;
+  const [origUrl, setOrigUrl] = useState<string | null>(
+    typeof original === 'string' ? original : null,
+  );
+  const [resultUrl, setResultUrl] = useState<string | null>(
+    typeof result === 'string' ? result : null,
+  );
+
+  useEffect(() => {
+    if (typeof original === 'string' || !original) {
+      setOrigUrl(original || null);
+      return;
+    }
+    const url = URL.createObjectURL(original);
+    setOrigUrl(url);
+    return () => {
+      URL.revokeObjectURL(url);
+    };
+  }, [original]);
+
+  useEffect(() => {
+    if (typeof result === 'string' || !result) {
+      setResultUrl(result || null);
+      return;
+    }
+    const url = URL.createObjectURL(result);
+    setResultUrl(url);
+    return () => {
+      URL.revokeObjectURL(url);
+    };
+  }, [result]);
   return (
     <div>
       <button
@@ -46,9 +64,13 @@ export default function ResultsDisplay({ original, result, error }: Props) {
       )}
       {mode === 'side-by-side' ? (
         <div className="flex gap-4" aria-label="results-display" data-mode="side-by-side">
-          {origUrl ? <img src={origUrl} alt="original" className="max-w-xs" /> : <div>No original</div>}
+          {origUrl ? (
+            <img src={origUrl} alt="original" className="max-w-xs" loading="lazy" />
+          ) : (
+            <div>No original</div>
+          )}
           {resultUrl ? (
-            <img src={resultUrl} alt="result" className="max-w-xs" />
+            <img src={resultUrl} alt="result" className="max-w-xs" loading="lazy" />
           ) : error ? (
             <div className="text-red-600">Error: {error}</div>
           ) : (
@@ -62,7 +84,7 @@ export default function ResultsDisplay({ original, result, error }: Props) {
           data-mode="overlay"
         >
           {origUrl ? (
-            <img src={origUrl} alt="original" className="max-w-xs block" />
+            <img src={origUrl} alt="original" className="max-w-xs block" loading="lazy" />
           ) : (
             <div>No original</div>
           )}
@@ -71,6 +93,7 @@ export default function ResultsDisplay({ original, result, error }: Props) {
               src={resultUrl}
               alt="result"
               className="max-w-xs absolute left-0 top-0 opacity-50"
+              loading="lazy"
             />
           ) : error ? (
             <div className="absolute left-0 top-0 text-red-600">Error: {error}</div>
