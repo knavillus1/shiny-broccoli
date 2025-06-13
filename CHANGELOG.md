@@ -28,3 +28,4 @@
 2025-06-13 Added progress and results display components with tests
 2025-06-13 Added overlay display mode for results and improved OpenAI tests
 2025-06-13 Marked tasks 2.4, 3.6, 5.5, and 6.3 as committed
+2025-06-13 Added prompt suggestions and download link

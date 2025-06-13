@@ -13,6 +13,12 @@ export default function PromptInput({
   const [prompt, setPrompt] = useState('');
   const [error, setError] = useState('');
   const [recent, setRecent] = useState<string[]>([]);
+  const suggestions = [
+    'Remove the background',
+    'Change sky color to blue',
+    'Add a watermark',
+    'Increase brightness',
+  ];
 
   useEffect(() => {
     const stored = localStorage.getItem('recentPrompts');
@@ -98,6 +104,19 @@ export default function PromptInput({
             ))}
           </div>
         )}
+      </div>
+      <div className="text-sm text-gray-600">
+        Suggestions:
+        {suggestions.map((s) => (
+          <button
+            key={s}
+            type="button"
+            className="ml-2 underline"
+            onClick={() => setPrompt(s)}
+          >
+            {s}
+          </button>
+        ))}
       </div>
       <button
         type="submit"
