@@ -75,7 +75,7 @@
 - `dev_init.sh` - Potentially, if new dependencies or setup steps are needed.
 - `frontend/package.json` - If new frontend dependencies are added.
 - `backend/requirements.txt` - If new backend dependencies are added.
-- `frontend/src/components/CanvasDisplay.tsx` - Added JSDoc comments.
+ - `frontend/src/components/CanvasDisplay.tsx` - Implemented image scaling logic and added JSDoc comments.
 - `frontend/src/components/FileUpload.tsx` - Added JSDoc comments.
 - `backend/app/api/v1/endpoints/images.py` - Added module and function docstrings.
 - `backend/services/image_processor.py` - Added module and function docstrings.
@@ -89,7 +89,7 @@
 
 ## Tasks
 
-- [ ] 1.0 Implement Frontend File Upload Functionality (FR1-FR4, US1, US5). This task is informed by `/Users/kevinsullivan/code/shiny-broccoli/.project-management/closed-prd/prd-background/design-mock.html`.
+- [x] 1.0 Implement Frontend File Upload Functionality (FR1-FR4, US1, US5). This task is informed by `/Users/kevinsullivan/code/shiny-broccoli/.project-management/closed-prd/prd-background/design-mock.html`.
   - [x] 1.1 Create `FileUpload.tsx` component with a file input element. (Ref: FR1, Design Mock)
   - [x] 1.2 Implement client-side validation for image formats (JPEG, PNG, GIF, WebP) and size (max 10MB). (Ref: FR2)
   - [x] 1.3 Display upload progress, success, and error messages to the user. (Ref: FR3)
@@ -98,7 +98,7 @@
   - [x] 1.6 Write unit tests for `FileUpload.tsx`.
 - [ ] 2.0 Develop Canvas Interface for Image Display and Basic Mask Drawing (FR5-FR9, US2, US3, US5). This task is informed by `/Users/kevinsullivan/code/shiny-broccoli/.project-management/closed-prd/prd-background/design-mock.html`.
   - [x] 2.1 Create `CanvasDisplay.tsx` component that receives an image and renders it on an HTML5 canvas. (Ref: FR5)
-  - [ ] 2.2 Implement proper image scaling to fit the canvas while maintaining aspect ratio. (Ref: FR5, Technical Considerations)
+  - [x] 2.2 Implement proper image scaling to fit the canvas while maintaining aspect ratio. (Ref: FR5, Technical Considerations)
   - [ ] 2.3 Implement a basic brush/pen tool for drawing on the canvas. (Ref: FR6)
   - [ ] 2.4 Add functionality to toggle between drawing and erasing modes. (Ref: FR7)
   - [ ] 2.5 Provide visual feedback during drawing (e.g., cursor change, stroke preview). (Ref: FR8)
@@ -125,7 +125,7 @@
 - [ ] 5.0 Ensure Project Structure and Documentation for Phase 1 Completion (G5, G6, SM1-SM7).
   - [ ] 5.1 Review and update `dev_init.sh` if any new backend/frontend dependencies or setup steps were added.
   - [ ] 5.2 Update `frontend/package.json` and `backend/requirements.txt` with any new dependencies.
-  - [c] 5.3 Add basic JSDoc/TypeDoc comments to new frontend components and hooks.
-  - [c] 5.4 Add basic docstrings to new backend Python modules and functions.
+  - [x] 5.3 Add basic JSDoc/TypeDoc comments to new frontend components and hooks.
+  - [x] 5.4 Add basic docstrings to new backend Python modules and functions.
   - [ ] 5.5 Manually test all functional requirements (FR1-FR17) and verify success metrics (SM1-SM7).
-  - [c] 5.6 Ensure code follows established project conventions.
+  - [x] 5.6 Ensure code follows established project conventions.

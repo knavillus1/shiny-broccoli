@@ -16,9 +16,17 @@ export default function CanvasDisplay({ image }: { image: File | null }) {
     if (!ctx) return;
     const img = new Image();
     img.onload = () => {
-      canvas.width = img.width;
-      canvas.height = img.height;
-      ctx.drawImage(img, 0, 0);
+      // Scale image to fit within the parent container while preserving aspect
+      // ratio. A max height is also enforced so very large images do not
+      // overwhelm the page.
+      const parent = canvas.parentElement as HTMLElement | null;
+      const maxWidth = parent?.clientWidth ?? img.width;
+      const maxHeight = 500; // limit height to keep canvas manageable
+      const scale = Math.min(maxWidth / img.width, maxHeight / img.height, 1);
+      canvas.width = img.width * scale;
+      canvas.height = img.height * scale;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
     };
     img.src = URL.createObjectURL(image);
     return () => {
