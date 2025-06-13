@@ -22,3 +22,4 @@
 2025-06-13 Added image editing service and endpoint implementation
 2025-06-15 Added OpenAI edit API client functions and updated tasks
 2025-06-15 Added mask toolbar with brush size controls
+2025-06-15 Added prompt history with example suggestions

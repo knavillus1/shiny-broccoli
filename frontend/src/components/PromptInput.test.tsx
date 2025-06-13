@@ -5,6 +5,7 @@ import PromptInput from './PromptInput';
 describe('PromptInput', () => {
   afterEach(() => {
     cleanup();
+    localStorage.clear();
   });
   it('submits valid prompt', () => {
     const submit = vi.fn();
@@ -19,5 +20,19 @@ describe('PromptInput', () => {
     const { getByText } = render(<PromptInput />);
     fireEvent.submit(getByText('Submit').closest('form') as HTMLFormElement);
     expect(getByText('Error: Prompt is required')).toBeTruthy();
+  });
+
+  it('shows example prompts when none stored', () => {
+    const { getByText } = render(<PromptInput />);
+    expect(getByText(/Example prompts/i)).toBeTruthy();
+  });
+
+  it('stores prompt and displays recent list', () => {
+    const { getByText, getByLabelText } = render(<PromptInput />);
+    const textarea = getByLabelText('Prompt');
+    fireEvent.change(textarea, { target: { value: 'hello' } });
+    fireEvent.submit(getByText('Submit').closest('form') as HTMLFormElement);
+    expect(localStorage.getItem('recentPrompts')).toContain('hello');
+    expect(getByText(/Recent prompts/i)).toBeTruthy();
   });
 });
