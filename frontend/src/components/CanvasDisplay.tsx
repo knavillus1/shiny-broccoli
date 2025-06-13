@@ -8,7 +8,7 @@ import useCanvas from '../hooks/useCanvas';
  */
 
 export default function CanvasDisplay({ image }: { image: File | null }) {
-  const { canvasRef } = useCanvas();
+  const { canvasRef, mode, toggleMode } = useCanvas();
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -38,7 +38,19 @@ export default function CanvasDisplay({ image }: { image: File | null }) {
   return (
     <div className="border rounded p-4 mt-4">
       {image ? (
-        <canvas ref={canvasRef} className="border" />
+        <>
+          <div className="mb-2 flex items-center gap-2">
+            <button
+              type="button"
+              onClick={toggleMode}
+              className="px-2 py-1 border rounded"
+            >
+              {mode === 'draw' ? 'Switch to Erase' : 'Switch to Draw'}
+            </button>
+            <span className="text-sm text-gray-600">Mode: {mode}</span>
+          </div>
+          <canvas ref={canvasRef} className="border" />
+        </>
       ) : (
         <div>No image uploaded yet.</div>
       )}

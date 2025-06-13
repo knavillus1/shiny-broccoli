@@ -9,3 +9,4 @@
 2025-06-13 Added documentation comments to frontend and backend modules
 2025-06-13 Implemented canvas image scaling
 2025-06-13 Added drawing hook and basic brush functionality
+2025-06-13 Added erase mode toggle and canvas styling
