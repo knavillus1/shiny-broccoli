@@ -123,7 +123,7 @@
   - [x] 2.1 Implement image editing function in `openai_service.py` using OpenAI SDK
   - [x] 2.2 Add proper image format conversion (canvas to PNG) for OpenAI compatibility
   - [x] 2.3 Handle OpenAI API responses including success, error, and timeout scenarios
-  - [c] 2.4 Implement request/response validation and error mapping
+  - [x] 2.4 Implement request/response validation and error mapping
   - [x] 2.5 Add comprehensive unit tests for OpenAI service functions
   - [ ] 2.6 Test integration with various image sizes and mask complexities
 
@@ -133,7 +133,7 @@
   - [x] 3.3 Implement `GET /api/v1/images/status/{request_id}` for progress tracking
   - [x] 3.4 Add proper request validation for image, mask, and prompt data
   - [ ] 3.5 Implement async processing for long-running OpenAI requests
-  - [c] 3.6 Add comprehensive error handling and status code mapping
+  - [x] 3.6 Add comprehensive error handling and status code mapping
   - [x] 3.7 Include the new OpenAI router in `backend/app/main.py`
   - [x] 3.8 Create unit tests for all OpenAI integration endpoints
 
