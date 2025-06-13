@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, fireEvent, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi, afterEach } from 'vitest';
+import { render, fireEvent, waitFor, cleanup } from '@testing-library/react';
 import CanvasDisplay from './CanvasDisplay';
 
 vi.stubGlobal('Image', class {
@@ -11,14 +11,24 @@ vi.stubGlobal('Image', class {
   }
 });
 
-HTMLCanvasElement.prototype.getContext = vi.fn(() => ({
-  clearRect: vi.fn(),
-  drawImage: vi.fn(),
-  beginPath: vi.fn(),
-  moveTo: vi.fn(),
-  lineTo: vi.fn(),
-  stroke: vi.fn(),
-} as unknown as CanvasRenderingContext2D));
+const contexts: any[] = [];
+HTMLCanvasElement.prototype.getContext = vi.fn(function () {
+  const ctx = {
+    clearRect: vi.fn(),
+    drawImage: vi.fn(),
+    beginPath: vi.fn(),
+    moveTo: vi.fn(),
+    lineTo: vi.fn(),
+    stroke: vi.fn(),
+  } as unknown as CanvasRenderingContext2D;
+  contexts.push(ctx);
+  return ctx;
+});
+
+afterEach(() => {
+  cleanup();
+  contexts.length = 0;
+});
 
 HTMLCanvasElement.prototype.toBlob = vi.fn(function (cb) {
   cb?.(new Blob());
@@ -41,5 +51,15 @@ describe('CanvasDisplay', () => {
     expect(toggle.textContent).toBe('Show Mask');
     fireEvent.click(getByText('Submit'));
     await waitFor(() => getByText('ok'));
+  });
+
+  it('clears the mask canvas', async () => {
+    const file = new File(['data'], 'test.png', { type: 'image/png' });
+    const { getByText } = render(<CanvasDisplay image={file} />);
+    await waitFor(() => getByText('Clear Mask'));
+    const clearBtn = getByText('Clear Mask');
+    const maskCtx = contexts[1];
+    fireEvent.click(clearBtn);
+    expect(maskCtx.clearRect).toHaveBeenCalled();
   });
 });

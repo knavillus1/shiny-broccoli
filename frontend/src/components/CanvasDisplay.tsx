@@ -10,7 +10,7 @@ import { processImage } from '../services/apiClient';
 
 export default function CanvasDisplay({ image }: { image: File | null }) {
   const baseRef = useRef<HTMLCanvasElement>(null);
-  const { canvasRef: maskRef, mode, toggleMode } = useCanvas();
+  const { canvasRef: maskRef, mode, toggleMode, clear } = useCanvas();
   const [maskVisible, setMaskVisible] = useState(true);
   const [submitMsg, setSubmitMsg] = useState('');
   const [submitError, setSubmitError] = useState('');
@@ -86,6 +86,13 @@ export default function CanvasDisplay({ image }: { image: File | null }) {
               className="px-2 py-1 border rounded"
             >
               {maskVisible ? 'Hide Mask' : 'Show Mask'}
+            </button>
+            <button
+              type="button"
+              onClick={clear}
+              className="px-2 py-1 border rounded"
+            >
+              Clear Mask
             </button>
             <span className="text-sm text-gray-600">Mode: {mode}</span>
           </div>
