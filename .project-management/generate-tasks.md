@@ -1,17 +1,17 @@
 
-# Rule: Generating a Task List from a PRD
+# Agent Instructions - Generate tasks from a prd file
 
 ## Goal
 
 To guide an AI assistant in creating a detailed, step-by-step task list in Markdown format based on an existing Product Requirements Document (PRD). The task list should guide a developer through implementation.
 
-## Output
+## Output file : details of the new file you will create
 
 - **Format:** Markdown (`.md`)
 - **Location:** `/.project-management/current-prd/` 
 - **Filename:** `tasks-[prd-file-name].md` (e.g., `tasks-prd-user-profile-editing.md`)` 
 
-## Process
+## Process - follow this process exactly:
 
 1.  **Receive PRD Reference:** The user points the AI to a specific PRD file
 2.  **Analyze PRD:** The AI reads and analyzes the functional requirements, user stories, and other sections of the specified PRD.
