@@ -27,4 +27,14 @@ describe('ResultsDisplay', () => {
     container = getByLabelText('results-display');
     expect(container.getAttribute('data-mode')).toBe('overlay');
   });
+
+  it('provides a download link for the result', () => {
+    const file = new File(['data'], 'res.png', { type: 'image/png' });
+    const { getByLabelText } = render(
+      <ResultsDisplay original={file} result={file} />
+    );
+    const link = getByLabelText('download-result') as HTMLAnchorElement;
+    expect(link.href).toContain('blob:url');
+    expect(link.getAttribute('download')).toBe('result.png');
+  });
 });

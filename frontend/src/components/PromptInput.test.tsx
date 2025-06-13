@@ -35,4 +35,11 @@ describe('PromptInput', () => {
     expect(localStorage.getItem('recentPrompts')).toContain('hello');
     expect(getByText(/Recent prompts/i)).toBeTruthy();
   });
+
+  it('allows inserting suggestions', () => {
+    const { getByText, getByLabelText } = render(<PromptInput />);
+    fireEvent.click(getByText('Add a watermark'));
+    const textarea = getByLabelText('Prompt') as HTMLTextAreaElement;
+    expect(textarea.value).toBe('Add a watermark');
+  });
 });

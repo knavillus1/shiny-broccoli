@@ -152,13 +152,13 @@
 - [x] 5.2 Add prompt length validation and character counter
   - [x] 5.3 Implement recent prompts storage and quick reuse functionality
   - [x] 5.4 Add example prompts and guidance text for new users
-  - [c] 5.5 Include prompt suggestions based on common editing tasks
+  - [x] 5.5 Include prompt suggestions based on common editing tasks
 - [x] 5.6 Create unit tests for prompt input validation and storage
 
 - [ ] 6.0 Build Results Display System (FR15-FR18, US3)
   - [x] 6.1 Create `ResultsDisplay.tsx` component for before/after comparison
   - [x] 6.2 Implement side-by-side and overlay comparison modes
-  - [c] 6.3 Add download/save functionality for edited results
+  - [x] 6.3 Add download/save functionality for edited results
   - [ ] 6.4 Handle display of OpenAI error responses and fallback states
   - [ ] 6.5 Optimize image loading and display performance
   - [x] 6.6 Create unit tests for results display functionality

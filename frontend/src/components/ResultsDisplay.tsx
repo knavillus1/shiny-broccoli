@@ -33,6 +33,16 @@ export default function ResultsDisplay({ original, result }: Props) {
       >
         {mode === 'side-by-side' ? 'Overlay' : 'Side by Side'}
       </button>
+      {resultUrl && (
+        <a
+          href={resultUrl}
+          download="result.png"
+          className="ml-2 underline"
+          aria-label="download-result"
+        >
+          Download
+        </a>
+      )}
       {mode === 'side-by-side' ? (
         <div className="flex gap-4" aria-label="results-display" data-mode="side-by-side">
           {origUrl ? <img src={origUrl} alt="original" className="max-w-xs" /> : <div>No original</div>}
