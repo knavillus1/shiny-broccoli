@@ -14,6 +14,7 @@ const ACCEPTED_TYPES = [
   'image/webp',
 ];
 const MAX_SIZE_BYTES = 10 * 1024 * 1024; // 10MB
+const SUPPORTED_DIMENSIONS = [256, 512, 1024]; // Must be square and one of these sizes
 
 export default function FileUpload({ onUploaded }: { onUploaded?: (file: File) => void }) {
   const [file, setFile] = useState<File | null>(null);
@@ -34,8 +35,30 @@ export default function FileUpload({ onUploaded }: { onUploaded?: (file: File) =
       setFile(null);
       return;
     }
-    setError('');
-    setFile(selected);
+    // Validate image dimensions
+    const img = new Image();
+    const objectUrl = URL.createObjectURL(selected);
+    img.onload = () => {
+      const { width, height } = img;
+      URL.revokeObjectURL(objectUrl);
+      if (width !== height || !SUPPORTED_DIMENSIONS.includes(width)) {
+        setError(
+          `Invalid dimensions: ${width}x${height}. Must be square and one of ${SUPPORTED_DIMENSIONS.join(
+            ', '
+          )} `
+        );
+        setFile(null);
+      } else {
+        setError('');
+        setFile(selected);
+      }
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      setError('Cannot validate image dimensions');
+      setFile(null);
+    };
+    img.src = objectUrl;
   };
 
   const handleSubmit = async (e: FormEvent) => {
