@@ -98,7 +98,7 @@
   - [ ] 2.7 Create `useCanvas.ts` hook to manage canvas state, drawing logic (brush, eraser), and mask data.
   - [ ] 2.8 Style the canvas and drawing controls area according to the design mock.
   - [ ] 2.9 Write unit tests for `CanvasDisplay.tsx` and `useCanvas.ts`.
-- [ ] 3.0 Create Backend API Endpoints for Image Handling (FR10-FR14, US4).
+- [x] 3.0 Create Backend API Endpoints for Image Handling (FR10-FR14, US4).
   - [x] 3.1 Create `backend/app/api/v1/endpoints/images.py`.
   - [x] 3.2 Implement `POST /api/v1/images/upload` endpoint to receive multipart form data (image). (Ref: FR10, API Specs)
   - [x] 3.3 Add backend validation for image file type and security. (Ref: FR11)
@@ -109,7 +109,7 @@
   - [x] 3.8 Create `backend/services/image_processor.py` with stubbed processing logic.
   - [x] 3.9 Write unit tests for the image API endpoints in `backend/tests/api/v1/test_images.py`.
 - [ ] 4.0 Integrate Frontend with Backend for Image Workflow (FR15-FR17, US4).
-  - [ ] 4.1 Update `frontend/src/services/apiClient.ts` to include functions for `/api/v1/images/upload` and `/api/v1/images/process`.
+  - [x] 4.1 Update `frontend/src/services/apiClient.ts` to include functions for `/api/v1/images/upload` and `/api/v1/images/process`.
   - [ ] 4.2 Connect `FileUpload.tsx` to call the `/api/v1/images/upload` endpoint. (Ref: FR15)
   - [ ] 4.3 Implement a "Submit" button/workflow in the frontend that sends the original image and mask data (from `CanvasDisplay.tsx`) to the `/api/v1/images/process` endpoint. (Ref: FR17)
   - [ ] 4.4 Handle API responses, including network errors and timeouts, displaying user-friendly messages. (Ref: FR16)

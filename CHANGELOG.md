@@ -3,3 +3,4 @@
 2025-06-13 Implemented initial frontend routing and health check component
 2025-06-13 Added dev_init.sh and updated install script and README
 2025-06-13 Added image upload endpoints and tests
+2025-06-13 Added API client functions for image upload and processing
