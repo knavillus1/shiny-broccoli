@@ -2,6 +2,7 @@ import os
 import pytest
 from backend.services.openai_service import OpenAIService
 
+
 @pytest.mark.asyncio
 async def test_edit_image_integration():
     api_key = os.environ.get("OPENAI_API_KEY")

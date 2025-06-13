@@ -157,7 +157,7 @@
 
 - [ ] 6.0 Build Results Display System (FR15-FR18, US3)
   - [x] 6.1 Create `ResultsDisplay.tsx` component for before/after comparison
-  - [ ] 6.2 Implement side-by-side and overlay comparison modes
+  - [x] 6.2 Implement side-by-side and overlay comparison modes
   - [ ] 6.3 Add download/save functionality for edited results
   - [ ] 6.4 Handle display of OpenAI error responses and fallback states
   - [ ] 6.5 Optimize image loading and display performance
