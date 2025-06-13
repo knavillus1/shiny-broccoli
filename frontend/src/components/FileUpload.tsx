@@ -1,0 +1,62 @@
+import { useState, ChangeEvent, FormEvent } from 'react';
+import { uploadImage } from '../services/apiClient';
+
+const ACCEPTED_TYPES = [
+  'image/jpeg',
+  'image/png',
+  'image/gif',
+  'image/webp',
+];
+const MAX_SIZE_BYTES = 10 * 1024 * 1024; // 10MB
+
+export default function FileUpload({ onUploaded }: { onUploaded?: (file: File) => void }) {
+  const [file, setFile] = useState<File | null>(null);
+  const [message, setMessage] = useState<string>('');
+  const [error, setError] = useState<string>('');
+  const [uploading, setUploading] = useState<boolean>(false);
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files?.[0]) return;
+    const selected = e.target.files[0];
+    if (!ACCEPTED_TYPES.includes(selected.type)) {
+      setError('Unsupported file type');
+      setFile(null);
+      return;
+    }
+    if (selected.size > MAX_SIZE_BYTES) {
+      setError('File too large');
+      setFile(null);
+      return;
+    }
+    setError('');
+    setFile(selected);
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!file) return;
+    setUploading(true);
+    setMessage('Uploading...');
+    try {
+      await uploadImage(file);
+      setMessage('Upload successful');
+      onUploaded?.(file);
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="p-4 border rounded">
+      <label htmlFor="file-input" className="mr-2">Image:</label>
+      <input id="file-input" type="file" onChange={handleChange} accept={ACCEPTED_TYPES.join(',')} />
+      <button type="submit" disabled={!file || uploading} className="ml-2 px-2 py-1 border rounded">
+        Upload
+      </button>
+      {message && <div className="mt-2 text-green-600">{message}</div>}
+      {error && <div className="mt-2 text-red-600">Error: {error}</div>}
+    </form>
+  );
+}
