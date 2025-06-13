@@ -8,6 +8,7 @@ from .logging import setup_logging
 from .core.config import get_settings
 from .api.v1.endpoints.health import router as health_router
 from .api.v1.endpoints.images import router as images_router
+from .api.v1.endpoints.openai_integration import router as openai_router
 
 settings = get_settings()
 setup_logging()
@@ -24,6 +25,7 @@ app.add_middleware(
 
 app.include_router(health_router, prefix="/api/v1")
 app.include_router(images_router, prefix="/api/v1")
+app.include_router(openai_router, prefix="/api/v1")
 
 
 @app.get("/")

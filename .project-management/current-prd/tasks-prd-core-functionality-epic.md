@@ -122,13 +122,13 @@
   - [ ] 2.6 Test integration with various image sizes and mask complexities
 
 - [ ] 3.0 Create OpenAI API Endpoints (FR1-FR5, US5, US7)
-  - [ ] 3.1 Create `backend/app/api/v1/endpoints/openai_integration.py`
-  - [ ] 3.2 Implement `POST /api/v1/images/edit` endpoint for OpenAI image editing
+  - [x] 3.1 Create `backend/app/api/v1/endpoints/openai_integration.py`
+  - [x] 3.2 Implement `POST /api/v1/images/edit` endpoint for OpenAI image editing
   - [ ] 3.3 Implement `GET /api/v1/images/status/{request_id}` for progress tracking
   - [ ] 3.4 Add proper request validation for image, mask, and prompt data
   - [ ] 3.5 Implement async processing for long-running OpenAI requests
   - [ ] 3.6 Add comprehensive error handling and status code mapping
-  - [ ] 3.7 Include the new OpenAI router in `backend/app/main.py`
+  - [x] 3.7 Include the new OpenAI router in `backend/app/main.py`
   - [ ] 3.8 Create unit tests for all OpenAI integration endpoints
 
 - [ ] 4.0 Enhance Mask Drawing System (FR6-FR10, US2, US6)
