@@ -1,1 +1,688 @@
-*PLACEHOLDER FILE*
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Image Modifier</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Prototype for an AI-powered image modification tool. Upload, mask, and transform images with a text prompt.">
+    <style>
+        /* ==== CSS RESET (MODERN) ==== */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* ==== FONT SETUP ==== */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+        
+        /* ==== COLOR PALETTE & VARIABLES ==== */
+        :root {
+            /* BRAND PALETTE - EDIT HERE */
+            --c-brand-dark-blue: #00215E;
+            --c-brand-medium-blue: #2C4E80;
+            --c-brand-orange: #FC4100;
+            --c-brand-yellow: #FFC55A;
+
+            /* SEMANTIC PALETTE */
+            --c-bg: #F0F4F8; /* Light grayish blue */
+            --c-surface: #FFFFFF;
+            --c-text-primary: var(--c-brand-dark-blue);
+            --c-text-secondary: var(--c-brand-medium-blue);
+            --c-primary-action: var(--c-brand-orange);
+            --c-primary-action-hover: #E03A00;
+            --c-accent: var(--c-brand-yellow);
+            --c-border: #DDE4ED;
+            --c-selection-mask: rgba(252, 65, 0, 0.4);
+
+            /* TYPOGRAPHY & SPACING */
+            --font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --font-weight-regular: 400;
+            --font-weight-medium: 500;
+            --font-weight-bold: 700;
+            --border-radius: 8px;
+            --shadow: 0 4px 12px rgba(0, 33, 94, 0.1);
+            --transition-speed: 0.2s ease-in-out;
+        }
+
+        /* ==== BASE STYLES ==== */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-family-base);
+            background-color: var(--c-bg);
+            color: var(--c-text-secondary);
+            line-height: 1.6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        /* ==== LAYOUT: APP WRAPPER ==== */
+        .app-wrapper {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            width: 100%;
+            max-width: 1200px;
+            background-color: var(--c-surface);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        @media (min-width: 992px) {
+            .app-wrapper {
+                grid-template-columns: 350px 1fr;
+                min-height: 80vh;
+                max-height: 90vh;
+            }
+        }
+        
+        /* ==== CONTROLS PANEL (LEFT) ==== */
+        .controls-panel {
+            padding: 2rem;
+            background-color: var(--c-surface);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 992px) {
+            .controls-panel {
+                border-right: 1px solid var(--c-border);
+            }
+        }
+
+        .controls-panel h1 {
+            color: var(--c-text-primary);
+            font-weight: var(--font-weight-bold);
+            font-size: 1.75rem;
+            line-height: 1.2;
+        }
+        .controls-panel h1 span {
+            color: var(--c-primary-action);
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .control-group label {
+            font-weight: var(--font-weight-medium);
+            color: var(--c-text-primary);
+        }
+
+        .control-group p.description {
+            font-size: 0.875rem;
+            color: var(--c-text-secondary);
+            margin-top: -0.25rem;
+        }
+
+        /* Custom File Input */
+        input[type="file"] {
+            display: none;
+        }
+
+        .file-upload-label {
+            display: inline-block;
+            padding: 0.75rem 1.25rem;
+            background-color: var(--c-text-secondary);
+            color: var(--c-surface);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            text-align: center;
+            font-weight: var(--font-weight-medium);
+            transition: background-color var(--transition-speed);
+        }
+        .file-upload-label:hover {
+            background-color: var(--c-text-primary);
+        }
+        
+        .file-name-display {
+            font-size: 0.875rem;
+            color: var(--c-text-secondary);
+            margin-top: 0.5rem;
+            word-break: break-all;
+        }
+
+        /* Text Input */
+        .text-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--c-border);
+            border-radius: var(--border-radius);
+            font-family: inherit;
+            font-size: 1rem;
+            color: var(--c-text-primary);
+            transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+        }
+        .text-input:focus {
+            outline: none;
+            border-color: var(--c-primary-action);
+            box-shadow: 0 0 0 2px rgba(252, 65, 0, 0.2);
+        }
+
+        /* Submit Button */
+        .submit-button {
+            width: 100%;
+            padding: 1rem;
+            background-color: var(--c-primary-action);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1.125rem;
+            font-weight: var(--font-weight-bold);
+            cursor: pointer;
+            transition: background-color var(--transition-speed);
+            margin-top: auto; /* Pushes button to the bottom in flex column */
+        }
+        .submit-button:hover:not(:disabled) {
+            background-color: var(--c-primary-action-hover);
+        }
+        .submit-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* ==== EDITOR PANEL (RIGHT) ==== */
+        .editor-panel {
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            position: relative;
+            background: #fafbfc; /* slightly different bg for contrast */
+            min-height: 400px;
+        }
+         @media (min-width: 992px) {
+            .editor-panel {
+                 padding: 2rem 2.5rem;
+                 height: 100%;
+            }
+        }
+
+        /* Tabs */
+        .tabs-container {
+            display: flex;
+            gap: 0.5rem;
+            border-bottom: 1px solid var(--c-border);
+        }
+
+        .tab-button {
+            padding: 0.75rem 1.5rem;
+            background-color: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: var(--font-weight-medium);
+            color: var(--c-text-secondary);
+            margin-bottom: -1px; /* Overlap with container border */
+            transition: color var(--transition-speed), border-color var(--transition-speed);
+        }
+        .tab-button:hover {
+            color: var(--c-text-primary);
+        }
+        .tab-button.active {
+            color: var(--c-primary-action);
+            border-bottom-color: var(--c-primary-action);
+        }
+        
+        /* Content Area */
+        .content-container {
+            flex-grow: 1;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--c-surface);
+            border: 1px dashed var(--c-border);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+        
+        .tab-content {
+            width: 100%;
+            height: 100%;
+            display: none; /* Hidden by default, JS will manage */
+        }
+        .tab-content.active {
+            display: flex; /* Use flex to easily center content */
+            justify-content: center;
+            align-items: center;
+        }
+
+        #editor-content {
+            flex-direction: column;
+            gap: 0.5rem;
+            text-align: center;
+            color: var(--c-text-secondary);
+        }
+        
+        #image-canvas {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            cursor: crosshair;
+            display: none; /* Hidden until an image is loaded */
+        }
+        
+        #result-content img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        /* Loading Spinner */
+        .loader-overlay {
+            position: absolute;
+            inset: 0;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: none; /* Managed by JS */
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+        .loader-overlay.active {
+            display: flex;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid var(--c-border);
+            border-top: 5px solid var(--c-primary-action);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-wrapper">
+        <!-- ==== CONTROLS PANEL ==== -->
+        <aside class="controls-panel">
+            <header>
+                <h1>Image<span>Mod</span></h1>
+                <p>AI-powered image editor</p>
+            </header>
+
+            <form id="editor-form" novalidate>
+                <div class="control-group">
+                    <label for="image-upload">1. Upload Image</label>
+                    <label for="image-upload" class="file-upload-label">Choose a file...</label>
+                    <input type="file" id="image-upload" accept="image/png, image/jpeg, image/webp">
+                    <p id="file-name" class="file-name-display">No file selected.</p>
+                </div>
+
+                <div class="control-group">
+                    <label for="mask-instruction">2. Select an Area</label>
+                    <p class="description">Click and drag on the image in the editor to create a mask for modification.</p>
+                </div>
+
+                <div class="control-group">
+                    <label for="text-prompt">3. Describe Your Change</label>
+                    <!-- EDIT HERE: Update placeholder text -->
+                    <textarea id="text-prompt" class="text-input" rows="4" placeholder="e.g., 'make the cat wear a wizard hat'"></textarea>
+                </div>
+            </form>
+            
+            <button type="submit" form="editor-form" id="submit-button" class="submit-button" disabled>Generate</button>
+        </aside>
+
+        <!-- ==== EDITOR PANEL ==== -->
+        <main class="editor-panel">
+            <div class="tabs-container">
+                <button id="tab-editor" class="tab-button active">Editor</button>
+                <button id="tab-result" class="tab-button">Result</button>
+            </div>
+
+            <div class="content-container">
+                <div id="editor-content" class="tab-content active">
+                    <p id="canvas-placeholder">Upload an image to get started</p>
+                    <canvas id="image-canvas"></canvas>
+                </div>
+
+                <div id="result-content" class="tab-content">
+                    <!-- The result image will be inserted here by JS -->
+                </div>
+                
+                <div id="loader-overlay" class="loader-overlay">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+    /**
+     * @file A single-file prototype for an AI image modification web app.
+     * Uses a modular class-based approach in vanilla JavaScript.
+     */
+
+    /**
+     * @class CanvasManager
+     * @description Handles all logic related to the HTML canvas, including image loading,
+     * drawing, and handling the rectangular selection mask.
+     */
+    class CanvasManager {
+        /**
+         * @param {HTMLCanvasElement} canvasElement
+         * @param {() => void} onMaskUpdate - Callback when the mask is drawn/updated.
+         */
+        constructor(canvasElement, onMaskUpdate) {
+            this.canvas = canvasElement;
+            this.ctx = this.canvas.getContext('2d');
+            this.image = null;
+            this.selectionRect = { x: 0, y: 0, width: 0, height: 0 };
+            this.isDrawing = false;
+            this.startPoint = { x: 0, y: 0 };
+            this.onMaskUpdate = onMaskUpdate;
+
+            this.canvas.addEventListener('mousedown', this.handleMouseDown.bind(this));
+            this.canvas.addEventListener('mousemove', this.handleMouseMove.bind(this));
+            this.canvas.addEventListener('mouseup', this.handleMouseUp.bind(this));
+            this.canvas.addEventListener('mouseleave', this.handleMouseLeave.bind(this));
+        }
+
+        /**
+         * Loads an image from a File object and draws it onto the canvas.
+         * @param {File} file
+         * @returns {Promise<void>}
+         */
+        loadImage(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    this.image = new Image();
+                    this.image.onload = () => {
+                        this.fitImageToCanvas();
+                        this.draw();
+                        this.resetSelection();
+                        resolve();
+                    };
+                    this.image.onerror = reject;
+                    this.image.src = event.target.result;
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+        
+        /** Resets the selection rectangle */
+        resetSelection() {
+            this.selectionRect = { x: 0, y: 0, width: 0, height: 0 };
+        }
+
+        /** Adjusts canvas dimensions to fit the image while maintaining aspect ratio */
+        fitImageToCanvas() {
+            const container = this.canvas.parentElement;
+            const maxWidth = container.clientWidth;
+            const maxHeight = container.clientHeight;
+            const imgAspectRatio = this.image.width / this.image.height;
+            
+            let newWidth = maxWidth;
+            let newHeight = newWidth / imgAspectRatio;
+
+            if (newHeight > maxHeight) {
+                newHeight = maxHeight;
+                newWidth = newHeight * imgAspectRatio;
+            }
+
+            this.canvas.width = newWidth;
+            this.canvas.height = newHeight;
+        }
+
+        /** Draws the image and the selection mask on the canvas */
+        draw() {
+            if (!this.image) return;
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            this.ctx.drawImage(this.image, 0, 0, this.canvas.width, this.canvas.height);
+
+            if (this.selectionRect.width !== 0 && this.selectionRect.height !== 0) {
+                this.ctx.fillStyle = 'var(--c-selection-mask)';
+                this.ctx.fillRect(this.selectionRect.x, this.selectionRect.y, this.selectionRect.width, this.selectionRect.height);
+            }
+        }
+
+        /**
+         * @param {MouseEvent} event
+         * @returns {{x: number, y: number}}
+         */
+        getMousePos(event) {
+            const rect = this.canvas.getBoundingClientRect();
+            return {
+                x: event.clientX - rect.left,
+                y: event.clientY - rect.top
+            };
+        }
+
+        handleMouseDown(event) {
+            if (!this.image) return;
+            this.startPoint = this.getMousePos(event);
+            this.isDrawing = true;
+            this.selectionRect = { x: this.startPoint.x, y: this.startPoint.y, width: 0, height: 0 };
+        }
+
+        handleMouseMove(event) {
+            if (!this.isDrawing) return;
+            const currentPoint = this.getMousePos(event);
+            this.selectionRect.width = currentPoint.x - this.startPoint.x;
+            this.selectionRect.height = currentPoint.y - this.startPoint.y;
+            this.draw();
+        }
+
+        handleMouseUp() {
+            if (!this.isDrawing) return;
+            this.isDrawing = false;
+            // Normalize rectangle if drawn backwards
+            if (this.selectionRect.width < 0) {
+                this.selectionRect.x += this.selectionRect.width;
+                this.selectionRect.width *= -1;
+            }
+            if (this.selectionRect.height < 0) {
+                this.selectionRect.y += this.selectionRect.height;
+                this.selectionRect.height *= -1;
+            }
+            this.onMaskUpdate();
+            this.draw();
+        }
+        
+        handleMouseLeave() {
+            if (this.isDrawing) {
+                this.handleMouseUp();
+            }
+        }
+
+        /**
+         * Generates a black and white mask image from the selection.
+         * @returns {string | null} Data URL of the mask, or null if no selection.
+         */
+        getMaskDataUrl() {
+            if (this.selectionRect.width === 0 || this.selectionRect.height === 0) {
+                return null;
+            }
+
+            const maskCanvas = document.createElement('canvas');
+            maskCanvas.width = this.canvas.width;
+            maskCanvas.height = this.canvas.height;
+            const maskCtx = maskCanvas.getContext('2d');
+
+            maskCtx.fillStyle = 'black';
+            maskCtx.fillRect(0, 0, maskCanvas.width, maskCanvas.height);
+            maskCtx.fillStyle = 'white';
+            maskCtx.fillRect(this.selectionRect.x, this.selectionRect.y, this.selectionRect.width, this.selectionRect.height);
+
+            return maskCanvas.toDataURL('image/png');
+        }
+    }
+
+    /**
+     * @class UIController
+     * @description Manages all DOM interactions, like showing/hiding elements and updating states.
+     */
+    class UIController {
+        constructor() {
+            this.elements = {
+                form: document.getElementById('editor-form'),
+                imageUpload: document.getElementById('image-upload'),
+                fileNameDisplay: document.getElementById('file-name'),
+                textPrompt: document.getElementById('text-prompt'),
+                submitButton: document.getElementById('submit-button'),
+                tabEditor: document.getElementById('tab-editor'),
+                tabResult: document.getElementById('tab-result'),
+                editorContent: document.getElementById('editor-content'),
+                resultContent: document.getElementById('result-content'),
+                canvas: document.getElementById('image-canvas'),
+                canvasPlaceholder: document.getElementById('canvas-placeholder'),
+                loaderOverlay: document.getElementById('loader-overlay'),
+            };
+            this.imageLoaded = false;
+            this.maskDrawn = false;
+        }
+
+        updateSubmitButtonState() {
+            const isTextEntered = this.elements.textPrompt.value.trim() !== '';
+            this.elements.submitButton.disabled = !(this.imageLoaded && this.maskDrawn && isTextEntered);
+        }
+
+        setFileName(name) {
+            this.elements.fileNameDisplay.textContent = name;
+            this.imageLoaded = true;
+            this.updateSubmitButtonState();
+        }
+        
+        setMaskDrawn(isDrawn) {
+            this.maskDrawn = isDrawn;
+            this.updateSubmitButtonState();
+        }
+
+        showCanvas() {
+            this.elements.canvas.style.display = 'block';
+            this.elements.canvasPlaceholder.style.display = 'none';
+        }
+
+        showLoader(show) {
+            this.elements.loaderOverlay.classList.toggle('active', show);
+        }
+
+        switchToTab(tabName) {
+            const isEditor = tabName === 'editor';
+            this.elements.tabEditor.classList.toggle('active', isEditor);
+            this.elements.tabResult.classList.toggle('active', !isEditor);
+            this.elements.editorContent.classList.toggle('active', isEditor);
+            this.elements.resultContent.classList.toggle('active', !isEditor);
+        }
+
+        displayResultImage(src) {
+            this.elements.resultContent.innerHTML = ''; // Clear previous results
+            const img = document.createElement('img');
+            img.src = src;
+            // EDIT HERE: Add alt text for the result image
+            img.alt = 'The modified image result';
+            this.elements.resultContent.appendChild(img);
+        }
+    }
+
+    /**
+     * @class ImageEditorApp
+     * @description Main application class that orchestrates the UI and Canvas logic.
+     */
+    class ImageEditorApp {
+        constructor() {
+            this.ui = new UIController();
+            this.canvasManager = new CanvasManager(this.ui.elements.canvas, () => {
+                this.ui.setMaskDrawn(true);
+            });
+        }
+
+        init() {
+            this.addEventListeners();
+            this.ui.updateSubmitButtonState();
+        }
+
+        addEventListeners() {
+            this.ui.elements.imageUpload.addEventListener('change', this.handleImageUpload.bind(this));
+            this.ui.elements.form.addEventListener('submit', this.handleSubmit.bind(this));
+            this.ui.elements.textPrompt.addEventListener('input', () => this.ui.updateSubmitButtonState());
+            this.ui.elements.tabEditor.addEventListener('click', () => this.ui.switchToTab('editor'));
+            this.ui.elements.tabResult.addEventListener('click', () => this.ui.switchToTab('result'));
+            window.addEventListener('resize', this.handleResize.bind(this));
+        }
+
+        handleResize() {
+            if (this.canvasManager.image) {
+                this.canvasManager.fitImageToCanvas();
+                this.canvasManager.draw();
+            }
+        }
+
+        async handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            this.ui.setFileName(file.name);
+            this.ui.showCanvas();
+            this.ui.showLoader(true);
+            
+            try {
+                await this.canvasManager.loadImage(file);
+                this.ui.setMaskDrawn(false); // Reset mask state on new image
+            } catch (error) {
+                console.error("Error loading image:", error);
+                alert("Failed to load the image. Please try another file.");
+                this.ui.setFileName("Failed to load image.");
+            } finally {
+                this.ui.showLoader(false);
+            }
+        }
+
+        handleSubmit(event) {
+            event.preventDefault();
+
+            const imageFile = this.ui.elements.imageUpload.files[0];
+            const textPrompt = this.ui.elements.textPrompt.value;
+            const maskDataUrl = this.canvasManager.getMaskDataUrl();
+
+            if (!imageFile || !textPrompt || !maskDataUrl) {
+                alert("Please ensure you've uploaded an image, selected an area, and described your change.");
+                return;
+            }
+
+            // --- SIMULATED BACKEND CALL ---
+            console.log("--- Submitting to Backend (Simulated) ---");
+            console.log("Text Prompt:", textPrompt);
+            console.log("Original Image:", imageFile.name);
+            console.log("Mask Data URL:", maskDataUrl.substring(0, 50) + '...');
+            
+            this.ui.showLoader(true);
+
+            setTimeout(() => {
+                this.ui.showLoader(false);
+                // EDIT HERE: Replace with your actual result image URL from the backend
+                const placeholderUrl = `https://placehold.co/600x400/${this.ui.elements.textPrompt.value.replace(/\s/g, '+')}`;
+                this.ui.displayResultImage(placeholderUrl);
+                this.ui.switchToTab('result');
+            }, 3000); // Simulate 3-second network delay
+        }
+    }
+
+    // Initialize the application once the DOM is fully loaded.
+    document.addEventListener('DOMContentLoaded', () => {
+        const app = new ImageEditorApp();
+        app.init();
+    });
+
+    </script>
+</body>
+</html>
