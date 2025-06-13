@@ -42,3 +42,4 @@
 2025-06-13 Added user guide documentation for editing workflow
 2025-06-13 Added undo/redo mask functionality with tests
 2025-06-13 Added PNG compression to OpenAI service
+2025-06-13 Added async processing with progress tracking for image edits

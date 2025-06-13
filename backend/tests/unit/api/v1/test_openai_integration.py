@@ -27,6 +27,11 @@ def make_error(error_cls, status_code=400):
 
 def test_edit_image(client, monkeypatch):
     patch_service(monkeypatch)
+
+    async def immediate(request_id, image, mask, prompt):
+        openai_integration.task_manager.set_result(request_id, {"detail": "ok"})
+
+    monkeypatch.setattr(openai_integration, "_process_request", immediate)
     file_content = io.BytesIO(b"data")
     response = client.post(
         "/api/v1/images/edit",
@@ -34,7 +39,14 @@ def test_edit_image(client, monkeypatch):
         data={"prompt": "edit"},
     )
     assert response.status_code == 200
-    assert response.json() == {"detail": "ok"}
+    request_id = response.json()["request_id"]
+    status_resp = client.get(f"/api/v1/images/status/{request_id}")
+    assert status_resp.status_code == 200
+    assert status_resp.json() == {
+        "request_id": request_id,
+        "status": "completed",
+        "result": {"detail": "ok"},
+    }
 
 
 def test_edit_image_invalid_type(client, monkeypatch):
@@ -75,29 +87,38 @@ def test_edit_image_invalid_mask(client, monkeypatch):
 
 
 def test_get_status(client):
-    response = client.get("/api/v1/images/status/abc123")
+    task_id = "abc123"
+    openai_integration.task_manager.create_task(task_id)
+    openai_integration.task_manager.set_result(task_id, {"ok": True})
+    response = client.get(f"/api/v1/images/status/{task_id}")
     assert response.status_code == 200
-    assert response.json() == {"request_id": "abc123", "status": "pending"}
+    assert response.json() == {
+        "request_id": task_id,
+        "status": "completed",
+        "result": {"ok": True},
+    }
 
 
 @pytest.mark.parametrize(
-    "error_cls,status",
+    "error_cls",
     [
-        (openai.BadRequestError, 400),
-        (openai.RateLimitError, 429),
-        (openai.APIConnectionError, 502),
+        openai.BadRequestError,
+        openai.RateLimitError,
+        openai.APIConnectionError,
     ],
 )
-def test_openai_error_mapping(client, monkeypatch, error_cls, status):
-    class FailService:
-        async def edit_image(self, image: bytes, mask: bytes | None, prompt: str):
-            raise make_error(error_cls)
+def test_openai_error_mapping(client, monkeypatch, error_cls):
+    async def fail_task(request_id, image, mask, prompt):
+        openai_integration.task_manager.set_error(request_id, "boom")
 
-    monkeypatch.setattr(openai_integration, "OpenAIService", lambda: FailService())
+    monkeypatch.setattr(openai_integration, "_process_request", fail_task)
     file_content = io.BytesIO(b"data")
     response = client.post(
         "/api/v1/images/edit",
         files={"image": ("test.png", file_content, "image/png")},
         data={"prompt": "edit"},
     )
-    assert response.status_code == status
+    assert response.status_code == 200
+    request_id = response.json()["request_id"]
+    status_resp = client.get(f"/api/v1/images/status/{request_id}")
+    assert status_resp.json()["status"] == "error"

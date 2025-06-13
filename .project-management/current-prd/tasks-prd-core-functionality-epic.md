@@ -80,6 +80,7 @@
 - `frontend/src/services/apiClient.test.ts` - Unit tests for API client retry logic.
 - `backend/app/api/v1/endpoints/openai_integration.py` - OpenAI API integration endpoints.
 - `backend/services/openai_service.py` - Service for handling OpenAI API calls with PNG compression.
+- `backend/services/task_manager.py` - Simple in-memory tracker for async request progress.
 - `backend/app/logging.py` - Logging configuration utilities.
 - `backend/tests/api/v1/test_openai_integration.py` - Unit tests for OpenAI integration endpoints.
 - `backend/tests/unit/services/test_openai_service.py` - Unit tests for OpenAI service.
@@ -139,7 +140,7 @@
   - [x] 3.2 Implement `POST /api/v1/images/edit` endpoint for OpenAI image editing
   - [x] 3.3 Implement `GET /api/v1/images/status/{request_id}` for progress tracking
   - [x] 3.4 Add proper request validation for image, mask, and prompt data
-  - [ ] 3.5 Implement async processing for long-running OpenAI requests
+  - [x] 3.5 Implement async processing for long-running OpenAI requests
   - [x] 3.6 Add comprehensive error handling and status code mapping
   - [x] 3.7 Include the new OpenAI router in `backend/app/main.py`
   - [x] 3.8 Create unit tests for all OpenAI integration endpoints
@@ -172,7 +173,7 @@
 
 - [ ] 7.0 Implement Progress and Error Handling (FR19-FR22, US5, US7)
   - [x] 7.1 Create `ProgressIndicator.tsx` component with loading animations
-  - [ ] 7.2 Implement progress tracking for long-running API requests
+  - [x] 7.2 Implement progress tracking for long-running API requests
   - [ ] 7.3 Add estimated completion time display
   - [x] 7.4 Create `ErrorBoundary.tsx` for graceful error recovery
   - [x] 7.5 Implement retry functionality for failed requests
