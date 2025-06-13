@@ -3,6 +3,7 @@ import pytest
 
 from backend.services.openai_service import OpenAIService
 
+
 @pytest.mark.asyncio
 async def test_openai_connectivity_integration():
     """

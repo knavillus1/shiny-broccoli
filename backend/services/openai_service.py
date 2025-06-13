@@ -95,4 +95,7 @@ class OpenAIService:
             logger.exception("OpenAI image edit failed")
             raise
         logger.debug("Image edit response: %s", response)
-        return response.to_dict()
+        try:
+            return response.to_dict()
+        except Exception:
+            return dict(response)

@@ -63,7 +63,8 @@ def test_missing_key(monkeypatch):
 def test_edit_image(monkeypatch):
     # Minimal valid 1x1 PNG image (transparent)
     png_base64 = (
-        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+X2ZkAAAAASUVORK5CYII="
+        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+"
+        "X2ZkAAAAASUVORK5CYII="
     )
     png_bytes = base64.b64decode(png_base64)
 

@@ -26,3 +26,4 @@
 2025-06-15 Improved mask export and PNG conversion for OpenAI edits
 2025-06-15 Added ErrorBoundary component with tests for error handling
 2025-06-13 Added progress and results display components with tests
+2025-06-13 Added overlay display mode for results and improved OpenAI tests
