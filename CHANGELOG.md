@@ -15,3 +15,4 @@
 2025-06-14 Added OpenAI service skeleton and tests
 2025-06-14 Added logging configuration for OpenAI service
 2025-06-13 Added OpenAI edit endpoint and router
+2025-06-13 Added status endpoint and tests
