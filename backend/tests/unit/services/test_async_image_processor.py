@@ -3,7 +3,7 @@ from io import BytesIO
 import pytest
 from PIL import Image
 
-from backend.services.async_image_processor import AsyncImageProcessor
+from backend.services.domain.async_image_processor import AsyncImageProcessor
 
 
 @pytest.mark.asyncio

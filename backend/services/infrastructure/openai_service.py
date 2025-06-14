@@ -9,7 +9,7 @@ import structlog
 import openai
 
 from backend.app.core.config import get_settings
-from backend.services.async_image_processor import AsyncImageProcessor
+from backend.services.domain.async_image_processor import AsyncImageProcessor
 
 logger = structlog.get_logger(__name__)
 

@@ -1,6 +1,6 @@
 import os
 import pytest
-from backend.services.openai_service import OpenAIService
+from backend.services.infrastructure.openai_service import OpenAIService
 
 
 @pytest.mark.asyncio

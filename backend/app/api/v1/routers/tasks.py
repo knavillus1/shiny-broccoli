@@ -20,13 +20,13 @@ from fastapi import (
 import openai
 from uuid import uuid4
 
-from backend.services.openai_service import OpenAIService
-from backend.services import task_manager
+from backend.services.infrastructure.openai_service import OpenAIService
+from backend.services.domain import task_manager
 from backend.app.core.dependencies import (
     get_openai_service,
     get_image_processor,
 )
-from backend.services.async_image_processor import AsyncImageProcessor
+from backend.services.domain.async_image_processor import AsyncImageProcessor
 from backend.app.core.errors import from_openai_error
 
 logger = structlog.get_logger(__name__)

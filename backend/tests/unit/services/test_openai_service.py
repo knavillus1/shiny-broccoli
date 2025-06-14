@@ -28,7 +28,7 @@ def load_service(monkeypatch: pytest.MonkeyPatch, client_factory) -> types.Modul
     """Reload openai_service with a patched openai module."""
     fake_openai = types.SimpleNamespace(AsyncOpenAI=client_factory)
     monkeypatch.setitem(sys.modules, "openai", fake_openai)
-    module = importlib.import_module("backend.services.openai_service")
+    module = importlib.import_module("backend.services.infrastructure.openai_service")
     return importlib.reload(module)
 
 
