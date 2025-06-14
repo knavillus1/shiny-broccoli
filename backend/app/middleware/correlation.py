@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-import logging
 import uuid
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.types import ASGIApp
 from fastapi import Request
 from structlog import contextvars
+import structlog
 
 
 class CorrelationIdMiddleware(BaseHTTPMiddleware):
@@ -14,7 +14,7 @@ class CorrelationIdMiddleware(BaseHTTPMiddleware):
     def __init__(self, app: ASGIApp, header_name: str = "X-Request-ID") -> None:
         super().__init__(app)
         self.header_name = header_name
-        self.logger = logging.getLogger("correlation")
+        self.logger = structlog.get_logger("correlation")
 
     async def dispatch(self, request: Request, call_next):
         corr_id = request.headers.get(self.header_name, str(uuid.uuid4()))

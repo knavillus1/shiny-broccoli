@@ -3,17 +3,17 @@
 from __future__ import annotations
 
 import asyncio
-import logging
 from concurrent.futures import ThreadPoolExecutor
 from io import BytesIO
 from typing import Tuple
+import structlog
 
 try:  # Pillow is optional for test environments
     from PIL import Image
 except Exception:  # pragma: no cover - optional dependency
     Image = None  # type: ignore
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 
 class AsyncImageProcessor:
