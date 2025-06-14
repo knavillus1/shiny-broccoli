@@ -59,3 +59,4 @@
 2025-06-14 Marked settings import update task complete
     flake8 reported lint errors
 2025-06-14 Added dependency injection system with tests
+2025-06-14 Added async image processor and updated OpenAI service
