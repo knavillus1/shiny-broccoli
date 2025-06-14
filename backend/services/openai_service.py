@@ -138,16 +138,16 @@ class OpenAIService:
         except Exception:  # pragma: no cover - network errors mocked in tests
             logger.exception("OpenAI image edit failed")
             raise
-        logger.debug("Image edit response: %s", response)
+        logger.info("Image edit response: %s", response)
         try:
             result = response.to_dict()
-            logger.debug("Successfully converted response to dict")
+            logger.info("Successfully converted response to dict")
             return result
         except Exception as e:
             logger.warning(f"Failed to convert response to dict using to_dict(): {e}")
             try:
                 result = dict(response)
-                logger.debug("Successfully converted response using dict()")
+                logger.info("Successfully converted response using dict()")
                 return result
             except Exception as e2:
                 logger.error(f"Failed to convert response using dict(): {e2}")

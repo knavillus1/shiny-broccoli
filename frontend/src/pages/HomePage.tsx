@@ -83,20 +83,51 @@ export default function HomePage({ image, prompt, onSubmitReady }: HomePageProps
           console.log('Status is completed, checking result structure...');
           console.log('Result:', status.result);
           
-          if (status.result?.data?.[0]?.url) {
-            console.log('Found URL:', status.result.data[0].url);
-            const res = await fetch(status.result.data[0].url);
-            const blob = await res.blob();
-            const file = new File([blob], 'result.png', { type: 'image/png' });
-            if (!cancelled) {
-              setResult(file);
-              setError('');
-              setRequestId(null); // Clear request ID after successful completion
+          const resultData = status.result?.data?.[0];
+          if (resultData?.url) {
+            console.log('Found URL:', resultData.url);
+            try {
+              const res = await fetch(resultData.url);
+              const blob = await res.blob();
+              const file = new File([blob], 'result.png', { type: 'image/png' });
+              if (!cancelled) {
+                setResult(file);
+                setError('');
+                setRequestId(null); // Clear request ID after successful completion
+              }
+            } catch (fetchError) {
+              console.error('Failed to fetch result image:', fetchError);
+              if (!cancelled) {
+                setError('Failed to download the generated image');
+                setRequestId(null);
+              }
+            }
+          } else if (resultData?.b64_json) {
+            console.log('Found base64 data, converting to file...');
+            try {
+              const binaryString = atob(resultData.b64_json);
+              const bytes = new Uint8Array(binaryString.length);
+              for (let i = 0; i < binaryString.length; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+              }
+              const blob = new Blob([bytes], { type: 'image/png' });
+              const file = new File([blob], 'result.png', { type: 'image/png' });
+              if (!cancelled) {
+                setResult(file);
+                setError('');
+                setRequestId(null);
+              }
+            } catch (b64Error) {
+              console.error('Failed to process base64 image:', b64Error);
+              if (!cancelled) {
+                setError('Failed to process the generated image data');
+                setRequestId(null);
+              }
             }
           } else {
-            console.error('Completed but no URL found in result:', status.result);
+            console.error('Completed but no URL or base64 data found in result:', status.result);
             if (!cancelled) {
-              setError('Image processing completed but no result URL found');
+              setError('Image processing completed but no result data found');
               setRequestId(null);
             }
           }
