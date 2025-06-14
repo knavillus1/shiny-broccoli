@@ -69,3 +69,4 @@
 2025-06-14 Sanitized OpenAI error handling
 2025-06-14 Added structured request logging middleware and migrated loggers to structlog
 2025-06-14 Updated README and test paths after router reorganization
+2025-06-14 Organized services into domain and infrastructure packages

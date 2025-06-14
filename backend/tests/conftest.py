@@ -4,7 +4,7 @@ from typing import Generator
 
 from backend.app.main import app
 from backend.app.core.dependencies import get_openai_service, get_image_processor
-from backend.services.async_image_processor import AsyncImageProcessor
+from backend.services.domain.async_image_processor import AsyncImageProcessor
 
 # Configure pytest-asyncio
 pytest_plugins = ("pytest_asyncio",)

@@ -68,7 +68,10 @@ shiny-broccoli/
 - `backend/repositories/task_repository.py` - Abstract task repository interface
 - `backend/repositories/memory_task_repository.py` - In-memory implementation
 - `backend/repositories/redis_task_repository.py` - Redis persistence implementation
-- `backend/services/async_image_processor.py` - Thread-pool optimized image processor
+- `backend/services/domain/async_image_processor.py` - Thread-pool optimized image processor
+- `backend/services/__init__.py` - Service package exports
+- `backend/services/domain/__init__.py` - Domain services package
+- `backend/services/infrastructure/__init__.py` - Infrastructure services package
 - `backend/.env.example` - Environment configuration template
 - `backend/app/middleware/request_logging.py` - Middleware for structured request logging
 
@@ -86,8 +89,8 @@ shiny-broccoli/
 - `backend/app/main.py` - Update to use new dependencies and routers
 - `backend/app/logging.py` - Replace with structured logging setup
 - `backend/app/middleware/__init__.py` - Timing middleware package
-- `backend/services/openai_service.py` - Update to use async image processing
-- `backend/services/task_manager.py` - Replace with repository pattern
+- `backend/services/infrastructure/openai_service.py` - Update to use async image processing
+- `backend/services/domain/task_manager.py` - Replace with repository pattern
 - `backend/requirements.txt` - Add structlog, redis-py dependencies
 - `backend/app/core/settings.py` - Update for request log level configuration
 - `backend/tests/conftest.py` - Update for new dependency injection
@@ -166,12 +169,12 @@ shiny-broccoli/
   - [x] 6.8 Include performance metrics (response time, status codes) in structured logs
   - [x] 6.9 Replace existing `logger` usage throughout codebase with structured logging
 
-- [ ] 7.0 Clean Up Code and Project Organization
+ - [x] 7.0 Clean Up Code and Project Organization
   - [x] 7.1 Remove unused `backend/services/chat_storage.py` file
   - [x] 7.2 Remove unused `verify_connection()` method from `OpenAIService`
   - [x] 7.3 Clean up empty `backend/app/core/__init__.py` file
   - [x] 7.4 Remove pragma: no cover statements that will never execute in production
   - [x] 7.5 Update import statements throughout codebase for new structure
-  - [ ] 7.6 Organize service layer to separate business logic from infrastructure
+  - [x] 7.6 Organize service layer to separate business logic from infrastructure
   - [x] 7.7 Update `backend/tests/` structure to match new API organization
   - [x] 7.8 Run linting and formatting tools to ensure code quality standards
