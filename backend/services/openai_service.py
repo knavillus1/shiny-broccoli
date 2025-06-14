@@ -73,12 +73,21 @@ class OpenAIService:
 
                     # Simple resize to square format for OpenAI
                     if orig_w != target_size or orig_h != target_size:
-                        img_obj = img_obj.resize((target_size, target_size), Image.Resampling.LANCZOS)
+                        img_obj = img_obj.resize(
+                            (target_size, target_size),
+                            Image.Resampling.LANCZOS,
+                        )
                         buf = BytesIO()
                         img_obj.save(buf, format="PNG", optimize=True)
                         png_image = buf.getvalue()
-                        
-                        logger.info(f"Image resized from {orig_w}x{orig_h} to {target_size}x{target_size}")
+
+                        logger.info(
+                            "Image resized from %sx%s to %sx%s",
+                            orig_w,
+                            orig_h,
+                            target_size,
+                            target_size,
+                        )
 
                     width = height = target_size
 
@@ -87,12 +96,21 @@ class OpenAIService:
                     with Image.open(BytesIO(png_mask)) as m_obj:
                         mask_w, mask_h = m_obj.size
                         if mask_w != target_size or mask_h != target_size:
-                            m_obj = m_obj.resize((target_size, target_size), Image.Resampling.LANCZOS)
+                            m_obj = m_obj.resize(
+                                (target_size, target_size),
+                                Image.Resampling.LANCZOS,
+                            )
                             mbuf = BytesIO()
                             m_obj.save(mbuf, format="PNG", optimize=True)
                             png_mask = mbuf.getvalue()
-                            
-                            logger.info(f"Mask resized from {mask_w}x{mask_h} to {target_size}x{target_size}")
+
+                            logger.info(
+                                "Mask resized from %sx%s to %sx%s",
+                                mask_w,
+                                mask_h,
+                                target_size,
+                                target_size,
+                            )
             else:
                 # This case should ideally not happen if frontend validates
                 # but as a fallback, try to get dimensions if possible
@@ -144,5 +162,7 @@ class OpenAIService:
                 logger.info("Successfully converted response using dict()")
                 return result
             except Exception as e2:
-                logger.error(f"Failed to convert response using dict(): {e2}")
-                raise RuntimeError(f"Could not convert OpenAI response to dict: {e2}") from e2
+                logger.error("Failed to convert response using dict(): %s", e2)
+                raise RuntimeError(
+                    f"Could not convert OpenAI response to dict: {e2}"
+                ) from e2

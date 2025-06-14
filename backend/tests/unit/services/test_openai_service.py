@@ -32,7 +32,6 @@ def load_service(monkeypatch: pytest.MonkeyPatch, client_factory) -> types.Modul
     return importlib.reload(module)
 
 
-
 def test_missing_key(monkeypatch):
     service_module = load_service(monkeypatch, lambda api_key: DummyClient(api_key))
 

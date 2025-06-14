@@ -2,10 +2,8 @@
 
 from __future__ import annotations
 
-import asyncio
 import logging
 import time
-import os
 from pathlib import Path
 
 from fastapi import (
@@ -17,38 +15,44 @@ from fastapi import (
     status,
     BackgroundTasks,
     Response,
+    Depends,
 )
 import openai
 from uuid import uuid4
 
 from backend.services.openai_service import OpenAIService
 from backend.services import task_manager
+from backend.app.core.dependencies import get_openai_service
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
+
 def save_debug_mask(mask_bytes: bytes) -> None:
     """Save mask file to root directory for debugging purposes."""
     try:
-        # Get the project root directory (go up from backend/app/api/v1/endpoints/)
+        # Get the project root directory
         current_dir = Path(__file__).parent
-        project_root = current_dir.parent.parent.parent.parent.parent  # Go up to project root
+        project_root = current_dir.parent.parent.parent.parent.parent  # project root
         mask_path = project_root / "mask.png"
-        
+
         with open(mask_path, "wb") as f:
             f.write(mask_bytes)
-        
+
         logger.info(f"Debug mask saved to: {mask_path}")
     except Exception as e:
         logger.error(f"Failed to save debug mask: {e}")
 
 
 async def _process_request(
-    request_id: str, image: bytes, mask: bytes | None, prompt: str
+    request_id: str,
+    image: bytes,
+    mask: bytes | None,
+    prompt: str,
+    service: OpenAIService,
 ) -> None:
     """Background task to send edit request to OpenAI."""
-    service = OpenAIService()
     try:
         logger.info(f"Starting OpenAI edit for request {request_id}")
         result = await service.edit_image(image, mask, prompt)
@@ -67,6 +71,7 @@ async def edit_image(
     image: UploadFile = File(...),
     mask: UploadFile | None = File(None),
     prompt: str = Form(""),
+    openai_service: OpenAIService = Depends(get_openai_service),
 ):
     """Edit an image using OpenAI's API."""
     if image.content_type not in {"image/png", "image/jpeg", "image/jpg"}:
@@ -94,18 +99,18 @@ async def edit_image(
     try:
         img_bytes = await image.read()
         mask_bytes = await mask.read() if mask else None
-        
+
         # Debug mask information
-        logger.info(f"=== MASK DEBUG (Backend) ===")
+        logger.info("=== MASK DEBUG (Backend) ===")
         logger.info(f"Image size: {len(img_bytes)} bytes")
         if mask_bytes:
             logger.info(f"Mask size: {len(mask_bytes)} bytes")
             logger.info(f"Mask content type: {mask.content_type}")
             logger.info(f"Mask filename: {mask.filename}")
-            
+
             # Save debug mask to root directory
             save_debug_mask(mask_bytes)
-            
+
             # Quick check for PNG header
             if mask_bytes.startswith(b'\x89PNG'):
                 logger.info("Mask has valid PNG header")
@@ -113,12 +118,17 @@ async def edit_image(
                 logger.warning("Mask does not have valid PNG header")
         else:
             logger.info("No mask provided")
-        
+
         request_id = uuid4().hex
         eta_seconds = 30
         task_manager.create_task(request_id, eta_seconds)
         background_tasks.add_task(
-            _process_request, request_id, img_bytes, mask_bytes, prompt
+            _process_request,
+            request_id,
+            img_bytes,
+            mask_bytes,
+            prompt,
+            openai_service,
         )
     except openai.BadRequestError as exc:
         logger.warning("OpenAI bad request: %s", exc)
@@ -227,7 +237,9 @@ async def download_result(request_id: str):
                 content=response.content,
                 media_type="image/png",
                 headers={
-                    "Content-Disposition": f"attachment; filename=result-{request_id}.png"
+                    "Content-Disposition": (
+                        f"attachment; filename=result-{request_id}.png"
+                    )
                 },
             )
     except Exception as e:

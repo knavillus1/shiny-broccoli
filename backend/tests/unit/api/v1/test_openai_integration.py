@@ -13,10 +13,6 @@ class DummyService:
         return {"detail": "ok"}
 
 
-def patch_service(monkeypatch):
-    monkeypatch.setattr(openai_integration, "OpenAIService", lambda: DummyService())
-
-
 def make_error(error_cls, status_code=400):
     request = httpx.Request("POST", "https://example.com")
     if issubclass(error_cls, openai.APIConnectionError):
@@ -26,9 +22,8 @@ def make_error(error_cls, status_code=400):
 
 
 def test_edit_image(client, monkeypatch):
-    patch_service(monkeypatch)
 
-    async def immediate(request_id, image, mask, prompt):
+    async def immediate(request_id, image, mask, prompt, service):
         openai_integration.task_manager.set_result(request_id, {"detail": "ok"})
 
     monkeypatch.setattr(openai_integration, "_process_request", immediate)
@@ -53,7 +48,6 @@ def test_edit_image(client, monkeypatch):
 
 
 def test_edit_image_invalid_type(client, monkeypatch):
-    patch_service(monkeypatch)
     file_content = io.BytesIO(b"data")
     response = client.post(
         "/api/v1/images/edit",
@@ -64,7 +58,6 @@ def test_edit_image_invalid_type(client, monkeypatch):
 
 
 def test_edit_image_missing_prompt(client, monkeypatch):
-    patch_service(monkeypatch)
     file_content = io.BytesIO(b"data")
     response = client.post(
         "/api/v1/images/edit",
@@ -75,7 +68,6 @@ def test_edit_image_missing_prompt(client, monkeypatch):
 
 
 def test_edit_image_invalid_mask(client, monkeypatch):
-    patch_service(monkeypatch)
     file_content = io.BytesIO(b"data")
     mask_content = io.BytesIO(b"data")
     response = client.post(
@@ -112,7 +104,7 @@ def test_get_status(client):
     ],
 )
 def test_openai_error_mapping(client, monkeypatch, error_cls):
-    async def fail_task(request_id, image, mask, prompt):
+    async def fail_task(request_id, image, mask, prompt, service):
         openai_integration.task_manager.set_error(request_id, "boom")
 
     monkeypatch.setattr(openai_integration, "_process_request", fail_task)

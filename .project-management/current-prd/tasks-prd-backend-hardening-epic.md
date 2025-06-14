@@ -89,6 +89,8 @@ shiny-broccoli/
 - `backend/services/task_manager.py` - Replace with repository pattern
 - `backend/requirements.txt` - Add structlog, redis-py dependencies
 - `backend/tests/conftest.py` - Update for new dependency injection
+- `backend/app/api/v1/endpoints/openai_integration.py` - Update to use dependency injection
+- `.flake8` - Exclude docs generator from linting
 - `backend/services/chat_storage.py` - **Removed unused chat history storage**
 - `backend/app/core/__init__.py` - **Removed empty module file**
 - `backend/tests/integration/test_openai_connectivity.py` - **Removed obsolete verify_connection test**
@@ -114,14 +116,14 @@ shiny-broccoli/
   - [x] 1.6 Test configuration loading from environment variables and .env file
   - [x] 1.7 Update all imports throughout codebase to use new settings module
 
-- [ ] 2.0 Establish Dependency Injection System
-  - [ ] 2.1 Create `backend/app/core/dependencies.py` with dependency provider functions
-  - [ ] 2.2 Implement `get_openai_service()` dependency function using `Depends(get_settings)`
-  - [ ] 2.3 Implement `get_task_repository()` dependency function with repository selection logic
-  - [ ] 2.4 Implement `get_image_processor()` dependency function for async image processing
-  - [ ] 2.5 Update all endpoint handlers to accept dependencies via `Depends()` instead of direct instantiation
-  - [ ] 2.6 Configure dependency overrides in `backend/tests/conftest.py` for testing
-  - [ ] 2.7 Update existing unit tests to use dependency injection system
+- [x] 2.0 Establish Dependency Injection System
+  - [x] 2.1 Create `backend/app/core/dependencies.py` with dependency provider functions
+  - [x] 2.2 Implement `get_openai_service()` dependency function using `Depends(get_settings)`
+  - [x] 2.3 Implement `get_task_repository()` dependency function with repository selection logic
+  - [x] 2.4 Implement `get_image_processor()` dependency function for async image processing
+  - [x] 2.5 Update all endpoint handlers to accept dependencies via `Depends()` instead of direct instantiation
+  - [x] 2.6 Configure dependency overrides in `backend/tests/conftest.py` for testing
+  - [x] 2.7 Update existing unit tests to use dependency injection system
 
 - [ ] 3.0 Implement Async-Optimized Image Processing
   - [ ] 3.1 Create `backend/services/async_image_processor.py` with `AsyncImageProcessor` class
