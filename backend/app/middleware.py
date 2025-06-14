@@ -1,3 +1,5 @@
+"""Timing middleware for logging request duration."""
+
 from __future__ import annotations
 
 import logging

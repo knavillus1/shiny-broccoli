@@ -106,15 +106,26 @@
 - `frontend/src/components/CanvasDisplay.test.tsx` - Check accessibility label.
 - `CHANGELOG.md` - Record progress entries.
 - `.project-management/current-prd/tasks-prd-polish-learning-epic.md` - Update task status.
+- `backend/app/__init__.py` - Module metadata for backend package.
+- `backend/app/api/__init__.py` - Module metadata for API package.
+- `backend/app/api/v1/__init__.py` - Module metadata for API version package.
+- `backend/app/api/v1/endpoints/__init__.py` - Module metadata for endpoint package.
+- `backend/app/api/v1/endpoints/health.py` - Health endpoint with docs.
+- `backend/app/core/__init__.py` - Module metadata for core package.
+- `backend/app/middleware.py` - Timing middleware docstring added.
+- `frontend/src/components/ChatArea.tsx` - Placeholder chat area component.
+- `frontend/src/components/MessageBubble.tsx` - Placeholder chat message bubble.
+- `frontend/src/components/Sidebar.tsx` - Placeholder sidebar component.
+- `frontend/src/hooks/useChat.ts` - Placeholder chat hook with docs.
 
 ## Tasks
 
-- [ ] 1.0 Document Codebase for Learning (FR1, FR2)
-  - [ ] 1.1 Add explanatory comments to all frontend components and hooks.
-  - [ ] 1.2 Add docstrings to all backend modules and services.
-  - [ ] 1.3 Run linting to verify comment style.
+ - [x] 1.0 Document Codebase for Learning (FR1, FR2)
+   - [x] 1.1 Add explanatory comments to all frontend components and hooks.
+   - [x] 1.2 Add docstrings to all backend modules and services.
+   - [x] 1.3 Run linting to verify comment style.
 
-- [ ] 2.0 Expand Project Documentation (FR3, FR4, FR5)
+- [x] 2.0 Expand Project Documentation (FR3, FR4, FR5)
   - [x] 2.1 Add a step-by-step tutorial to `README.md` with learning resources.
   - [x] 2.2 Update `DEVELOPMENT.md` with explicit environment setup instructions.
   - [x] 2.3 Create `.env.template` files for backend and frontend.
@@ -126,7 +137,7 @@
   - [x] 3.3 Add focus states for interactive elements.
   - [x] 3.4 Update or create tests for new prompts and accessibility attributes.
 
-- [ ] 4.0 Verify Success Metrics (SM1-SM3)
+- [x] 4.0 Verify Success Metrics (SM1-SM3)
   - [x] 4.1 Run `run_tests.sh -no_integration` and ensure it passes.
-  - [ ] 4.2 Confirm code coverage remains stable after documentation updates.
+  - [x] 4.2 Confirm code coverage remains stable after documentation updates.
   - [x] 4.3 Update `CHANGELOG.md` with progress for each completed task.
