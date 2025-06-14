@@ -37,6 +37,8 @@ Run tests with `run_tests.sh -no_integration`, which will exclude `/tests/integr
 
 Generate unit tests and integration tests liberally during development.  New integration tests will be proven in a local environment, but do your best to set them up.
 
+You must make an effort to fix failing tests prior to finishing your task.
+
 ## CHANGELOG.md Instructions
 Append a single line summary to CHANGELOG.md describing the changes with a preceeding timestamp
 if errors were encountered, list them indented below the changelog row with a single line summary
