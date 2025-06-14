@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import useCanvas from './useCanvas';
+import useCanvas, { MAX_HISTORY } from './useCanvas';
 
 describe('useCanvas', () => {
   it('toggles drawing mode', () => {
@@ -81,5 +81,36 @@ describe('useCanvas', () => {
       result.current.redo();
     });
     expect(putImageData).toHaveBeenCalledTimes(2);
+  });
+
+  it('limits undo history to MAX_HISTORY', () => {
+    const { result } = renderHook(() => useCanvas());
+    const canvas = document.createElement('canvas');
+    canvas.width = 10;
+    canvas.height = 10;
+    const ctx = {
+      fillRect: vi.fn(),
+      getImageData: vi.fn(() => ({ data: new Uint8ClampedArray(1) })),
+      putImageData: vi.fn(),
+      globalCompositeOperation: 'source-over',
+      fillStyle: 'white',
+    } as unknown as CanvasRenderingContext2D;
+    canvas.getContext = vi.fn(() => ctx);
+    result.current.canvasRef.current = canvas;
+
+    for (let i = 0; i < MAX_HISTORY + 5; i++) {
+      act(() => {
+        result.current.clear();
+      });
+    }
+
+    let count = 0;
+    while (result.current.canUndo) {
+      act(() => {
+        result.current.undo();
+      });
+      count += 1;
+    }
+    expect(count).toBe(MAX_HISTORY);
   });
 });

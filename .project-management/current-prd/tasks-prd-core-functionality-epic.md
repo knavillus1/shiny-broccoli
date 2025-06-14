@@ -82,6 +82,7 @@
 - `backend/services/openai_service.py` - Service for handling OpenAI API calls with PNG compression.
 - `backend/services/task_manager.py` - Simple in-memory tracker for async request progress.
 - `backend/app/logging.py` - Logging configuration utilities.
+- `backend/app/middleware.py` - HTTP middleware for request timing metrics.
 - `backend/tests/api/v1/test_openai_integration.py` - Unit tests for OpenAI integration endpoints.
 - `backend/tests/unit/services/test_openai_service.py` - Unit tests for OpenAI service.
 - `docs/user_guide.md` - User guide for the complete image editing workflow.
@@ -190,12 +191,12 @@
   - [ ] 8.7 Test end-to-end functionality with real OpenAI API calls
 
 - [ ] 9.0 Performance Optimization and Polish (SM1-SM7)
-  - [ ] 9.1 Optimize canvas operations for smooth mask drawing performance
+  - [x] 9.1 Optimize canvas operations for smooth mask drawing performance
   - [x] 9.2 Implement image compression for large uploads to meet OpenAI size limits
   - [x] 9.3 Add client-side validation for image dimensions and format compatibility
-  - [ ] 9.4 Optimize memory usage for large images and long editing sessions
+  - [x] 9.4 Optimize memory usage for large images and long editing sessions
   - [ ] 9.5 Test performance across different browsers and devices
-  - [ ] 9.6 Add performance monitoring and logging for optimization
+  - [x] 9.6 Add performance monitoring and logging for optimization
 
 - [ ] 10.0 Testing and Documentation for Phase 2 Completion (SM6, SM7)
   - [ ] 10.1 Create comprehensive integration tests for the complete editing workflow
