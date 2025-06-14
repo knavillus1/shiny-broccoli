@@ -67,3 +67,4 @@
 2025-06-14 Added tasks router and RFC 7807 error handling
 2025-06-14 Added validation error handling and correlation ID logging
 2025-06-14 Sanitized OpenAI error handling
+2025-06-14 Added structured request logging middleware and migrated loggers to structlog

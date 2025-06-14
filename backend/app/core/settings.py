@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     allow_origins: str = Field(default="http://localhost:5173", env="ALLOW_ORIGINS")
     log_level: str = Field(default="INFO", env="LOG_LEVEL")
     log_format: str = Field(default="console", env="LOG_FORMAT")
+    request_log_level: str = Field(default="INFO", env="REQUEST_LOG_LEVEL")
     redis_url: str | None = Field(default=None, env="REDIS_URL")
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")

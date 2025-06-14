@@ -4,10 +4,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
 
-from .middleware import TimingMiddleware
+from .middleware import TimingMiddleware, RequestLoggingMiddleware
 from .middleware.correlation import CorrelationIdMiddleware
 
-from .logging import setup_logging
+from .core.logging import setup_logging
 
 from .core.config import get_settings
 from .api.v1.routers.health import router as health_router
@@ -49,6 +49,10 @@ app.add_middleware(
 )
 
 app.add_middleware(CorrelationIdMiddleware)
+
+app.add_middleware(
+    RequestLoggingMiddleware, level=settings.request_log_level
+)
 
 app.add_middleware(TimingMiddleware)
 

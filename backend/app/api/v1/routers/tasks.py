@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-import logging
 import time
 from pathlib import Path
+import structlog
 
 from fastapi import (
     APIRouter,
@@ -29,7 +29,7 @@ from backend.app.core.dependencies import (
 from backend.services.async_image_processor import AsyncImageProcessor
 from backend.app.core.errors import from_openai_error
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 router = APIRouter()
 

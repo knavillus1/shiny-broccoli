@@ -2,16 +2,16 @@
 
 from __future__ import annotations
 
-import logging
 from io import BytesIO
 from typing import Any
+import structlog
 
 import openai
 
 from backend.app.core.config import get_settings
 from backend.services.async_image_processor import AsyncImageProcessor
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 
 class OpenAIService:

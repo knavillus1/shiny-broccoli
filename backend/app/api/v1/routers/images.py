@@ -2,15 +2,15 @@
 
 from __future__ import annotations
 
-import logging
 import time
+import structlog
 from typing import Awaitable, Callable
 
 from fastapi import APIRouter, UploadFile, File, HTTPException, status, Depends
 
 from backend.app.core.dependencies import get_process_image
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 ALLOWED_TYPES = {
     "image/jpeg",

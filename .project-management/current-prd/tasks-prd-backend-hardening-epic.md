@@ -70,6 +70,7 @@ shiny-broccoli/
 - `backend/repositories/redis_task_repository.py` - Redis persistence implementation
 - `backend/services/async_image_processor.py` - Thread-pool optimized image processor
 - `backend/.env.example` - Environment configuration template
+- `backend/app/middleware/request_logging.py` - Middleware for structured request logging
 
 ### Proposed New Test Files
 - `backend/tests/unit/core/test_settings.py` - Test new configuration system
@@ -88,7 +89,9 @@ shiny-broccoli/
 - `backend/services/openai_service.py` - Update to use async image processing
 - `backend/services/task_manager.py` - Replace with repository pattern
 - `backend/requirements.txt` - Add structlog, redis-py dependencies
+- `backend/app/core/settings.py` - Update for request log level configuration
 - `backend/tests/conftest.py` - Update for new dependency injection
+- `backend/.env.example` - Add REQUEST_LOG_LEVEL variable
 - `backend/tests/unit/core/test_errors.py` - Updated for validation errors
 - `backend/app/api/v1/endpoints/openai_integration.py` - **Removed after relocation to routers**
 - `backend/app/core/dependencies.py` - Add process_image dependency function
@@ -149,16 +152,16 @@ shiny-broccoli/
   - [x] 5.8 Add validation error handling with proper Problem Details format
   - [x] 5.9 Replace raw OpenAI API errors with sanitized Problem Details responses
 
-- [ ] 6.0 Implement Structured Logging and Observability
+- [x] 6.0 Implement Structured Logging and Observability
   - [x] 6.1 Add `structlog` dependency to `backend/requirements.txt`
   - [x] 6.2 Create `backend/app/core/logging.py` with structlog configuration
   - [x] 6.3 Implement JSON log formatting for production and human-readable for development
   - [x] 6.4 Create `backend/app/middleware/correlation.py` for X-Request-ID middleware
   - [x] 6.5 Configure correlation ID injection into all log entries
-  - [ ] 6.6 Add request/response logging with configurable log levels
+  - [x] 6.6 Add request/response logging with configurable log levels
   - [x] 6.7 Update `backend/app/main.py` to use new logging and correlation middleware
-  - [ ] 6.8 Include performance metrics (response time, status codes) in structured logs
-  - [ ] 6.9 Replace existing `logger` usage throughout codebase with structured logging
+  - [x] 6.8 Include performance metrics (response time, status codes) in structured logs
+  - [x] 6.9 Replace existing `logger` usage throughout codebase with structured logging
 
 - [ ] 7.0 Clean Up Code and Project Organization
   - [x] 7.1 Remove unused `backend/services/chat_storage.py` file
