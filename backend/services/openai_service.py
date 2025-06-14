@@ -6,14 +6,10 @@ import logging
 from io import BytesIO
 from typing import Any
 
-try:  # Pillow is optional in test environments
-    from PIL import Image
-except Exception:
-    Image = None  # type: ignore
-
 import openai
 
 from backend.app.core.config import get_settings
+from backend.services.async_image_processor import AsyncImageProcessor
 
 logger = logging.getLogger(__name__)
 
@@ -29,17 +25,14 @@ class OpenAIService:
         self._client = openai.AsyncOpenAI(api_key=key)
         logger.debug("OpenAI client initialized")
 
-    def _ensure_png(self, data: bytes) -> bytes:
-        """Return image data encoded as optimized PNG."""
-        if Image is None:
-            return data
-        img = Image.open(BytesIO(data))
-        buf = BytesIO()
-        img.save(buf, format="PNG", optimize=True)
-        return buf.getvalue()
-
     async def edit_image(
-        self, image: bytes, mask: bytes | None, prompt: str, n: int = 1
+        self,
+        image: bytes,
+        mask: bytes | None,
+        prompt: str,
+        n: int = 1,
+        *,
+        processor: AsyncImageProcessor | None = None,
     ) -> dict[str, Any]:
         """Send an image edit request to OpenAI.
 
@@ -56,82 +49,10 @@ class OpenAIService:
         """
         logger.info("Sending image edit request")
         try:
-            png_image = self._ensure_png(image)
-            png_mask = self._ensure_png(mask) if mask else None
-
-            # Open image to get size and ensure supported dimensions
-            if Image is not None:
-                with Image.open(BytesIO(png_image)) as img_obj:
-                    orig_w, orig_h = img_obj.size
-                    # choose supported target size
-                    supported_sizes = (256, 512, 1024)
-                    target_size = 1024  # Default to largest if image is bigger
-                    for s in supported_sizes:
-                        if max(orig_w, orig_h) <= s:
-                            target_size = s
-                            break
-
-                    # Simple resize to square format for OpenAI
-                    if orig_w != target_size or orig_h != target_size:
-                        img_obj = img_obj.resize(
-                            (target_size, target_size),
-                            Image.Resampling.LANCZOS,
-                        )
-                        buf = BytesIO()
-                        img_obj.save(buf, format="PNG", optimize=True)
-                        png_image = buf.getvalue()
-
-                        logger.info(
-                            "Image resized from %sx%s to %sx%s",
-                            orig_w,
-                            orig_h,
-                            target_size,
-                            target_size,
-                        )
-
-                    width = height = target_size
-
-                # Resize mask to match if present
-                if png_mask:
-                    with Image.open(BytesIO(png_mask)) as m_obj:
-                        mask_w, mask_h = m_obj.size
-                        if mask_w != target_size or mask_h != target_size:
-                            m_obj = m_obj.resize(
-                                (target_size, target_size),
-                                Image.Resampling.LANCZOS,
-                            )
-                            mbuf = BytesIO()
-                            m_obj.save(mbuf, format="PNG", optimize=True)
-                            png_mask = mbuf.getvalue()
-
-                            logger.info(
-                                "Mask resized from %sx%s to %sx%s",
-                                mask_w,
-                                mask_h,
-                                target_size,
-                                target_size,
-                            )
-            else:
-                # This case should ideally not happen if frontend validates
-                # but as a fallback, try to get dimensions if possible
-                # This might still fail if PIL is missing and image lacks size info
-                try:
-                    # A simple way to get dimensions for PNG without full PIL
-                    # This is a placeholder and might not work for all PNGs
-                    # A more robust solution would be needed if PIL is optional
-                    if (
-                        png_image.startswith(b'\x89PNG\r\n\x1a\n')
-                        and png_image[12:16] == b'IHDR'
-                    ):
-                        import struct
-                        width, height = struct.unpack('>LL', png_image[16:24])
-                    else:  # Fallback when PNG header is missing
-                        # Proceed with original bytes if no PIL
-                        pass  # width/height may be missing; API might error
-                except Exception:
-                    # If we can't determine size and PIL is not there, we can't resize.
-                    # The API will likely reject it if not already a supported size.
-                    pass
+            processor = processor or AsyncImageProcessor()
+            png_image, png_mask, width, height = await processor.process_image_async(
+                image, mask
+            )
 
             # Prepare file-like objects for OpenAI API
             image_file = BytesIO(png_image)

@@ -136,20 +136,3 @@ async def test_edit_image_resizes_mask(monkeypatch):
     assert captured["size"] == "512x512"
     assert captured["img"] == (512, 512)
     assert captured["mask"] == (512, 512)
-
-
-def test_ensure_png_optimizes(monkeypatch):
-    def factory(api_key=None):
-        return DummyClient(api_key)
-
-    service_module = load_service(monkeypatch, factory)
-    service = service_module.OpenAIService(api_key="key")
-
-    buf = BytesIO()
-    Image.new("RGBA", (256, 256), color="red").save(buf, format="PNG", optimize=False)
-    data = buf.getvalue()
-
-    optimized = service._ensure_png(data)
-
-    assert optimized.startswith(b"\x89PNG")
-    assert len(optimized) <= len(data)

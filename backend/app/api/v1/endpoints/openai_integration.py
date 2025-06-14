@@ -22,7 +22,11 @@ from uuid import uuid4
 
 from backend.services.openai_service import OpenAIService
 from backend.services import task_manager
-from backend.app.core.dependencies import get_openai_service
+from backend.app.core.dependencies import (
+    get_openai_service,
+    get_image_processor,
+)
+from backend.services.async_image_processor import AsyncImageProcessor
 
 logger = logging.getLogger(__name__)
 
@@ -51,11 +55,12 @@ async def _process_request(
     mask: bytes | None,
     prompt: str,
     service: OpenAIService,
+    processor: AsyncImageProcessor,
 ) -> None:
     """Background task to send edit request to OpenAI."""
     try:
         logger.info(f"Starting OpenAI edit for request {request_id}")
-        result = await service.edit_image(image, mask, prompt)
+        result = await service.edit_image(image, mask, prompt, processor=processor)
         logger.info(f"OpenAI edit completed for request {request_id}")
         logger.info(f"OpenAI result structure: {result}")
         task_manager.set_result(request_id, result)
@@ -72,6 +77,7 @@ async def edit_image(
     mask: UploadFile | None = File(None),
     prompt: str = Form(""),
     openai_service: OpenAIService = Depends(get_openai_service),
+    image_processor: AsyncImageProcessor = Depends(get_image_processor),
 ):
     """Edit an image using OpenAI's API."""
     if image.content_type not in {"image/png", "image/jpeg", "image/jpg"}:
@@ -129,6 +135,7 @@ async def edit_image(
             mask_bytes,
             prompt,
             openai_service,
+            image_processor,
         )
     except openai.BadRequestError as exc:
         logger.warning("OpenAI bad request: %s", exc)

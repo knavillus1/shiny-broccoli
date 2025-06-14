@@ -3,7 +3,6 @@ import os
 import pytest
 import httpx
 
-from backend.app.api.v1.endpoints import openai_integration
 from backend.app.core import dependencies
 from backend.app.main import app
 from fastapi.testclient import TestClient
@@ -39,9 +38,9 @@ def sample_image_bytes():
 def test_full_workflow_success(client, monkeypatch, sample_image_bytes):
     def mock_service(settings=None):
         return DummyService()
-    
+
     app.dependency_overrides[dependencies.get_openai_service] = mock_service
-    
+
     try:
         data = client.get("/")
         assert data.status_code == 200
@@ -64,12 +63,12 @@ def test_full_workflow_api_error(client, monkeypatch, sample_image_bytes):
         response=httpx.Response(400, request=httpx.Request("POST", "http://")),
         body=None,
     )
-    
+
     def mock_service(settings=None):
         return FailingService(exc)
-    
+
     app.dependency_overrides[dependencies.get_openai_service] = mock_service
-    
+
     try:
         result = client.post(
             "/api/v1/images/edit",
@@ -88,12 +87,12 @@ def test_full_workflow_connection_error(client, monkeypatch, sample_image_bytes)
     exc = openai.APIConnectionError(
         message="boom", request=httpx.Request("POST", "http://")
     )
-    
+
     def mock_service(settings=None):
         return FailingService(exc)
-    
+
     app.dependency_overrides[dependencies.get_openai_service] = mock_service
-    
+
     try:
         result = client.post(
             "/api/v1/images/edit",

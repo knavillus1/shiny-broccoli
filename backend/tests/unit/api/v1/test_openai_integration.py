@@ -23,7 +23,7 @@ def make_error(error_cls, status_code=400):
 
 def test_edit_image(client, monkeypatch):
 
-    async def immediate(request_id, image, mask, prompt, service):
+    async def immediate(request_id, image, mask, prompt, service, processor):
         openai_integration.task_manager.set_result(request_id, {"detail": "ok"})
 
     monkeypatch.setattr(openai_integration, "_process_request", immediate)
@@ -104,7 +104,7 @@ def test_get_status(client):
     ],
 )
 def test_openai_error_mapping(client, monkeypatch, error_cls):
-    async def fail_task(request_id, image, mask, prompt, service):
+    async def fail_task(request_id, image, mask, prompt, service, processor):
         openai_integration.task_manager.set_error(request_id, "boom")
 
     monkeypatch.setattr(openai_integration, "_process_request", fail_task)

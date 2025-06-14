@@ -6,7 +6,7 @@ from fastapi import Depends
 
 from .config import get_settings, Settings
 from backend.services.openai_service import OpenAIService
-from backend.services.image_processor import process_image
+from backend.services.async_image_processor import AsyncImageProcessor
 
 
 def get_openai_service(settings: Settings = Depends(get_settings)) -> OpenAIService:
@@ -21,6 +21,9 @@ def get_task_repository():
     return task_manager
 
 
-def get_image_processor():
-    """Provide the default image processor implementation."""
-    return process_image
+_async_processor = AsyncImageProcessor()
+
+
+def get_image_processor() -> AsyncImageProcessor:
+    """Provide the default async image processor instance."""
+    return _async_processor
