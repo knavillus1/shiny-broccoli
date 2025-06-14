@@ -19,3 +19,4 @@ npm-debug.log*
 # Misc
 backend/data/
 backend/uploads/
+mask.png

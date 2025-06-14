@@ -14,6 +14,11 @@ def test_env_file_loading(tmp_path, monkeypatch):
         ])
     )
     monkeypatch.chdir(tmp_path)
+    # Clear any existing environment variables that might interfere
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    monkeypatch.delenv("ALLOW_ORIGINS", raising=False)
+    monkeypatch.delenv("LOG_LEVEL", raising=False)
+    monkeypatch.delenv("REDIS_URL", raising=False)
     settings = Settings()
     assert settings.openai_api_key == "test-key"
     assert settings.allow_origins == "http://example.com"

@@ -4,6 +4,7 @@ import pytest
 import httpx
 
 from backend.app.api.v1.endpoints import openai_integration
+from backend.app.core import dependencies
 from backend.app.main import app
 from fastapi.testclient import TestClient
 import openai
@@ -36,22 +37,25 @@ def sample_image_bytes():
 
 
 def test_full_workflow_success(client, monkeypatch, sample_image_bytes):
-    monkeypatch.setattr(
-        openai_integration,
-        "OpenAIService",
-        lambda: DummyService(),
-    )
-    data = client.get("/")
-    assert data.status_code == 200
-    result = client.post(
-        "/api/v1/images/edit",
-        files={"image": ("test.png", io.BytesIO(sample_image_bytes), "image/png")},
-        data={"prompt": "edit"},
-    )
-    assert result.status_code == 200
-    request_id = result.json()["request_id"]
-    status = client.get(f"/api/v1/images/status/{request_id}").json()
-    assert status["status"] in {"completed", "pending"}
+    def mock_service(settings=None):
+        return DummyService()
+    
+    app.dependency_overrides[dependencies.get_openai_service] = mock_service
+    
+    try:
+        data = client.get("/")
+        assert data.status_code == 200
+        result = client.post(
+            "/api/v1/images/edit",
+            files={"image": ("test.png", io.BytesIO(sample_image_bytes), "image/png")},
+            data={"prompt": "edit"},
+        )
+        assert result.status_code == 200
+        request_id = result.json()["request_id"]
+        status = client.get(f"/api/v1/images/status/{request_id}").json()
+        assert status["status"] in {"completed", "pending"}
+    finally:
+        app.dependency_overrides.clear()
 
 
 def test_full_workflow_api_error(client, monkeypatch, sample_image_bytes):
@@ -60,37 +64,45 @@ def test_full_workflow_api_error(client, monkeypatch, sample_image_bytes):
         response=httpx.Response(400, request=httpx.Request("POST", "http://")),
         body=None,
     )
-    monkeypatch.setattr(
-        openai_integration,
-        "OpenAIService",
-        lambda: FailingService(exc),
-    )
-    result = client.post(
-        "/api/v1/images/edit",
-        files={"image": ("test.png", io.BytesIO(sample_image_bytes), "image/png")},
-        data={"prompt": "edit"},
-    )
-    assert result.status_code == 200
-    request_id = result.json()["request_id"]
-    status = client.get(f"/api/v1/images/status/{request_id}").json()
-    assert status["status"] == "error"
+    
+    def mock_service(settings=None):
+        return FailingService(exc)
+    
+    app.dependency_overrides[dependencies.get_openai_service] = mock_service
+    
+    try:
+        result = client.post(
+            "/api/v1/images/edit",
+            files={"image": ("test.png", io.BytesIO(sample_image_bytes), "image/png")},
+            data={"prompt": "edit"},
+        )
+        assert result.status_code == 200
+        request_id = result.json()["request_id"]
+        status = client.get(f"/api/v1/images/status/{request_id}").json()
+        assert status["status"] == "error"
+    finally:
+        app.dependency_overrides.clear()
 
 
 def test_full_workflow_connection_error(client, monkeypatch, sample_image_bytes):
     exc = openai.APIConnectionError(
         message="boom", request=httpx.Request("POST", "http://")
     )
-    monkeypatch.setattr(
-        openai_integration,
-        "OpenAIService",
-        lambda: FailingService(exc),
-    )
-    result = client.post(
-        "/api/v1/images/edit",
-        files={"image": ("test.png", io.BytesIO(sample_image_bytes), "image/png")},
-        data={"prompt": "edit"},
-    )
-    assert result.status_code == 200
-    request_id = result.json()["request_id"]
-    status = client.get(f"/api/v1/images/status/{request_id}").json()
-    assert status["status"] == "error"
+    
+    def mock_service(settings=None):
+        return FailingService(exc)
+    
+    app.dependency_overrides[dependencies.get_openai_service] = mock_service
+    
+    try:
+        result = client.post(
+            "/api/v1/images/edit",
+            files={"image": ("test.png", io.BytesIO(sample_image_bytes), "image/png")},
+            data={"prompt": "edit"},
+        )
+        assert result.status_code == 200
+        request_id = result.json()["request_id"]
+        status = client.get(f"/api/v1/images/status/{request_id}").json()
+        assert status["status"] == "error"
+    finally:
+        app.dependency_overrides.clear()
