@@ -418,25 +418,6 @@ export default function CanvasDisplay({
     <div className="border rounded p-4 mt-4">
       {image ? (
         <>
-          <div className="mb-2 flex items-center gap-2">
-            <button type="button" onClick={toggleMaskMode} className="px-2 py-1 border rounded focus:outline focus:outline-blue-500">
-              {maskMode === 'draw' ? 'Switch to Erase' : 'Switch to Draw'}
-            </button>
-            <button type="button" onClick={toggleMaskVisibility} className="px-2 py-1 border rounded focus:outline focus:outline-blue-500">
-              {maskVisible ? 'Hide Mask' : 'Show Mask'}
-            </button>
-            <button type="button" onClick={clearMaskAction} className="px-2 py-1 border rounded focus:outline focus:outline-blue-500">
-              Clear Mask
-            </button>
-            <button type="button" onClick={undoMaskAction} disabled={!canUndoMaskFlag} className="px-2 py-1 border rounded focus:outline focus:outline-blue-500">
-              Undo
-            </button>
-            <button type="button" onClick={redoMaskAction} disabled={!canRedoMaskFlag} className="px-2 py-1 border rounded focus:outline focus:outline-blue-500">
-              Redo
-            </button>
-            <span className="text-sm text-gray-600">Mode: {maskMode}</span>
-            <span className="text-sm text-gray-600">Tool: {maskTool}</span>
-          </div>
           <div 
             className="relative inline-block"
             onMouseDown={handleMouseDown}
