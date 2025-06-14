@@ -44,3 +44,4 @@
 2025-06-13 Added PNG compression to OpenAI service
 2025-06-13 Added async processing with progress tracking for image edits
 2025-06-13 Added ETA display for OpenAI task progress
+2025-06-14 Added timing middleware and canvas optimization

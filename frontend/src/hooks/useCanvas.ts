@@ -7,6 +7,8 @@ import { useRef, useEffect, useState } from 'react';
 export type BrushSize = 'small' | 'medium' | 'large';
 export type Tool = 'brush' | 'rectangle' | 'circle';
 
+export const MAX_HISTORY = 20;
+
 export default function useCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const drawing = useRef(false);
@@ -30,6 +32,9 @@ export default function useCanvas() {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+    if (history.current.length >= MAX_HISTORY) {
+      history.current.shift();
+    }
     history.current.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
     redoStack.current = [];
     forceRender({});
@@ -49,6 +54,9 @@ export default function useCanvas() {
     const startDraw = (e: PointerEvent) => {
       drawing.current = true;
       startPos.current = { x: e.offsetX, y: e.offsetY };
+      if (history.current.length >= MAX_HISTORY) {
+        history.current.shift();
+      }
       history.current.push(
         ctx.getImageData(0, 0, canvas.width, canvas.height),
       );
@@ -99,14 +107,29 @@ export default function useCanvas() {
       canvas.style.cursor = 'default';
     };
 
+    let raf = 0;
+    let pending: PointerEvent | null = null;
+    const throttledDraw = (e: PointerEvent) => {
+      pending = e;
+      if (!raf) {
+        raf = requestAnimationFrame(() => {
+          raf = 0;
+          if (pending) {
+            draw(pending);
+            pending = null;
+          }
+        });
+      }
+    };
+
     canvas.addEventListener('pointerdown', startDraw);
-    canvas.addEventListener('pointermove', draw);
+    canvas.addEventListener('pointermove', throttledDraw);
     canvas.addEventListener('pointerup', stopDraw);
     canvas.addEventListener('pointerleave', stopDraw);
 
     return () => {
       canvas.removeEventListener('pointerdown', startDraw);
-      canvas.removeEventListener('pointermove', draw);
+      canvas.removeEventListener('pointermove', throttledDraw);
       canvas.removeEventListener('pointerup', stopDraw);
       canvas.removeEventListener('pointerleave', stopDraw);
     };
@@ -118,7 +141,12 @@ export default function useCanvas() {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
     const prev = history.current.pop()!;
-    redoStack.current.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+    if (redoStack.current.length >= MAX_HISTORY) {
+      redoStack.current.shift();
+    }
+    redoStack.current.push(
+      ctx.getImageData(0, 0, canvas.width, canvas.height),
+    );
     ctx.putImageData(prev, 0, 0);
     forceRender({});
   };
@@ -129,7 +157,12 @@ export default function useCanvas() {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
     const next = redoStack.current.pop()!;
-    history.current.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+    if (history.current.length >= MAX_HISTORY) {
+      history.current.shift();
+    }
+    history.current.push(
+      ctx.getImageData(0, 0, canvas.width, canvas.height),
+    );
     ctx.putImageData(next, 0, 0);
     forceRender({});
   };
