@@ -29,6 +29,10 @@ interface Props {
   redoMask: () => void;
   canUndoMask: boolean;
   canRedoMask: boolean;
+  
+  // Mask visibility control
+  maskVisible?: boolean;
+  toggleMaskVisibility?: () => void;
 }
 
 export default function CanvasDisplay({
@@ -55,10 +59,11 @@ export default function CanvasDisplay({
   redoMask: redoMaskAction,
   canUndoMask: canUndoMaskFlag,
   canRedoMask: canRedoMaskFlag,
+  maskVisible = true,
+  toggleMaskVisibility,
 }: Props) {
   const baseRef = useRef<HTMLCanvasElement>(null);
   const submitHandlerRef = useRef<(() => Promise<void>) | null>(null);
-  const [maskVisible, setMaskVisible] = useState(true);
   const [submitMsg, setSubmitMsg] = useState('');
   const [submitError, setSubmitError] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -417,7 +422,7 @@ export default function CanvasDisplay({
             <button type="button" onClick={toggleMaskMode} className="px-2 py-1 border rounded focus:outline focus:outline-blue-500">
               {maskMode === 'draw' ? 'Switch to Erase' : 'Switch to Draw'}
             </button>
-            <button type="button" onClick={() => setMaskVisible((v) => !v)} className="px-2 py-1 border rounded focus:outline focus:outline-blue-500">
+            <button type="button" onClick={toggleMaskVisibility} className="px-2 py-1 border rounded focus:outline focus:outline-blue-500">
               {maskVisible ? 'Hide Mask' : 'Show Mask'}
             </button>
             <button type="button" onClick={clearMaskAction} className="px-2 py-1 border rounded focus:outline focus:outline-blue-500">
@@ -449,7 +454,8 @@ export default function CanvasDisplay({
               style={{ 
                 display: image ? 'block' : 'none',
                 position: 'relative',
-                zIndex: 1
+                zIndex: 1,
+                borderRadius: 'calc(var(--border-radius) / 2)'
               }}
               className="border block"
             />

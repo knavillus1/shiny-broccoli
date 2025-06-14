@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { fetchEditStatus, downloadResultImage } from '../services/apiClient';
 import CanvasDisplay from '../components/CanvasDisplay';
 import ErrorBoundary from '../components/ErrorBoundary';
-import MaskToolbar from '../components/MaskToolbar';
 import useCanvas from '../hooks/useCanvas';
 
 // Define props for HomePage
@@ -16,6 +15,7 @@ interface HomePageProps {
 
 export default function HomePage({ image, prompt, onSubmitReady, onResult, onError }: HomePageProps) {
   const [requestId, setRequestId] = useState<string | null>(null);
+  const [maskVisible, setMaskVisible] = useState(true);
 
   const {
     canvasRef: maskCanvasRefForDisplay, // This is the ref object for the mask canvas
@@ -203,15 +203,129 @@ export default function HomePage({ image, prompt, onSubmitReady, onResult, onErr
 
   return (
     <ErrorBoundary fallback={<p>Something went wrong.</p>}>
+      {/* Editor Toolbar - only show when image is loaded */}
       {image && (
-        <MaskToolbar
-          brushSize={maskBrushSize}
-          setBrushSize={setMaskBrushSize}
-          tool={maskTool}
-          setTool={setMaskTool}
-        />
+        <div id="editor-toolbar-container" className={!image ? 'toolbar-disabled' : ''}>
+          <div className="editor-toolbar">
+            <div className="toolbar-row">
+              <div id="tool-size-group" className="toolbar-group">
+                <label>
+                  <input
+                    type="radio"
+                    name="brush-size"
+                    value="small"
+                    checked={maskBrushSize === 'small'}
+                    onChange={() => setMaskBrushSize('small')}
+                  />
+                  Small
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="brush-size"
+                    value="medium"
+                    checked={maskBrushSize === 'medium'}
+                    onChange={() => setMaskBrushSize('medium')}
+                  />
+                  Medium
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="brush-size"
+                    value="large"
+                    checked={maskBrushSize === 'large'}
+                    onChange={() => setMaskBrushSize('large')}
+                  />
+                  Large
+                </label>
+              </div>
+              <div className="toolbar-divider"></div>
+              <div id="tool-type-group" className="toolbar-group">
+                <label>
+                  <input
+                    type="radio"
+                    name="tool-type"
+                    value="brush"
+                    checked={maskTool === 'brush'}
+                    onChange={() => setMaskTool('brush')}
+                  />
+                  brush
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="tool-type"
+                    value="rectangle"
+                    checked={maskTool === 'rectangle'}
+                    onChange={() => setMaskTool('rectangle')}
+                  />
+                  rectangle
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="tool-type"
+                    value="circle"
+                    checked={maskTool === 'circle'}
+                    onChange={() => setMaskTool('circle')}
+                  />
+                  circle
+                </label>
+              </div>
+            </div>
+            <div className="toolbar-row">
+              <div className="toolbar-group">
+                <button 
+                  id="tool-mode-toggle" 
+                  className="toolbar-action-btn"
+                  onClick={toggleMaskMode}
+                >
+                  {maskMode === 'draw' ? 'Switch to Erase' : 'Switch to Draw'}
+                </button>
+                <button 
+                  id="mask-visibility-toggle" 
+                  className="toolbar-action-btn"
+                  onClick={() => setMaskVisible(!maskVisible)}
+                >
+                  {maskVisible ? 'Hide Mask' : 'Show Mask'}
+                </button>
+                <button 
+                  id="clear-mask-btn" 
+                  className="toolbar-action-btn"
+                  onClick={clearMaskCanvas}
+                >
+                  Clear Mask
+                </button>
+                <button 
+                  id="undo-btn" 
+                  className="toolbar-action-btn"
+                  disabled={!canUndoMask}
+                  onClick={undoMaskCanvas}
+                >
+                  Undo
+                </button>
+                <button 
+                  id="redo-btn" 
+                  className="toolbar-action-btn"
+                  disabled={!canRedoMask}
+                  onClick={redoMaskCanvas}
+                >
+                  Redo
+                </button>
+              </div>
+              <div id="status-display">
+                Mode: {maskMode === 'draw' ? 'Draw' : 'Erase'} | Tool: {maskTool.charAt(0).toUpperCase() + maskTool.slice(1)}
+              </div>
+            </div>
+          </div>
+        </div>
       )}
+      
+      {/* Canvas placeholder when no image */}
       {!image && <p id="canvas-placeholder">Upload an image to get started</p>}
+      
+      {/* Main Canvas Display */}
       <CanvasDisplay
         image={image}
         prompt={prompt}
@@ -239,6 +353,8 @@ export default function HomePage({ image, prompt, onSubmitReady, onResult, onErr
         redoMask={redoMaskCanvas}
         canUndoMask={canUndoMask}
         canRedoMask={canRedoMask}
+        maskVisible={maskVisible}
+        toggleMaskVisibility={() => setMaskVisible(!maskVisible)}
       />
     </ErrorBoundary>
   );

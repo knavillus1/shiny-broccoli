@@ -99,7 +99,7 @@ export default function FileUpload({
 
   return (
     // The form tag might be redundant if there's no explicit submit button here
-    <div className="control-group">
+    <>
       <label htmlFor={id} className="file-upload-label">Choose a file...</label>
       <input
         type="file"
@@ -112,6 +112,6 @@ export default function FileUpload({
       <p className="file-name-display">{error || message}</p> {/* Display error or current file/message */}
       {/* Progress indicator can be added here if direct upload from this component is re-enabled */}
       {/* {uploading && <ProgressIndicator message={message} />} */}
-    </div>
+    </>
   );
 }

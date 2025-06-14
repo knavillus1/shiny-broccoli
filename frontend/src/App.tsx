@@ -52,24 +52,28 @@ function App() {
           <p>AI-powered image editor</p>
         </header>
         <form id="editor-form" noValidate onSubmit={handleGenerate}>
-          {/* Render FileUpload here, passing an id and onUploaded handler */}
-          <FileUpload id="image-upload" onUploaded={handleFileSelected} />
+          <div className="control-group">
+            <label htmlFor="image-upload">1. Upload Image</label>
+            {/* Render FileUpload here, passing an id and onUploaded handler */}
+            <FileUpload id="image-upload" onUploaded={handleFileSelected} />
+          </div>
 
           <div className="control-group">
-            <label htmlFor="mask-instruction">2. Select an Area</label>
-            <p className="description">Click and drag on the image in the editor to create a mask for modification.</p>
+            <label>2. Create a Mask</label>
+            <p className="description">Use the tools in the editor to mark the area you want to change.</p>
           </div>
 
           {/* Render PromptInput here, passing an onSubmit handler */}
           <div className="control-group">
             <label htmlFor="text-prompt">3. Describe Your Change</label>
             {/* Assuming PromptInput renders a textarea with id="text-prompt" */}
-            <textarea id="text-prompt" className="text-input" rows={4} placeholder="e.g., 'make the cat wear a wizard hat'" onChange={e => setTextPrompt(e.target.value)} value={textPrompt}></textarea>
+            <textarea id="text-prompt" className="text-input" rows={4} placeholder="e.g., 'make the hedgehog wear sunglasses'" onChange={e => setTextPrompt(e.target.value)} value={textPrompt}></textarea>
           </div>
-          <button type="submit" id="submit-button" className="submit-button" disabled={!imageFile || !textPrompt || !submitHandlerRef.current}>
-            Generate
-          </button>
+          {/* NOTE: The submit button is part of the form, but outside the last control-group for layout purposes. */}
         </form>
+        <button type="submit" form="editor-form" id="submit-button" className="submit-button" disabled={!imageFile || !textPrompt || !submitHandlerRef.current}>
+          Generate
+        </button>
       </aside>
       <main className="editor-panel">
         <div className="tabs-container">
