@@ -26,7 +26,7 @@ app = FastAPI(title="Shiny Broccoli API")
 async def http_exception_handler(request: Request, exc: HTTPException) -> JSONResponse:
     """Convert HTTPException to RFC 7807 Problem Details response."""
     problem = from_http_exception(exc)
-    return JSONResponse(status_code=exc.status_code, content=problem.dict())
+    return JSONResponse(status_code=exc.status_code, content=problem.model_dump())
 
 app.add_exception_handler(HTTPException, http_exception_handler)
 
@@ -36,7 +36,7 @@ async def validation_exception_handler(
 ) -> JSONResponse:
     """Convert validation errors to RFC 7807 Problem Details."""
     problem = from_validation_error(exc)
-    return JSONResponse(status_code=422, content=problem.dict())
+    return JSONResponse(status_code=422, content=problem.model_dump())
 
 app.add_exception_handler(RequestValidationError, validation_exception_handler)
 
