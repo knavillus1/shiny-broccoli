@@ -1,11 +1,14 @@
 import Router from './router';
 import FileUpload from './components/FileUpload'; // Import FileUpload
-import { useState } from 'react'; // Import useState
+import { useState, useRef } from 'react'; // Import useState and useRef
 
 function App() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [textPrompt, setTextPrompt] = useState('');
-  const [submitHandler, setSubmitHandler] = useState<(() => Promise<void>) | null>(null);
+  const submitHandlerRef = useRef<(() => Promise<void>) | null>(null);
+  const [activeTab, setActiveTab] = useState<'editor' | 'result'>('editor');
+  const [result, setResult] = useState<File | null>(null);
+  const [error, setError] = useState('');
 
   const handleFileSelected = (file: File | null) => {
     setImageFile(file);
@@ -18,14 +21,23 @@ function App() {
   };
 
   const handleSubmitReady = (handler: () => Promise<void>) => {
-    setSubmitHandler(() => handler);
+    submitHandlerRef.current = handler;
+  };
+
+  const handleResult = (file: File) => {
+    setResult(file);
+    setActiveTab('result'); // Switch to results tab when result is available
+  };
+
+  const handleError = (errorMsg: string) => {
+    setError(errorMsg);
   };
 
   const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (submitHandler && imageFile && textPrompt) {
+    if (submitHandlerRef.current && imageFile && textPrompt) {
       try {
-        await submitHandler();
+        await submitHandlerRef.current();
       } catch (error) {
         console.error('Generation failed:', error);
       }
@@ -54,23 +66,60 @@ function App() {
             {/* Assuming PromptInput renders a textarea with id="text-prompt" */}
             <textarea id="text-prompt" className="text-input" rows={4} placeholder="e.g., 'make the cat wear a wizard hat'" onChange={e => setTextPrompt(e.target.value)} value={textPrompt}></textarea>
           </div>
-          <button type="submit" id="submit-button" className="submit-button" disabled={!imageFile || !textPrompt || !submitHandler}>
+          <button type="submit" id="submit-button" className="submit-button" disabled={!imageFile || !textPrompt || !submitHandlerRef.current}>
             Generate
           </button>
         </form>
       </aside>
       <main className="editor-panel">
         <div className="tabs-container">
-          <button id="tab-editor" className="tab-button active">Editor</button>
-          <button id="tab-result" className="tab-button">Result</button>
+          <button 
+            id="tab-editor" 
+            className={`tab-button ${activeTab === 'editor' ? 'active' : ''}`}
+            onClick={() => setActiveTab('editor')}
+          >
+            Editor
+          </button>
+          <button 
+            id="tab-result" 
+            className={`tab-button ${activeTab === 'result' ? 'active' : ''}`}
+            onClick={() => setActiveTab('result')}
+          >
+            Result
+          </button>
         </div>
         <div className="content-container">
-          <div id="editor-content" className="tab-content active">
+          <div id="editor-content" className={`tab-content ${activeTab === 'editor' ? 'active' : ''}`}>
             {/* Router renders HomePage. HomePage needs to receive imageFile and textPrompt as props, or access them via context */}
-            <Router image={imageFile} prompt={textPrompt} onSubmitReady={handleSubmitReady} />
+            <Router image={imageFile} prompt={textPrompt} onSubmitReady={handleSubmitReady} onResult={handleResult} onError={handleError} />
           </div>
-          <div id="result-content" className="tab-content">
-            {/* The result image will be dynamically inserted here by component logic */}
+          <div id="result-content" className={`tab-content ${activeTab === 'result' ? 'active' : ''}`}>
+            {/* The result image will be displayed here */}
+            {result ? (
+              <div className="result-only-display">
+                <div className="mb-4">
+                  <h3 className="text-lg font-semibold mb-2">Generated Result</h3>
+                  <a
+                    href={URL.createObjectURL(result)}
+                    download="result.png"
+                    className="inline-block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline focus:outline-blue-500"
+                  >
+                    Download Result
+                  </a>
+                </div>
+                <div className="flex justify-center">
+                  <img 
+                    src={URL.createObjectURL(result)} 
+                    alt="Generated result" 
+                    className="max-w-full max-h-[70vh] object-contain border rounded shadow-lg" 
+                    loading="lazy" 
+                  />
+                </div>
+              </div>
+            ) : (
+              <p>No results yet. Generate an image in the Editor tab to see results here.</p>
+            )}
+            {error && <div className="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">{error}</div>}
           </div>
           <div id="loader-overlay" className="loader-overlay">
             <div className="spinner"></div>

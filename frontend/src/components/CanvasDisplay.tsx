@@ -57,6 +57,7 @@ export default function CanvasDisplay({
   canRedoMask: canRedoMaskFlag,
 }: Props) {
   const baseRef = useRef<HTMLCanvasElement>(null);
+  const submitHandlerRef = useRef<(() => Promise<void>) | null>(null);
   const [maskVisible, setMaskVisible] = useState(true);
   const [submitMsg, setSubmitMsg] = useState('');
   const [submitError, setSubmitError] = useState('');
@@ -130,7 +131,7 @@ export default function CanvasDisplay({
     };
   }, [image, maskCanvasRef, onMaskCanvasReady, isMaskCanvasInitialized, onError]); // Added onError to dependencies
 
-  const getCanvasCoordinates = (event: React.MouseEvent<HTMLDivElement>): { x: number, y: number } | null => {
+  const getCanvasCoordinates = useCallback((event: React.MouseEvent<HTMLDivElement>): { x: number, y: number } | null => {
     // Use baseRef for coordinate calculations relative to the image canvas
     if (!baseRef.current) return null;
     const rect = baseRef.current.getBoundingClientRect();
@@ -140,9 +141,9 @@ export default function CanvasDisplay({
     };
     console.log(`Coords: click(${event.clientX},${event.clientY}) -> canvas(${coords.x},${coords.y})`);
     return coords;
-  };
+  }, []);
 
-  const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseDown = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
     if (!isMaskCanvasInitialized || event.button !== 0) return; 
     const coords = getCanvasCoordinates(event);
     if (!coords) return;
@@ -153,9 +154,9 @@ export default function CanvasDisplay({
     } else if (maskTool === 'rectangle' || maskTool === 'circle') {
       setMaskStartPosition(coords);
     }
-  };
+  }, [isMaskCanvasInitialized, maskTool, drawBrushStroke, setMaskStartPosition, getCanvasCoordinates]);
 
-  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseMove = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
     if (!isDrawing || !isMaskCanvasInitialized) return;
     const coords = getCanvasCoordinates(event);
     if (!coords) return;
@@ -164,9 +165,9 @@ export default function CanvasDisplay({
       drawBrushStroke(coords.x, coords.y, false); // false for continuing path
     }
     // Note: For rectangle/circle tools, we draw the final shape on mouseUp for simplicity
-  };
+  }, [isDrawing, isMaskCanvasInitialized, maskTool, drawBrushStroke, getCanvasCoordinates]);
 
-  const handleMouseUp = (event: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseUp = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
     if (!isDrawing || !isMaskCanvasInitialized || event.button !== 0) return;
     setIsDrawing(false);
     const coords = getCanvasCoordinates(event);
@@ -181,13 +182,13 @@ export default function CanvasDisplay({
     }
     saveMaskState();
     setMaskStartPosition(null);
-  };
+  }, [isDrawing, isMaskCanvasInitialized, maskTool, getMaskStartPosition, drawShape, saveMaskState, setMaskStartPosition, getCanvasCoordinates]);
   
-  const handleMouseLeave = (event: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseLeave = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
     if (isDrawing) {
         handleMouseUp(event); 
     }
-  };
+  }, [isDrawing, handleMouseUp]);
 
   // Helper function to debug mask data
   const debugMask = useCallback(async (maskBlob: Blob) => {
@@ -337,12 +338,23 @@ export default function CanvasDisplay({
     }
   }, [image, maskCanvasRef, baseRef, isMaskCanvasInitialized, prompt, onRequestId, onError, convertMaskToRGBA, debugMask]);
 
+  // Update the ref whenever handleSubmit changes
+  useEffect(() => {
+    submitHandlerRef.current = handleSubmit;
+  }, [handleSubmit]);
+
   // Expose the submit handler to parent component
   useEffect(() => {
     if (onSubmitReady) {
-      onSubmitReady(handleSubmit);
+      const stableSubmitHandler = () => {
+        if (submitHandlerRef.current) {
+          return submitHandlerRef.current();
+        }
+        return Promise.resolve();
+      };
+      onSubmitReady(stableSubmitHandler);
     }
-  }, [onSubmitReady, handleSubmit]);
+  }, [onSubmitReady]); // Remove handleSubmit from dependencies
 
   return (
     <div className="border rounded p-4 mt-4">

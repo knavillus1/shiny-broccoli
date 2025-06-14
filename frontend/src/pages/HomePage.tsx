@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { fetchEditStatus, downloadResultImage } from '../services/apiClient';
 import CanvasDisplay from '../components/CanvasDisplay';
-import ResultsDisplay from '../components/ResultsDisplay';
 import ErrorBoundary from '../components/ErrorBoundary';
 import MaskToolbar from '../components/MaskToolbar';
 import useCanvas from '../hooks/useCanvas';
@@ -11,11 +10,11 @@ interface HomePageProps {
   image: File | null;
   prompt: string;
   onSubmitReady?: (submitHandler: () => Promise<void>) => void;
+  onResult?: (file: File) => void;
+  onError?: (errorMsg: string) => void;
 }
 
-export default function HomePage({ image, prompt, onSubmitReady }: HomePageProps) {
-  const [result, setResult] = useState<File | null>(null);
-  const [error, setError] = useState('');
+export default function HomePage({ image, prompt, onSubmitReady, onResult, onError }: HomePageProps) {
   const [requestId, setRequestId] = useState<string | null>(null);
 
   const {
@@ -50,11 +49,13 @@ export default function HomePage({ image, prompt, onSubmitReady }: HomePageProps
     void file; // preview ignored until processing completes
   };
 
+  const handleRequestId = useCallback((id: string) => {
+    setRequestId(id);
+  }, []);
+
   // Clear any stale request ID on component mount
   useEffect(() => {
     setRequestId(null);
-    setResult(null);
-    setError('');
   }, []);
 
   useEffect(() => {
@@ -67,7 +68,7 @@ export default function HomePage({ image, prompt, onSubmitReady }: HomePageProps
       if (pollCount >= maxPolls) {
         console.log('Polling timeout reached');
         if (!cancelled) {
-          setError('Request timed out after 3 minutes');
+          onError?.('Request timed out after 3 minutes');
           setRequestId(null);
         }
         return;
@@ -92,8 +93,7 @@ export default function HomePage({ image, prompt, onSubmitReady }: HomePageProps
               
               const file = new File([blob], 'result.png', { type: 'image/png' });
               if (!cancelled) {
-                setResult(file);
-                setError('');
+                onResult?.(file);
                 setRequestId(null); // Clear request ID after successful completion
               }
             } catch (downloadError) {
@@ -119,8 +119,7 @@ export default function HomePage({ image, prompt, onSubmitReady }: HomePageProps
                 
                 const file = new File([blob], 'result.png', { type: 'image/png' });
                 if (!cancelled) {
-                  setResult(file);
-                  setError('');
+                  onResult?.(file);
                   setRequestId(null);
                 }
               } catch (fetchError) {
@@ -131,7 +130,7 @@ export default function HomePage({ image, prompt, onSubmitReady }: HomePageProps
                   url: resultData.url
                 });
                 if (!cancelled) {
-                  setError(`Failed to download the generated image: ${fetchError.message}`);
+                  onError?.(`Failed to download the generated image: ${fetchError.message}`);
                   setRequestId(null);
                 }
               }
@@ -147,28 +146,27 @@ export default function HomePage({ image, prompt, onSubmitReady }: HomePageProps
               const blob = new Blob([bytes], { type: 'image/png' });
               const file = new File([blob], 'result.png', { type: 'image/png' });
               if (!cancelled) {
-                setResult(file);
-                setError('');
+                onResult?.(file);
                 setRequestId(null);
               }
             } catch (b64Error) {
               console.error('Failed to process base64 image:', b64Error);
               if (!cancelled) {
-                setError('Failed to process the generated image data');
+                onError?.('Failed to process the generated image data');
                 setRequestId(null);
               }
             }
           } else {
             console.error('Completed but no URL or base64 data found in result:', status.result);
             if (!cancelled) {
-              setError('Image processing completed but no result data found');
+              onError?.('Image processing completed but no result data found');
               setRequestId(null);
             }
           }
         } else if (status.status === 'error') {
           console.log('Status is error:', status.error);
           if (!cancelled) {
-            setError(status.error || 'Processing failed');
+            onError?.(status.error || 'Processing failed');
             setRequestId(null); // Clear request ID after error
           }
         } else {
@@ -181,9 +179,8 @@ export default function HomePage({ image, prompt, onSubmitReady }: HomePageProps
           if (errorMessage.includes('404') || errorMessage.includes('Not Found')) {
             console.log('Request ID not found, clearing polling');
             setRequestId(null);
-            setError('');
           } else {
-            setError(errorMessage);
+            onError?.(errorMessage);
           }
         }
       }
@@ -201,8 +198,6 @@ export default function HomePage({ image, prompt, onSubmitReady }: HomePageProps
       console.log("HomePage received image and prompt, ready to generate if requested.");
       // Clear any previous request ID when new image/prompt is provided
       setRequestId(null);
-      setResult(null);
-      setError('');
     }
   }, [image, prompt]);
 
@@ -221,8 +216,8 @@ export default function HomePage({ image, prompt, onSubmitReady }: HomePageProps
         image={image}
         prompt={prompt}
         onResult={handleCanvasResult}
-        onError={setError}
-        onRequestId={setRequestId}
+        onError={onError}
+        onRequestId={handleRequestId}
         onSubmitReady={onSubmitReady}
         
         // Pass the ref object itself, not its .current property
@@ -245,14 +240,6 @@ export default function HomePage({ image, prompt, onSubmitReady }: HomePageProps
         canUndoMask={canUndoMask}
         canRedoMask={canRedoMask}
       />
-      {image && result && (
-        <ResultsDisplay
-          original={image}
-          result={result}
-          error={error || undefined}
-        />
-      )}
-      {error && <p className="error-message">{error}</p>}
     </ErrorBoundary>
   );
 }
