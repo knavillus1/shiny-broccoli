@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Shiny Broccoli - Prototype</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Prototype for an AI-powered image modification tool, styled to match the target application's structure.">
+    <style>
+        /* ==== FONT SETUP ==== */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+        
+        /* ==== CSS RESET (MODERN) ==== */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* ==== COLOR PALETTE & VARIABLES ==== */
+        :root {
+            /* BRAND PALETTE - EDIT HERE */
+            --c-brand-dark-blue: #00215E;
+            --c-brand-medium-blue: #2C4E80;
+            --c-brand-orange: #FC4100;
+            --c-brand-yellow: #FFC55A;
+
+            /* SEMANTIC PALETTE */
+            --c-surface: #FFFFFF;
+            --c-surface-glass: rgba(255, 255, 255, 0.9); 
+            --c-text-primary: var(--c-brand-dark-blue);
+            --c-text-secondary: var(--c-brand-medium-blue);
+            --c-primary-action: var(--c-brand-orange);
+            --c-primary-action-hover: #E03A00;
+            --c-accent: var(--c-brand-yellow);
+            --c-border: #DDE4ED;
+            --c-mask-color: rgba(252, 65, 0, 0.5);
+
+            /* TYPOGRAPHY & SPACING */
+            --font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --font-weight-regular: 400;
+            --font-weight-medium: 500;
+            --font-weight-bold: 700;
+            --border-radius: 12px;
+            --shadow: 0 8px 32px 0 rgba(0, 33, 94, 0.2);
+            --transition-speed: 0.2s ease-in-out;
+        }
+
+        /* ==== BASE STYLES ==== */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-family-base);
+            background: linear-gradient(135deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #ee82ee);
+            background-size: 600% 600%;
+            animation: gradientFade 15s ease infinite;
+            color: var(--c-text-secondary);
+            line-height: 1.6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        @keyframes gradientFade {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* ==== LAYOUT: APP WRAPPER ==== */
+        .app-wrapper {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0;
+            width: 100%;
+            max-width: 1200px;
+            background-color: transparent;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        @media (min-width: 992px) {
+            .app-wrapper {
+                grid-template-columns: 350px 1fr;
+                min-height: 80vh;
+                max-height: 90vh;
+            }
+        }
+        
+        /* ==== CONTROLS PANEL (LEFT) ==== */
+        .controls-panel {
+            padding: 2rem;
+            background-color: var(--c-surface-glass);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 992px) {
+            .controls-panel {
+                background-color: var(--c-surface);
+                backdrop-filter: none;
+                border-right: 1px solid var(--c-border);
+            }
+        }
+
+        .controls-panel h1 { color: var(--c-text-primary); font-weight: var(--font-weight-bold); font-size: 1.75rem; line-height: 1.2; }
+        .controls-panel h1 span { color: var(--c-primary-action); }
+        .control-group { display: flex; flex-direction: column; gap: 0.5rem; }
+        .control-group label { font-weight: var(--font-weight-medium); color: var(--c-text-primary); }
+        .control-group p.description { font-size: 0.875rem; color: var(--c-text-secondary); margin-top: -0.25rem; }
+        input[type="file"] { display: none; }
+        .file-upload-label { display: inline-block; padding: 0.75rem 1.25rem; background-color: var(--c-text-secondary); color: var(--c-surface); border-radius: var(--border-radius); cursor: pointer; text-align: center; font-weight: var(--font-weight-medium); transition: background-color var(--transition-speed); }
+        .file-upload-label:hover { background-color: var(--c-text-primary); }
+        .file-name-display { font-size: 0.875rem; color: var(--c-text-secondary); margin-top: 0.5rem; word-break: break-all; }
+        .text-input { width: 100%; padding: 0.75rem; border: 1px solid var(--c-border); border-radius: var(--border-radius); font-family: inherit; font-size: 1rem; color: var(--c-text-primary); transition: border-color var(--transition-speed), box-shadow var(--transition-speed); background-color: rgba(255, 255, 255, 0.9); }
+        .text-input:focus { outline: none; border-color: var(--c-primary-action); box-shadow: 0 0 0 2px rgba(252, 65, 0, 0.2); background-color: #fff; }
+        .submit-button { width: 100%; padding: 1rem; background-color: var(--c-primary-action); color: white; border: none; border-radius: var(--border-radius); font-size: 1.125rem; font-weight: var(--font-weight-bold); cursor: pointer; transition: background-color var(--transition-speed); margin-top: auto; }
+        .submit-button:hover:not(:disabled) { background-color: var(--c-primary-action-hover); }
+        .submit-button:disabled { background-color: #ccc; cursor: not-allowed; }
+
+        /* ==== EDITOR PANEL (RIGHT) ==== */
+        .editor-panel { padding: 2rem; display: flex; flex-direction: column; gap: 1rem; position: relative; background-color: var(--c-surface-glass); backdrop-filter: blur(10px); min-height: 400px; }
+        @media (min-width: 992px) { .editor-panel { padding: 2rem 2.5rem; height: 100%; } }
+        .tabs-container { display: flex; gap: 0.5rem; border-bottom: 1px solid var(--c-border); }
+        .tab-button { padding: 0.75rem 1.5rem; background-color: transparent; border: none; border-bottom: 3px solid transparent; cursor: pointer; font-size: 1rem; font-weight: var(--font-weight-medium); color: var(--c-text-secondary); margin-bottom: -1px; transition: color var(--transition-speed), border-color var(--transition-speed); }
+        .tab-button:hover { color: var(--c-text-primary); }
+        .tab-button.active { color: var(--c-primary-action); border-bottom-color: var(--c-primary-action); }
+        
+        /* ==== EDITOR TOOLBAR ==== */
+        .editor-toolbar { padding: 0.5rem 0.75rem; border: 1px solid var(--c-border); border-radius: var(--border-radius); background: #fff; display: flex; flex-direction: column; gap: 0.5rem; transition: opacity 0.3s ease; }
+        .toolbar-disabled { opacity: 0.5; pointer-events: none; user-select: none; }
+        .toolbar-row { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+        .toolbar-group { display: flex; align-items: center; gap: 0.75rem; font-size: 0.9rem; }
+        .toolbar-group label { display: flex; align-items: center; gap: 0.25rem; cursor: pointer; }
+        .toolbar-group input[type="radio"] { -webkit-appearance: none; appearance: none; background-color: #fff; margin: 0; font: inherit; color: currentColor; width: 1em; height: 1em; border: 0.1em solid var(--c-text-secondary); border-radius: 50%; transform: translateY(-0.075em); display: grid; place-content: center; }
+        .toolbar-group input[type="radio"]::before { content: ""; width: 0.5em; height: 0.5em; border-radius: 50%; transform: scale(0); transition: 120ms transform ease-in-out; box-shadow: inset 1em 1em var(--c-primary-action); }
+        .toolbar-group input[type="radio"]:checked::before { transform: scale(1); }
+        .toolbar-group input[type="radio"]:checked { border-color: var(--c-primary-action); }
+        .toolbar-divider { width: 1px; height: 1.25rem; background-color: var(--c-border); }
+        .toolbar-action-btn { background: none; border: none; color: var(--c-primary-action); cursor: pointer; font-size: 0.9rem; font-family: inherit; padding: 0; }
+        .toolbar-action-btn:hover { text-decoration: underline; }
+        .toolbar-action-btn:disabled { color: #aaa; cursor: not-allowed; text-decoration: none; }
+        #status-display { font-size: 0.8rem; color: var(--c-text-secondary); margin-left: auto; }
+
+        /* ==== CONTENT AREA ==== */
+        .content-container { flex-grow: 1; position: relative; display: flex; justify-content: center; align-items: center; background-color: var(--c-surface); border: 1px dashed var(--c-border); border-radius: var(--border-radius); overflow: hidden; }
+        .tab-content { width: 100%; height: 100%; display: none; }
+        .tab-content.active { display: flex; justify-content: center; align-items: center; }
+        #editor-content { flex-direction: column; gap: 0.5rem; text-align: center; color: var(--c-text-secondary); }
+        #image-canvas { max-width: 100%; max-height: 100%; object-fit: contain; cursor: crosshair; display: none; border-radius: calc(var(--border-radius) / 2); }
+        #result-content img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: calc(var(--border-radius) / 2); }
+        .loader-overlay { position: absolute; inset: 0; background-color: rgba(255, 255, 255, 0.8); backdrop-filter: blur(2px); display: none; justify-content: center; align-items: center; z-index: 10; }
+        .loader-overlay.active { display: flex; }
+        .spinner { width: 50px; height: 50px; border: 5px solid var(--c-border); border-top: 5px solid var(--c-primary-action); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<div id="root">
+    <div class="app-wrapper">
+        <aside class="controls-panel">
+            <header>
+                <h1>Image<span>Mod</span></h1>
+                <p>AI-powered image editor</p>
+            </header>
+            <form id="editor-form" novalidate="">
+                <div class="control-group">
+                    <label for="image-upload">1. Upload Image</label>
+                    <label for="image-upload" class="file-upload-label">Choose a file...</label>
+                    <input type="file" id="image-upload" accept="image/jpeg,image/png,image/gif,image/webp">
+                    <p class="file-name-display">No file selected.</p>
+                </div>
+                <div class="control-group">
+                    <label>2. Create a Mask</label>
+                    <p class="description">Use the tools in the editor to mark the area you want to change.</p>
+                </div>
+                <div class="control-group">
+                    <label for="text-prompt">3. Describe Your Change</label>
+                    <textarea id="text-prompt" class="text-input" rows="4" placeholder="e.g., 'make the hedgehog wear sunglasses'"></textarea>
+                </div>
+                <!-- NOTE: The submit button is part of the form, but outside the last control-group for layout purposes. -->
+            </form>
+            <button type="submit" form="editor-form" id="submit-button" class="submit-button" disabled="">Generate</button>
+        </aside>
+        
+        <main class="editor-panel">
+            <div class="tabs-container">
+                <button id="tab-editor" class="tab-button active">Editor</button>
+                <button id="tab-result" class="tab-button">Result</button>
+            </div>
+            
+            <div id="editor-toolbar-container" class="toolbar-disabled" style="display: block;">
+                <div class="editor-toolbar">
+                    <div class="toolbar-row">
+                        <div id="tool-size-group" class="toolbar-group">
+                            <label><input type="radio" name="brush-size" value="10"> Small</label>
+                            <label><input type="radio" name="brush-size" value="25" checked> Medium</label>
+                            <label><input type="radio" name="brush-size" value="50"> Large</label>
+                        </div>
+                        <div class="toolbar-divider"></div>
+                        <div id="tool-type-group" class="toolbar-group">
+                            <label><input type="radio" name="tool-type" value="brush"> brush</label>
+                            <label><input type="radio" name="tool-type" value="rectangle"> rectangle</label>
+                            <label><input type="radio" name="tool-type" value="circle" checked> circle</label>
+                        </div>
+                    </div>
+                    <div class="toolbar-row">
+                        <div class="toolbar-group">
+                            <button id="tool-mode-toggle" class="toolbar-action-btn">Switch to Erase</button>
+                            <button id="mask-visibility-toggle" class="toolbar-action-btn">Hide Mask</button>
+                            <button id="clear-mask-btn" class="toolbar-action-btn">Clear Mask</button>
+                            <button id="undo-btn" class="toolbar-action-btn" disabled>Undo</button>
+                            <button id="redo-btn" class="toolbar-action-btn" disabled>Redo</button>
+                        </div>
+                        <div id="status-display">Mode: Draw | Tool: Circle</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-container">
+                <div id="editor-content" class="tab-content active">
+                    <p id="canvas-placeholder">Upload an image to get started</p>
+                    <!-- NOTE: Replaced the empty div from your code with the canvas element -->
+                    <canvas id="image-canvas"></canvas>
+                </div>
+                <div id="result-content" class="tab-content">
+                    <p>No results yet. Generate an image in the Editor tab to see results here.</p>
+                </div>
+                <div id="loader-overlay" class="loader-overlay">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+    /**
+     * @file A single-file prototype for an AI image modification web app.
+     * JS adapted to match the provided HTML structure.
+     */
+
+    class CanvasManager {
+        constructor(canvasElement, onStateUpdate) {
+            this.canvas = canvasElement;
+            this.ctx = this.canvas.getContext('2d');
+            this.onStateUpdate = onStateUpdate;
+            this.image = null;
+            this.isDrawing = false;
+            this.startPoint = { x: 0, y: 0 };
+            this.maskCanvas = document.createElement('canvas');
+            this.maskCtx = this.maskCanvas.getContext('2d');
+            this.tool = { type: 'circle', size: 25, isErasing: false };
+            this.isMaskVisible = true;
+            this.history = [];
+            this.historyIndex = -1;
+
+            this.canvas.addEventListener('mousedown', this.handleMouseDown.bind(this));
+            this.canvas.addEventListener('mousemove', this.handleMouseMove.bind(this));
+            this.canvas.addEventListener('mouseup', this.handleMouseUp.bind(this));
+            this.canvas.addEventListener('mouseleave', this.handleMouseLeave.bind(this));
+        }
+
+        loadImage(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    this.image = new Image();
+                    this.image.onload = () => {
+                        this.fitImageToCanvas();
+                        this.maskCanvas.width = this.canvas.width;
+                        this.maskCanvas.height = this.canvas.height;
+                        this.clearMask(false);
+                        this.saveState();
+                        this.draw();
+                        resolve();
+                    };
+                    this.image.onerror = reject;
+                    this.image.src = event.target.result;
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+        
+        setTool(config) {
+            this.tool = { ...this.tool, ...config };
+            this.updateCursor();
+            this.onStateUpdate(this.getState());
+        }
+
+        clearMask(save = true) {
+            this.maskCtx.clearRect(0, 0, this.maskCanvas.width, this.maskCanvas.height);
+            if (save) this.saveState();
+            this.draw();
+            this.onStateUpdate(this.getState());
+        }
+
+        toggleMaskVisibility() {
+            this.isMaskVisible = !this.isMaskVisible;
+            this.draw();
+            this.onStateUpdate(this.getState());
+        }
+
+        undo() { if (this.historyIndex > 0) { this.historyIndex--; this.restoreState(); } }
+        redo() { if (this.historyIndex < this.history.length - 1) { this.historyIndex++; this.restoreState(); } }
+
+        getMaskDataUrl() {
+            const buffer = this.maskCanvas.getContext('2d').getImageData(0, 0, this.maskCanvas.width, this.maskCanvas.height).data;
+            for(let i = 3; i < buffer.length; i += 4) { if (buffer[i] > 0) return this.maskCanvas.toDataURL('image/png'); }
+            return null;
+        }
+
+        getState() { return { tool: this.tool, isMaskVisible: this.isMaskVisible, canUndo: this.historyIndex > 0, canRedo: this.historyIndex < this.history.length - 1 }; }
+        
+        fitImageToCanvas() {
+            const container = this.canvas.parentElement;
+            const imgAspectRatio = this.image.width / this.image.height;
+            let newWidth = container.clientWidth;
+            let newHeight = newWidth / imgAspectRatio;
+            if (newHeight > container.clientHeight) { newHeight = container.clientHeight; newWidth = newHeight * imgAspectRatio; }
+            this.canvas.width = newWidth;
+            this.canvas.height = newHeight;
+        }
+
+        draw() {
+            if (!this.image) return;
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            this.ctx.drawImage(this.image, 0, 0, this.canvas.width, this.canvas.height);
+            if (this.isMaskVisible) { this.ctx.drawImage(this.maskCanvas, 0, 0); }
+        }
+
+        getMousePos(event) { const rect = this.canvas.getBoundingClientRect(); return { x: event.clientX - rect.left, y: event.clientY - rect.top }; }
+        updateCursor() { this.canvas.style.cursor = this.image ? 'crosshair' : 'default'; }
+        
+        handleMouseDown(event) {
+            if (!this.image) return;
+            this.isDrawing = true;
+            this.startPoint = this.getMousePos(event);
+            Object.assign(this.maskCtx, {
+                lineCap: 'round', lineJoin: 'round', lineWidth: this.tool.size,
+                fillStyle: 'var(--c-mask-color)', strokeStyle: 'var(--c-mask-color)',
+                globalCompositeOperation: this.tool.isErasing ? 'destination-out' : 'source-over'
+            });
+            if (this.tool.type === 'brush') { this.maskCtx.beginPath(); this.maskCtx.moveTo(this.startPoint.x, this.startPoint.y); }
+        }
+
+        handleMouseMove(event) {
+            if (!this.isDrawing || !this.image) return;
+            const currentPoint = this.getMousePos(event);
+            if (this.tool.type !== 'brush') this.maskCtx.putImageData(this.history[this.historyIndex], 0, 0);
+            this.maskCtx.beginPath();
+            switch (this.tool.type) {
+                case 'brush': this.maskCtx.lineTo(currentPoint.x, currentPoint.y); this.maskCtx.stroke(); break;
+                case 'rectangle': this.maskCtx.rect(this.startPoint.x, this.startPoint.y, currentPoint.x - this.startPoint.x, currentPoint.y - this.startPoint.y); this.maskCtx.fill(); break;
+                case 'circle': const r = Math.hypot(currentPoint.x - this.startPoint.x, currentPoint.y - this.startPoint.y); this.maskCtx.arc(this.startPoint.x, this.startPoint.y, r, 0, 2 * Math.PI); this.maskCtx.fill(); break;
+            }
+            this.draw();
+        }
+
+        handleMouseUp() { if (this.isDrawing) { this.isDrawing = false; this.saveState(); } }
+        handleMouseLeave() { if (this.isDrawing) this.handleMouseUp(); }
+        
+        saveState() {
+            if (this.historyIndex < this.history.length - 1) this.history.splice(this.historyIndex + 1);
+            this.history.push(this.maskCtx.getImageData(0, 0, this.maskCanvas.width, this.maskCanvas.height));
+            this.historyIndex++;
+            this.onStateUpdate(this.getState());
+        }
+
+        restoreState() {
+            this.maskCtx.putImageData(this.history[this.historyIndex], 0, 0);
+            this.draw();
+            this.onStateUpdate(this.getState());
+        }
+    }
+
+    class UIController {
+        constructor() {
+            this.elements = {
+                form: document.getElementById('editor-form'), imageUpload: document.getElementById('image-upload'),
+                fileNameDisplay: document.querySelector('.file-name-display'), // Using querySelector for class
+                textPrompt: document.getElementById('text-prompt'), submitButton: document.getElementById('submit-button'),
+                tabEditor: document.getElementById('tab-editor'), tabResult: document.getElementById('tab-result'),
+                editorContent: document.getElementById('editor-content'), resultContent: document.getElementById('result-content'),
+                canvas: document.getElementById('image-canvas'), canvasPlaceholder: document.getElementById('canvas-placeholder'),
+                loaderOverlay: document.getElementById('loader-overlay'), toolbarContainer: document.getElementById('editor-toolbar-container'),
+                toolModeToggle: document.getElementById('tool-mode-toggle'), maskVisibilityToggle: document.getElementById('mask-visibility-toggle'),
+                undoBtn: document.getElementById('undo-btn'), redoBtn: document.getElementById('redo-btn'),
+                statusDisplay: document.getElementById('status-display'),
+            };
+            this.imageLoaded = false;
+        }
+        
+        setToolbarEnabled(enabled) { this.elements.toolbarContainer.classList.toggle('toolbar-disabled', !enabled); }
+
+        updateOnStateChange(state) {
+            this.elements.undoBtn.disabled = !state.canUndo;
+            this.elements.redoBtn.disabled = !state.canRedo;
+            this.elements.toolModeToggle.textContent = state.tool.isErasing ? 'Switch to Draw' : 'Switch to Erase';
+            this.elements.maskVisibilityToggle.textContent = state.isMaskVisible ? 'Hide Mask' : 'Show Mask';
+            const modeText = state.tool.isErasing ? 'Erase' : 'Draw';
+            const toolText = state.tool.type.charAt(0).toUpperCase() + state.tool.type.slice(1);
+            this.elements.statusDisplay.textContent = `Mode: ${modeText} | Tool: ${toolText}`;
+            this.updateSubmitButtonState();
+        }
+
+        updateSubmitButtonState(maskExists = false) {
+            const isTextEntered = this.elements.textPrompt.value.trim() !== '';
+            this.elements.submitButton.disabled = !(this.imageLoaded && maskExists && isTextEntered);
+        }
+        
+        setFileName(name) { this.elements.fileNameDisplay.textContent = name; this.imageLoaded = true; this.updateSubmitButtonState(); }
+        showCanvas(show) { this.elements.canvas.style.display = show ? 'block' : 'none'; this.elements.canvasPlaceholder.style.display = show ? 'none' : 'flex'; }
+        showLoader(show) { this.elements.loaderOverlay.classList.toggle('active', show); }
+
+        switchToTab(tabName) {
+            const isEditor = tabName === 'editor';
+            this.elements.tabEditor.classList.toggle('active', isEditor);
+            this.elements.tabResult.classList.toggle('active', !isEditor);
+            this.elements.editorContent.classList.toggle('active', isEditor);
+            this.elements.resultContent.classList.toggle('active', !isEditor);
+            if (this.elements.toolbarContainer) this.elements.toolbarContainer.style.display = isEditor ? 'block' : 'none';
+        }
+
+        displayResultImage(src) {
+            this.elements.resultContent.innerHTML = ''; const img = document.createElement('img');
+            img.src = src; img.alt = 'The modified image result'; this.elements.resultContent.appendChild(img);
+        }
+    }
+
+    class ImageEditorApp {
+        constructor() {
+            this.ui = new UIController();
+            this.canvasManager = new CanvasManager(this.ui.elements.canvas, (state) => {
+                this.ui.updateOnStateChange(state);
+                this.ui.updateSubmitButtonState(!!this.canvasManager.getMaskDataUrl());
+            });
+        }
+
+        init() {
+            this.addEventListeners();
+            this.ui.updateSubmitButtonState();
+            this.ui.setToolbarEnabled(false);
+        }
+
+        addEventListeners() {
+            this.ui.elements.imageUpload.addEventListener('change', this.handleImageUpload.bind(this));
+            this.ui.elements.form.addEventListener('submit', this.handleSubmit.bind(this));
+            this.ui.elements.textPrompt.addEventListener('input', () => this.ui.updateSubmitButtonState(!!this.canvasManager.getMaskDataUrl()));
+            this.ui.elements.tabEditor.addEventListener('click', () => this.ui.switchToTab('editor'));
+            this.ui.elements.tabResult.addEventListener('click', () => this.ui.switchToTab('result'));
+            document.getElementById('tool-size-group').addEventListener('change', (e) => this.canvasManager.setTool({ size: parseInt(e.target.value, 10) }));
+            document.getElementById('tool-type-group').addEventListener('change', (e) => this.canvasManager.setTool({ type: e.target.value }));
+            document.getElementById('tool-mode-toggle').addEventListener('click', () => this.canvasManager.setTool({ isErasing: !this.canvasManager.tool.isErasing }));
+            document.getElementById('mask-visibility-toggle').addEventListener('click', () => this.canvasManager.toggleMaskVisibility());
+            document.getElementById('clear-mask-btn').addEventListener('click', () => this.canvasManager.clearMask());
+            document.getElementById('undo-btn').addEventListener('click', () => this.canvasManager.undo());
+            document.getElementById('redo-btn').addEventListener('click', () => this.canvasManager.redo());
+            window.addEventListener('resize', this.handleResize.bind(this));
+        }
+
+        handleResize() {
+            if (this.canvasManager.image) {
+                alert("Resizing the window after loading an image is not fully supported and may clear the mask. Please re-upload your image.");
+                this.ui.setToolbarEnabled(false);
+            }
+        }
+
+        async handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            this.ui.setFileName(file.name);
+            this.ui.showLoader(true);
+            this.ui.setToolbarEnabled(false);
+            try {
+                await this.canvasManager.loadImage(file);
+                this.ui.showCanvas(true);
+                this.ui.setToolbarEnabled(true);
+                this.ui.updateOnStateChange(this.canvasManager.getState());
+            } catch (error) { console.error("Error loading image:", error); alert("Failed to load image."); this.ui.setFileName("Failed to load image.");
+            } finally { this.ui.showLoader(false); }
+        }
+
+        handleSubmit(event) {
+            event.preventDefault();
+            const maskDataUrl = this.canvasManager.getMaskDataUrl();
+            this.ui.updateSubmitButtonState(!!maskDataUrl);
+            if (this.ui.elements.submitButton.disabled) { alert("Please ensure you've uploaded an image, created a mask, and described your change."); return; }
+            console.log("--- Submitting to Backend (Simulated) ---");
+            this.ui.showLoader(true);
+            setTimeout(() => {
+                this.ui.showLoader(false);
+                const placeholderUrl = `https://placehold.co/600x400/222/fff?text=${encodeURIComponent('Result for: ' + this.ui.elements.textPrompt.value)}`;
+                this.ui.displayResultImage(placeholderUrl);
+                this.ui.switchToTab('result');
+            }, 2000);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => { new ImageEditorApp().init(); });
+</script>
+
+</body>
+</html>

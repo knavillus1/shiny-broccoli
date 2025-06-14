@@ -1,11 +1,21 @@
 .DS_Store
-venv/
+# Python
 __pycache__/
+*.py[cod]
+venv/
+backend/.venv/
+
+# Node
 frontend/node_modules/
 frontend/dist/
-backend/data/
-*.pyc
-npm-debug.log*
-.env
 
+# Logs and debugging
+npm-debug.log*
+
+# Environment files
+.env
+*.env
+
+# Misc
+backend/data/
 backend/uploads/

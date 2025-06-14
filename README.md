@@ -96,3 +96,48 @@ Starting with any description of a feature, this project supplies tooling to aut
 ## Codex Environment Setup
 Go to https://chatgpt.com/codex/settings/environments, select or create your github-connected environment then Edit -> Advanced and copy-paste install.sh into the startup script textbox. Save
 *End of document*
+
+## Development Setup
+
+### Prerequisites
+- Python 3.11
+- Node.js 18 or 20
+- `pip` and `npm` available on your path
+
+### Quick Start
+Run the helper script which installs dependencies and starts both servers:
+
+```bash
+./dev_init.sh
+```
+
+The backend will start on http://localhost:8000 and the frontend on http://localhost:5173.
+
+### Beginner Tutorial
+1. Clone the repository and run `./dev_init.sh`.
+2. Open `http://localhost:5173` in your browser once both servers start.
+3. Upload an image using the **Upload** button.
+4. Enter a short text prompt describing your desired edit.
+5. Click **Submit** to process the image and view the result.
+6. Download the final image from the results panel.
+
+### Running Services Separately
+If you prefer separate terminals:
+
+```bash
+# Backend
+cd backend && source .venv/bin/activate && uvicorn backend.app.main:app --reload
+
+# Frontend
+cd frontend && npm run dev
+```
+
+### Environment Variables
+Backend settings are loaded from `backend/.env`. Create this from
+`backend/.env.example` and supply your values. Frontend variables use Vite's
+`.env` files (see `frontend/.env.example`).
+
+### Troubleshooting
+- Ensure required versions of Python and Node are installed if the script exits.
+- Delete `backend/.venv` or `frontend/node_modules` to force a clean install if
+  you encounter dependency issues.

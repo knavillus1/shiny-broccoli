@@ -1,0 +1,112 @@
+import { describe, it, expect, vi, afterEach } from 'vitest';
+import { render, fireEvent, waitFor, cleanup } from '@testing-library/react';
+import CanvasDisplay from './CanvasDisplay';
+
+vi.stubGlobal('Image', class {
+  onload: (() => void) | null = null;
+  width = 100;
+  height = 100;
+  set src(_val: string) {
+    this.onload && this.onload();
+  }
+});
+
+const contexts: any[] = [];
+HTMLCanvasElement.prototype.getContext = vi.fn(function () {
+  const ctx = {
+    clearRect: vi.fn(),
+    fillRect: vi.fn(),
+    drawImage: vi.fn(),
+    beginPath: vi.fn(),
+    moveTo: vi.fn(),
+    lineTo: vi.fn(),
+    stroke: vi.fn(),
+    getImageData: vi.fn(() => ({ data: new Uint8ClampedArray(1) })),
+    putImageData: vi.fn(),
+  } as unknown as CanvasRenderingContext2D;
+  contexts.push(ctx);
+  return ctx;
+});
+
+afterEach(() => {
+  cleanup();
+  contexts.length = 0;
+});
+
+HTMLCanvasElement.prototype.toBlob = vi.fn(function (cb) {
+  cb?.(new Blob());
+});
+
+vi.mock('../services/apiClient', () => ({
+  editImage: vi.fn(() => Promise.resolve({ detail: 'ok' })),
+}));
+
+global.URL.createObjectURL = vi.fn(() => 'blob:url');
+global.URL.revokeObjectURL = vi.fn();
+
+describe('CanvasDisplay', () => {
+  it('toggles mask visibility and submits', async () => {
+    const file = new File(['data'], 'test.png', { type: 'image/png' });
+    const { getByText, getByLabelText } = render(
+      <CanvasDisplay image={file} prompt="edit" />,
+    );
+    await waitFor(() => getByText('Switch to Erase'));
+    expect(getByLabelText('Toggle draw or erase mode')).toBeTruthy();
+    const toggle = getByText('Hide Mask');
+    fireEvent.click(toggle);
+    expect(toggle.textContent).toBe('Show Mask');
+    fireEvent.click(getByText('Submit'));
+    await waitFor(() => getByText('ok'));
+  });
+
+  it('changes brush size using toolbar', async () => {
+    const file = new File(['data'], 'test.png', { type: 'image/png' });
+    const { getByLabelText } = render(<CanvasDisplay image={file} prompt="edit" />);
+    await waitFor(() => getByLabelText('Large'));
+    const large = getByLabelText('Large') as HTMLInputElement;
+    fireEvent.click(large);
+    expect(large.checked).toBe(true);
+  });
+
+  it('changes drawing tool using toolbar', async () => {
+    const file = new File(['data'], 'test.png', { type: 'image/png' });
+    const { getByLabelText } = render(<CanvasDisplay image={file} prompt="edit" />);
+    await waitFor(() => getByLabelText('rectangle'));
+    const rect = getByLabelText('rectangle') as HTMLInputElement;
+    fireEvent.click(rect);
+    expect(rect.checked).toBe(true);
+  });
+
+  it('clears the mask canvas', async () => {
+    const file = new File(['data'], 'test.png', { type: 'image/png' });
+    const { getByText } = render(<CanvasDisplay image={file} prompt="edit" />);
+    await waitFor(() => getByText('Clear Mask'));
+    const clearBtn = getByText('Clear Mask');
+    fireEvent.click(clearBtn);
+    const called = contexts.some((ctx) => ctx.fillRect.mock.calls.length > 0);
+    expect(called).toBe(true);
+  });
+
+  it('undoes and redoes mask actions', async () => {
+    const file = new File(['data'], 'test.png', { type: 'image/png' });
+    const { getByText } = render(<CanvasDisplay image={file} prompt="edit" />);
+    await waitFor(() => getByText('Clear Mask'));
+    fireEvent.click(getByText('Clear Mask'));
+    await waitFor(() => expect(getByText('Undo').getAttribute('disabled')).toBeNull());
+    fireEvent.click(getByText('Undo'));
+    await waitFor(() => expect(getByText('Redo').getAttribute('disabled')).toBeNull());
+    fireEvent.click(getByText('Redo'));
+    await waitFor(() => expect(getByText('Undo').getAttribute('disabled')).toBeNull());
+  });
+
+  it('returns the result via callback', async () => {
+    const file = new File(['data'], 'test.png', { type: 'image/png' });
+    const onResult = vi.fn();
+    const { getByText } = render(
+      <CanvasDisplay image={file} prompt="edit" onResult={onResult} />,
+    );
+    await waitFor(() => getByText('Submit'));
+    fireEvent.click(getByText('Submit'));
+    await waitFor(() => expect(onResult).toHaveBeenCalled());
+  });
+});
