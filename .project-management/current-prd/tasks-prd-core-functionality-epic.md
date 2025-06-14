@@ -185,7 +185,7 @@
   - [x] 8.2 Connect `PromptInput.tsx` to validation and submission workflow
   - [x] 8.3 Integrate enhanced `CanvasDisplay.tsx` with mask export for API submission
   - [x] 8.4 Connect `ResultsDisplay.tsx` to receive and display API responses
-  - [ ] 8.5 Implement complete edit workflow in `HomePage.tsx`
+  - [x] 8.5 Implement complete edit workflow in `HomePage.tsx`
   - [x] 8.6 Add proper loading states and error handling throughout the UI
   - [ ] 8.7 Test end-to-end functionality with real OpenAI API calls
 

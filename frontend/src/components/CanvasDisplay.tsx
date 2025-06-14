@@ -15,9 +15,16 @@ interface Props {
   prompt: string;
   onResult?: (file: File) => void;
   onError?: (msg: string) => void;
+  onRequestId?: (id: string) => void;
 }
 
-export default function CanvasDisplay({ image, prompt, onResult, onError }: Props) {
+export default function CanvasDisplay({
+  image,
+  prompt,
+  onResult,
+  onError,
+  onRequestId,
+}: Props) {
   const baseRef = useRef<HTMLCanvasElement>(null);
   const {
     canvasRef: maskRef,
@@ -97,6 +104,9 @@ export default function CanvasDisplay({ image, prompt, onResult, onError }: Prop
         : image;
       const result = await editImage(imageFile, prompt || 'Edit', maskFile);
       setEta(result.eta_seconds ?? null);
+      if (result.request_id) {
+        onRequestId?.(result.request_id);
+      }
       onResult?.(imageFile);
       setSubmitMsg(result.detail || 'Processing complete');
     } catch (err) {
