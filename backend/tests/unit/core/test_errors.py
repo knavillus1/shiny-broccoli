@@ -46,7 +46,7 @@ def test_validation_exception_handler():
     response = client.post("/items", json={"name": "abc"})
     assert response.status_code == 422
     body = response.json()
-    assert body["title"] == "Unprocessable Entity"
+    assert body["title"] == "Unprocessable Content"
     assert body["status"] == 422
 
 
