@@ -23,7 +23,7 @@ async def test_edit_image_integration():
     # or be a simple success response like {'ok': True}
     assert (
         "status" in result
-        or "data" in result  
+        or "data" in result
         or "id" in result
         or "result" in result
         or "ok" in result
