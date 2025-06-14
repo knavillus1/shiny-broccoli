@@ -90,6 +90,8 @@ shiny-broccoli/
 - `backend/requirements.txt` - Add structlog, redis-py dependencies
 - `backend/tests/conftest.py` - Update for new dependency injection
 - `backend/app/api/v1/endpoints/openai_integration.py` - Update to use dependency injection
+- `backend/app/core/dependencies.py` - Add process_image dependency function
+- `backend/app/api/v1/endpoints/images.py` - **Removed after relocation to routers**
 - `.flake8` - Exclude docs generator from linting
 - `backend/services/chat_storage.py` - **Removed unused chat history storage**
 - `backend/app/core/__init__.py` - **Removed empty module file**
@@ -138,7 +140,7 @@ shiny-broccoli/
 - [ ] 5.0 Reorganize API Structure and Error Handling
   - [x] 5.1 Create `backend/app/api/v1/routers/` directory structure
   - [x] 5.2 Move `health.py` endpoint to `backend/app/api/v1/routers/health.py` with router patterns
-  - [ ] 5.3 Move `images.py` endpoint to `backend/app/api/v1/routers/images.py` with dependency injection
+  - [c] 5.3 Move `images.py` endpoint to `backend/app/api/v1/routers/images.py` with dependency injection
   - [ ] 5.4 Move `openai_integration.py` functionality to `backend/app/api/v1/routers/tasks.py`
   - [ ] 5.5 Create `backend/app/core/errors.py` with RFC 7807 Problem Details models
   - [ ] 5.6 Implement global exception handler for `HTTPException` to Problem Details conversion

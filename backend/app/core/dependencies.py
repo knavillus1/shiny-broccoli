@@ -27,3 +27,10 @@ _async_processor = AsyncImageProcessor()
 def get_image_processor() -> AsyncImageProcessor:
     """Provide the default async image processor instance."""
     return _async_processor
+
+
+def get_process_image():
+    """Provide the synchronous image processing function."""
+    from backend.services.image_processor import process_image
+
+    return process_image
