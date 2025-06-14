@@ -60,10 +60,24 @@ export default function HomePage({ image, prompt, onSubmitReady }: HomePageProps
   useEffect(() => {
     if (!requestId) return;
     let cancelled = false;
+    let pollCount = 0;
+    const maxPolls = 60; // Maximum 3 minutes of polling (60 * 3 seconds)
+    
     const poll = async () => {
+      if (pollCount >= maxPolls) {
+        console.log('Polling timeout reached');
+        if (!cancelled) {
+          setError('Request timed out after 3 minutes');
+          setRequestId(null);
+        }
+        return;
+      }
+      
+      pollCount++;
+      
       try {
         const status = await fetchEditStatus(requestId);
-        console.log('Polling status response:', status);
+        console.log(`Polling status response (attempt ${pollCount}/${maxPolls}):`, status);
         
         if (status.status === 'completed') {
           console.log('Status is completed, checking result structure...');
@@ -93,7 +107,7 @@ export default function HomePage({ image, prompt, onSubmitReady }: HomePageProps
             setRequestId(null); // Clear request ID after error
           }
         } else {
-          console.log('Status is pending, continuing to poll...');
+          console.log(`Status is ${status.status}, continuing to poll... (${pollCount}/${maxPolls})`);
         }
       } catch (err) {
         if (!cancelled) {

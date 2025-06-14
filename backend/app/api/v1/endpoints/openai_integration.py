@@ -33,23 +33,7 @@ async def _process_request(
     service = OpenAIService()
     try:
         logger.info(f"Starting OpenAI edit for request {request_id}")
-        
-        # TEMPORARY: Mock the response for debugging
-        import time
-        await asyncio.sleep(2)  # Simulate processing time
-        mock_result = {
-            "created": int(time.time()),
-            "data": [
-                {
-                    "url": "https://oaidalleapiprodscus.blob.core.windows.net/private/test-image.png"
-                }
-            ]
-        }
-        result = mock_result
-        
-        # Uncomment this line for real OpenAI calls:
-        # result = await service.edit_image(image, mask, prompt)
-        
+        result = await service.edit_image(image, mask, prompt)
         logger.info(f"OpenAI edit completed for request {request_id}")
         logger.debug(f"OpenAI result structure: {result}")
         task_manager.set_result(request_id, result)

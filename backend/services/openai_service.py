@@ -140,6 +140,15 @@ class OpenAIService:
             raise
         logger.debug("Image edit response: %s", response)
         try:
-            return response.to_dict()
-        except Exception:
-            return dict(response)
+            result = response.to_dict()
+            logger.debug("Successfully converted response to dict")
+            return result
+        except Exception as e:
+            logger.warning(f"Failed to convert response to dict using to_dict(): {e}")
+            try:
+                result = dict(response)
+                logger.debug("Successfully converted response using dict()")
+                return result
+            except Exception as e2:
+                logger.error(f"Failed to convert response using dict(): {e2}")
+                raise RuntimeError(f"Could not convert OpenAI response to dict: {e2}") from e2
