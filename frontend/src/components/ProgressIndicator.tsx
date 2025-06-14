@@ -3,12 +3,17 @@ import React from 'react';
 interface Props {
   message?: string;
   progress?: number; // 0-100
+  etaSeconds?: number;
 }
 
 /**
  * Displays a simple progress indicator with optional message and progress percent.
  */
-export default function ProgressIndicator({ message = 'Loading...', progress }: Props) {
+export default function ProgressIndicator({
+  message = 'Loading...',
+  progress,
+  etaSeconds,
+}: Props) {
   return (
     <div className="flex items-center gap-2" aria-label="progress-indicator">
       <svg
@@ -33,6 +38,7 @@ export default function ProgressIndicator({ message = 'Loading...', progress }: 
       </svg>
       <span>{message}</span>
       {progress !== undefined && <span>{progress}%</span>}
+      {etaSeconds !== undefined && <span>ETA: {etaSeconds}s</span>}
     </div>
   );
 }

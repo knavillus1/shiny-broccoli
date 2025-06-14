@@ -73,7 +73,8 @@ async def edit_image(
         img_bytes = await image.read()
         mask_bytes = await mask.read() if mask else None
         request_id = uuid4().hex
-        task_manager.create_task(request_id)
+        eta_seconds = 30
+        task_manager.create_task(request_id, eta_seconds)
         background_tasks.add_task(
             _process_request, request_id, img_bytes, mask_bytes, prompt
         )
@@ -123,7 +124,7 @@ async def edit_image(
             detail=str(exc),
         )
     logger.info("/images/edit queued in %.3f", time.time() - start)
-    return {"request_id": request_id}
+    return {"request_id": request_id, "eta_seconds": eta_seconds}
 
 
 @router.get("/images/status/{request_id}")
@@ -137,6 +138,11 @@ async def get_status(request_id: str) -> dict[str, object]:
         "request_id": request_id,
         "status": record.status,
     }
+    if record.status in {"completed", "error"}:
+        eta = 0
+    else:
+        eta = max(int(record.start_time + record.eta_seconds - time.time()), 0)
+    response["eta_seconds"] = eta
     if record.result is not None:
         response["result"] = record.result
     if record.error is not None:
