@@ -30,6 +30,7 @@ export default function MaskToolbar({ brushSize, setBrushSize, tool, setTool }: 
               value={opt}
               checked={brushSize === opt}
               onChange={() => setBrushSize(opt)}
+              className="focus:outline focus:outline-blue-500"
             />
             {label(opt)}
           </label>
@@ -45,6 +46,7 @@ export default function MaskToolbar({ brushSize, setBrushSize, tool, setTool }: 
               value={t}
               checked={tool === t}
               onChange={() => setTool(t)}
+              className="focus:outline focus:outline-blue-500"
             />
             {t}
           </label>

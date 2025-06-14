@@ -81,8 +81,20 @@ export default function FileUpload({ onUploaded }: { onUploaded?: (file: File) =
   return (
     <form onSubmit={handleSubmit} className="p-4 border rounded">
       <label htmlFor="file-input" className="mr-2">Image:</label>
-      <input id="file-input" type="file" onChange={handleChange} accept={ACCEPTED_TYPES.join(',')} />
-      <button type="submit" disabled={!file || uploading} className="ml-2 px-2 py-1 border rounded">
+      <input
+        id="file-input"
+        aria-label="Image file"
+        className="focus:outline focus:outline-blue-500"
+        type="file"
+        onChange={handleChange}
+        accept={ACCEPTED_TYPES.join(',')}
+      />
+      <button
+        type="submit"
+        aria-label="Upload image"
+        disabled={!file || uploading}
+        className="ml-2 px-2 py-1 border rounded focus:outline focus:outline-blue-500"
+      >
         Upload
       </button>
       {uploading && <ProgressIndicator message="Uploading..." />}

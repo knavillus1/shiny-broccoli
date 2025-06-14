@@ -39,6 +39,7 @@ describe('FileUpload', () => {
     const onUploaded = vi.fn();
     const { getByText, getByLabelText } = render(<FileUpload onUploaded={onUploaded} />);
     const input = getByLabelText('Image:');
+    expect(getByLabelText('Upload image')).toBeTruthy();
     const file = new File(['data'], 'test.png', { type: 'image/png' });
     await fireEvent.change(input, { target: { files: [file] } });
     await fireEvent.submit(getByText('Upload').closest('form') as HTMLFormElement);

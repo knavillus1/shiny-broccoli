@@ -61,10 +61,11 @@ export default function PromptInput({
     <form onSubmit={handleSubmit} className="p-4 border rounded">
       <textarea
         aria-label="Prompt"
+        placeholder="e.g. Remove the background"
         value={prompt}
         onChange={handleChange}
         maxLength={maxLength}
-        className="w-full border rounded p-2"
+        className="w-full border rounded p-2 focus:outline focus:outline-blue-500"
       />
       <div className="text-sm text-gray-600 mt-1">
         {prompt.length}/{maxLength}
@@ -75,7 +76,8 @@ export default function PromptInput({
             Example prompts:
             <button
               type="button"
-              className="ml-2 underline"
+              aria-label="Use example prompt Remove the background"
+              className="ml-2 underline focus:outline focus:outline-blue-500"
               onClick={() => setPrompt('Remove the background')}
             >
               Remove the background
@@ -83,7 +85,8 @@ export default function PromptInput({
             ,
             <button
               type="button"
-              className="ml-1 underline"
+              aria-label="Use example prompt Change sky color"
+              className="ml-1 underline focus:outline focus:outline-blue-500"
               onClick={() => setPrompt('Change sky color to blue')}
             >
               Change sky color
@@ -96,7 +99,8 @@ export default function PromptInput({
               <button
                 key={p}
                 type="button"
-                className="ml-2 underline"
+                aria-label={`Use recent prompt ${p}`}
+                className="ml-2 underline focus:outline focus:outline-blue-500"
                 onClick={() => setPrompt(p)}
               >
                 {p}
@@ -111,7 +115,8 @@ export default function PromptInput({
           <button
             key={s}
             type="button"
-            className="ml-2 underline"
+            aria-label={`Use suggestion ${s}`}
+            className="ml-2 underline focus:outline focus:outline-blue-500"
             onClick={() => setPrompt(s)}
           >
             {s}
@@ -120,8 +125,9 @@ export default function PromptInput({
       </div>
       <button
         type="submit"
+        aria-label="Submit prompt"
         disabled={!prompt.trim() || prompt.length > maxLength}
-        className="mt-2 px-2 py-1 border rounded"
+        className="mt-2 px-2 py-1 border rounded focus:outline focus:outline-blue-500"
       >
         Submit
       </button>

@@ -131,38 +131,43 @@ export default function CanvasDisplay({
             />
             <button
               type="button"
+              aria-label="Toggle draw or erase mode"
               onClick={toggleMode}
-              className="px-2 py-1 border rounded"
+              className="px-2 py-1 border rounded focus:outline focus:outline-blue-500"
             >
               {mode === 'draw' ? 'Switch to Erase' : 'Switch to Draw'}
             </button>
             <button
               type="button"
+              aria-label="Toggle mask visibility"
               onClick={() => setMaskVisible((v) => !v)}
-              className="px-2 py-1 border rounded"
+              className="px-2 py-1 border rounded focus:outline focus:outline-blue-500"
             >
               {maskVisible ? 'Hide Mask' : 'Show Mask'}
             </button>
             <button
               type="button"
+              aria-label="Clear mask"
               onClick={clear}
-              className="px-2 py-1 border rounded"
+              className="px-2 py-1 border rounded focus:outline focus:outline-blue-500"
             >
               Clear Mask
             </button>
             <button
               type="button"
+              aria-label="Undo mask action"
               onClick={undo}
               disabled={!canUndo}
-              className="px-2 py-1 border rounded"
+              className="px-2 py-1 border rounded focus:outline focus:outline-blue-500"
             >
               Undo
             </button>
             <button
               type="button"
+              aria-label="Redo mask action"
               onClick={redo}
               disabled={!canRedo}
-              className="px-2 py-1 border rounded"
+              className="px-2 py-1 border rounded focus:outline focus:outline-blue-500"
             >
               Redo
             </button>
@@ -178,9 +183,10 @@ export default function CanvasDisplay({
           </div>
           <button
             type="button"
+            aria-label="Submit image edits"
             disabled={submitting}
             onClick={handleSubmit}
-            className="mt-2 px-2 py-1 border rounded"
+            className="mt-2 px-2 py-1 border rounded focus:outline focus:outline-blue-500"
           >
             Submit
           </button>

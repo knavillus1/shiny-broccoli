@@ -27,6 +27,13 @@ describe('PromptInput', () => {
     expect(getByText(/Example prompts/i)).toBeTruthy();
   });
 
+  it('renders placeholder text', () => {
+    const { getByPlaceholderText } = render(<PromptInput />);
+    expect(
+      getByPlaceholderText('e.g. Remove the background')
+    ).toBeTruthy();
+  });
+
   it('stores prompt and displays recent list', () => {
     const { getByText, getByLabelText } = render(<PromptInput />);
     const textarea = getByLabelText('Prompt');
