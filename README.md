@@ -113,6 +113,14 @@ Run the helper script which installs dependencies and starts both servers:
 
 The backend will start on http://localhost:8000 and the frontend on http://localhost:5173.
 
+### Beginner Tutorial
+1. Clone the repository and run `./dev_init.sh`.
+2. Open `http://localhost:5173` in your browser once both servers start.
+3. Upload an image using the **Upload** button.
+4. Enter a short text prompt describing your desired edit.
+5. Click **Submit** to process the image and view the result.
+6. Download the final image from the results panel.
+
 ### Running Services Separately
 If you prefer separate terminals:
 

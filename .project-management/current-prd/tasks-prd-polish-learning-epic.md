@@ -108,10 +108,10 @@
   - [ ] 1.3 Run linting to verify comment style.
 
 - [ ] 2.0 Expand Project Documentation (FR3, FR4, FR5)
-  - [ ] 2.1 Add a step-by-step tutorial to `README.md` with learning resources.
-  - [ ] 2.2 Update `DEVELOPMENT.md` with explicit environment setup instructions.
-  - [ ] 2.3 Create `.env.template` files for backend and frontend.
-  - [ ] 2.4 Update `dev_init.sh` to copy `.env.template` when `.env` is missing.
+  - [x] 2.1 Add a step-by-step tutorial to `README.md` with learning resources.
+  - [x] 2.2 Update `DEVELOPMENT.md` with explicit environment setup instructions.
+  - [x] 2.3 Create `.env.template` files for backend and frontend.
+  - [x] 2.4 Update `dev_init.sh` to copy `.env.template` when `.env` is missing.
 
 - [ ] 3.0 Improve UI Prompting and Accessibility (FR6, FR7)
   - [ ] 3.1 Provide example prompts within `PromptInput.tsx`.
@@ -120,6 +120,6 @@
   - [ ] 3.4 Update or create tests for new prompts and accessibility attributes.
 
 - [ ] 4.0 Verify Success Metrics (SM1-SM3)
-  - [ ] 4.1 Run `run_tests.sh -no_integration` and ensure it passes.
+  - [x] 4.1 Run `run_tests.sh -no_integration` and ensure it passes.
   - [ ] 4.2 Confirm code coverage remains stable after documentation updates.
-  - [ ] 4.3 Update `CHANGELOG.md` with progress for each completed task.
+  - [x] 4.3 Update `CHANGELOG.md` with progress for each completed task.

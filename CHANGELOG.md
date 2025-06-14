@@ -50,3 +50,4 @@
 2025-06-14 Closed Core Functionality Epic PRD
 2025-06-14 Added PRD for Polish & Learning Epic (Phase 3)
 2025-06-14 Generated task list for Polish & Learning Epic
+2025-06-14 Added env templates, docs tutorial, and dev_init improvements

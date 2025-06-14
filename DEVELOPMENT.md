@@ -4,18 +4,24 @@
 This section describes development environment setup and is maintained by the codex agent.
 
 ### Frontend
-Run `npm install` inside `frontend` to install dependencies. Start the dev server with `npm run dev`.
+Run `npm install` inside `frontend` to install dependencies:
+```bash
+cd frontend
+cp .env.template .env
+npm run dev
+```
 
 ### Backend
 Create a virtual environment in `backend/.venv` and install requirements:
 
 ```bash
-python3 -m venv backend/.venv
-source backend/.venv/bin/activate
-pip install -r backend/requirements.txt
+cd backend
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 
 # Configure environment variables
-cp backend/.env.example backend/.env  # edit OPENAI_API_KEY with your key
+cp .env.template .env  # edit OPENAI_API_KEY with your key
 ```
 
 Start the server using Uvicorn:
