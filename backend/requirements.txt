@@ -9,3 +9,4 @@ httpx
 python-multipart
 openai
 Pillow
+structlog
