@@ -147,8 +147,8 @@ shiny-broccoli/
   - [ ] 5.9 Replace raw OpenAI API errors with sanitized Problem Details responses
 
 - [ ] 6.0 Implement Structured Logging and Observability
-  - [ ] 6.1 Add `structlog` dependency to `backend/requirements.txt`
-  - [ ] 6.2 Create `backend/app/core/logging.py` with structlog configuration
+  - [x] 6.1 Add `structlog` dependency to `backend/requirements.txt`
+  - [x] 6.2 Create `backend/app/core/logging.py` with structlog configuration
   - [ ] 6.3 Implement JSON log formatting for production and human-readable for development
   - [ ] 6.4 Create `backend/app/middleware/correlation.py` for X-Request-ID middleware
   - [ ] 6.5 Configure correlation ID injection into all log entries
@@ -165,4 +165,4 @@ shiny-broccoli/
   - [ ] 7.5 Update import statements throughout codebase for new structure
   - [ ] 7.6 Organize service layer to separate business logic from infrastructure
   - [ ] 7.7 Update `backend/tests/` structure to match new API organization
-  - [ ] 7.8 Run linting and formatting tools to ensure code quality standards
+  - [x] 7.8 Run linting and formatting tools to ensure code quality standards
