@@ -85,6 +85,7 @@
 - `backend/app/middleware.py` - HTTP middleware for request timing metrics.
 - `backend/tests/api/v1/test_openai_integration.py` - Unit tests for OpenAI integration endpoints.
 - `backend/tests/unit/services/test_openai_service.py` - Unit tests for OpenAI service.
+- `backend/tests/integration/test_workflow.py` - Integration tests for full editing workflow and error handling.
 - `docs/user_guide.md` - User guide for the complete image editing workflow.
 
 ### Existing Files Modified
@@ -199,8 +200,8 @@
   - [x] 9.6 Add performance monitoring and logging for optimization
 
 - [ ] 10.0 Testing and Documentation for Phase 2 Completion (SM6, SM7)
-  - [ ] 10.1 Create comprehensive integration tests for the complete editing workflow
-  - [ ] 10.2 Test error scenarios including API failures, network issues, and invalid inputs
+  - [x] 10.1 Create comprehensive integration tests for the complete editing workflow
+  - [x] 10.2 Test error scenarios including API failures, network issues, and invalid inputs
   - [ ] 10.3 Verify all functional requirements (FR1-FR22) through manual testing
   - [x] 10.4 Add JSDoc comments to all new frontend components and hooks
   - [x] 10.5 Add docstrings to all new backend modules and functions
