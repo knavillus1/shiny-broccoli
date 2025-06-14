@@ -41,12 +41,20 @@ fi
 source backend/.venv/bin/activate
 pip install -r backend/requirements.txt
 if [ ! -f backend/.env ]; then
-  cp backend/.env.example backend/.env
+  if [ -f backend/.env.template ]; then
+    cp backend/.env.template backend/.env
+  else
+    cp backend/.env.example backend/.env
+  fi
 fi
 
 # --------- Frontend Setup ---------
 if [ ! -f frontend/.env ]; then
-  cp frontend/.env.example frontend/.env
+  if [ -f frontend/.env.template ]; then
+    cp frontend/.env.template frontend/.env
+  else
+    cp frontend/.env.example frontend/.env
+  fi
 fi
 (cd frontend && npm install)
 
