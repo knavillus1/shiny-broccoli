@@ -10,7 +10,7 @@ import openai
 
 
 class DummyService:
-    async def edit_image(self, image: bytes, mask: bytes | None, prompt: str):
+    async def edit_image(self, image: bytes, mask: bytes | None, prompt: str, **kwargs):
         return {"detail": "ok"}
 
 
@@ -18,7 +18,7 @@ class FailingService:
     def __init__(self, exc: Exception) -> None:
         self._exc = exc
 
-    async def edit_image(self, image: bytes, mask: bytes | None, prompt: str):
+    async def edit_image(self, image: bytes, mask: bytes | None, prompt: str, **kwargs):
         raise self._exc
 
 

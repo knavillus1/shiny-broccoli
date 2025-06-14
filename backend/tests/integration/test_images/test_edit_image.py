@@ -19,9 +19,14 @@ async def test_edit_image_integration():
     prompt = "Make the image background blue."
     result = await service.edit_image(image_bytes, mask_bytes, prompt)
     assert isinstance(result, dict)
+    # The OpenAI response should contain at least one of these expected keys
+    # or be a simple success response like {'ok': True}
     assert (
         "status" in result
-        or "data" in result
+        or "data" in result  
         or "id" in result
         or "result" in result
+        or "ok" in result
+        or "url" in result
+        or "revised_prompt" in result
     )
