@@ -37,6 +37,7 @@ export default function CanvasDisplay({ image, prompt, onResult, onError }: Prop
   const [submitMsg, setSubmitMsg] = useState('');
   const [submitError, setSubmitError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [eta, setEta] = useState<number | null>(null);
 
   useEffect(() => {
     const canvas = baseRef.current;
@@ -78,6 +79,7 @@ export default function CanvasDisplay({ image, prompt, onResult, onError }: Prop
     setSubmitting(true);
     setSubmitMsg('Processing...');
     setSubmitError('');
+    setEta(null);
     try {
       const [maskBlob, imgBlob] = await Promise.all([
         new Promise<Blob | null>((resolve) =>
@@ -94,6 +96,7 @@ export default function CanvasDisplay({ image, prompt, onResult, onError }: Prop
         ? new File([imgBlob], 'image.png', { type: 'image/png' })
         : image;
       const result = await editImage(imageFile, prompt || 'Edit', maskFile);
+      setEta(result.eta_seconds ?? null);
       onResult?.(imageFile);
       setSubmitMsg(result.detail || 'Processing complete');
     } catch (err) {
@@ -171,7 +174,9 @@ export default function CanvasDisplay({ image, prompt, onResult, onError }: Prop
           >
             Submit
           </button>
-          {submitting && <ProgressIndicator message="Processing..." />}
+          {submitting && (
+            <ProgressIndicator message="Processing..." etaSeconds={eta ?? undefined} />
+          )}
           {submitMsg && <div className="mt-2 text-green-600">{submitMsg}</div>}
           {submitError && (
             <div className="mt-2 text-red-600">Error: {submitError}</div>

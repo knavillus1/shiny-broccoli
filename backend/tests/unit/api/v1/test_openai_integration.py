@@ -39,13 +39,16 @@ def test_edit_image(client, monkeypatch):
         data={"prompt": "edit"},
     )
     assert response.status_code == 200
-    request_id = response.json()["request_id"]
+    data = response.json()
+    request_id = data["request_id"]
+    assert data["eta_seconds"] == 30
     status_resp = client.get(f"/api/v1/images/status/{request_id}")
     assert status_resp.status_code == 200
     assert status_resp.json() == {
         "request_id": request_id,
         "status": "completed",
         "result": {"detail": "ok"},
+        "eta_seconds": 0,
     }
 
 
@@ -96,6 +99,7 @@ def test_get_status(client):
         "request_id": task_id,
         "status": "completed",
         "result": {"ok": True},
+        "eta_seconds": 0,
     }
 
 
@@ -121,4 +125,6 @@ def test_openai_error_mapping(client, monkeypatch, error_cls):
     assert response.status_code == 200
     request_id = response.json()["request_id"]
     status_resp = client.get(f"/api/v1/images/status/{request_id}")
-    assert status_resp.json()["status"] == "error"
+    data = status_resp.json()
+    assert data["status"] == "error"
+    assert data["eta_seconds"] == 0

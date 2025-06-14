@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+import time
 from typing import Any, Dict
 
 
@@ -13,14 +14,16 @@ class TaskRecord:
     status: str = "pending"
     result: dict[str, Any] | None = None
     error: str | None = None
+    start_time: float = field(default_factory=time.time)
+    eta_seconds: int = 30
 
 
 _tasks: Dict[str, TaskRecord] = {}
 
 
-def create_task(task_id: str) -> None:
-    """Create a new task entry."""
-    _tasks[task_id] = TaskRecord()
+def create_task(task_id: str, eta_seconds: int = 30) -> None:
+    """Create a new task entry with optional ETA."""
+    _tasks[task_id] = TaskRecord(eta_seconds=eta_seconds)
 
 
 def set_result(task_id: str, result: dict[str, Any]) -> None:
