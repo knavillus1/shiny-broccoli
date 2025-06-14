@@ -32,20 +32,6 @@ def load_service(monkeypatch: pytest.MonkeyPatch, client_factory) -> types.Modul
     return importlib.reload(module)
 
 
-@pytest.mark.asyncio
-async def test_verify_connection(monkeypatch):
-    calls = {}
-
-    def factory(api_key: str) -> DummyClient:
-        calls["key"] = api_key
-        return DummyClient(api_key)
-
-    service_module = load_service(monkeypatch, factory)
-    service = service_module.OpenAIService(api_key="test-key")
-    result = await service.verify_connection()
-    assert calls["key"] == "test-key"
-    assert result == {"object": "list"}
-
 
 def test_missing_key(monkeypatch):
     service_module = load_service(monkeypatch, lambda api_key: DummyClient(api_key))

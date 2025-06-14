@@ -89,6 +89,10 @@ shiny-broccoli/
 - `backend/services/task_manager.py` - Replace with repository pattern
 - `backend/requirements.txt` - Add structlog, redis-py dependencies
 - `backend/tests/conftest.py` - Update for new dependency injection
+- `backend/services/chat_storage.py` - **Removed unused chat history storage**
+- `backend/app/core/__init__.py` - **Removed empty module file**
+- `backend/tests/integration/test_openai_connectivity.py` - **Removed obsolete verify_connection test**
+- `backend/tests/unit/services/test_openai_service.py` - Updated for removed verify_connection
 
 ### Notes
 
@@ -161,10 +165,10 @@ shiny-broccoli/
   - [ ] 6.9 Replace existing `logger` usage throughout codebase with structured logging
 
 - [ ] 7.0 Clean Up Code and Project Organization
-  - [ ] 7.1 Remove unused `backend/services/chat_storage.py` file
-  - [ ] 7.2 Remove unused `verify_connection()` method from `OpenAIService`
-  - [ ] 7.3 Clean up empty `backend/app/core/__init__.py` file
-  - [ ] 7.4 Remove pragma: no cover statements that will never execute in production
+  - [x] 7.1 Remove unused `backend/services/chat_storage.py` file
+  - [x] 7.2 Remove unused `verify_connection()` method from `OpenAIService`
+  - [x] 7.3 Clean up empty `backend/app/core/__init__.py` file
+  - [x] 7.4 Remove pragma: no cover statements that will never execute in production
   - [ ] 7.5 Update import statements throughout codebase for new structure
   - [ ] 7.6 Organize service layer to separate business logic from infrastructure
   - [ ] 7.7 Update `backend/tests/` structure to match new API organization
