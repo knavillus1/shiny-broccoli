@@ -27,7 +27,6 @@ export default function useCanvas() {
     
     // Don't reinitialize if already initialized with the same size
     if (isInitialized && canvas.width === width && canvas.height === height) {
-      console.log("Canvas already initialized with correct size, skipping reinitialization");
       return;
     }
     
@@ -48,9 +47,7 @@ export default function useCanvas() {
         history.current = [initialImageData];
         setHistoryIndex(0);
         setIsInitialized(true);
-        console.log(`Canvas initialized with size ${width}x${height}`);
       } catch (e) {
-        console.error("Failed to get ImageData for history initialization:", e);
         setIsInitialized(false);
       }
     }
@@ -72,7 +69,7 @@ export default function useCanvas() {
       history.current = newHistory;
       setHistoryIndex(newHistory.length - 1);
     } catch (e) {
-      console.error("Failed to save canvas state:", e);
+      // Failed to save canvas state
     }
   }, [isInitialized, getContext, historyIndex]);
 
@@ -94,7 +91,7 @@ export default function useCanvas() {
       ctx.putImageData(prevState, 0, 0);
       setHistoryIndex(prevIndex => prevIndex - 1);
     } catch (e) {
-      console.error("Failed to undo:", e);
+      // Failed to undo
     }
   }, [isInitialized, getContext, historyIndex]);
 
@@ -108,7 +105,7 @@ export default function useCanvas() {
       ctx.putImageData(nextState, 0, 0);
       setHistoryIndex(prevIndex => prevIndex + 1);
     } catch (e) {
-      console.error("Failed to redo:", e);
+      // Failed to redo
     }
   }, [isInitialized, getContext, historyIndex]);
 

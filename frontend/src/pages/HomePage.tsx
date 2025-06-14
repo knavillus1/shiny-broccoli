@@ -67,7 +67,6 @@ export default function HomePage({ image, prompt, onSubmitReady, onResult, onErr
     
     const poll = async () => {
       if (pollCount >= maxPolls) {
-        console.log('Polling timeout reached');
         if (!cancelled) {
           onError?.('Request timed out after 3 minutes');
           setRequestId(null);
@@ -79,18 +78,13 @@ export default function HomePage({ image, prompt, onSubmitReady, onResult, onErr
       
       try {
         const status = await fetchEditStatus(requestId);
-        console.log(`Polling status response (attempt ${pollCount}/${maxPolls}):`, status);
         
         if (status.status === 'completed') {
-          console.log('Status is completed, checking result structure...');
-          console.log('Result:', status.result);
           
           const resultData = status.result?.data?.[0];
           if (resultData?.url) {
-            console.log('Found URL, downloading via backend proxy...');
             try {
               const blob = await downloadResultImage(requestId);
-              console.log('Successfully downloaded image via proxy, blob size:', blob.size);
               
               const file = new File([blob], 'result.png', { type: 'image/png' });
               if (!cancelled) {
@@ -98,13 +92,10 @@ export default function HomePage({ image, prompt, onSubmitReady, onResult, onErr
                 setRequestId(null); // Clear request ID after successful completion
               }
             } catch (downloadError) {
-              console.error('Failed to download via proxy, trying direct fetch...', downloadError);
-              
               // Fallback to direct fetch
               try {
                 await new Promise(resolve => setTimeout(resolve, 1000));
                 
-                console.log('Fetching image directly from URL...');
                 const res = await fetch(resultData.url, {
                   mode: 'cors',
                   credentials: 'omit'
@@ -114,9 +105,7 @@ export default function HomePage({ image, prompt, onSubmitReady, onResult, onErr
                   throw new Error(`HTTP ${res.status}: ${res.statusText}`);
                 }
                 
-                console.log('Successfully fetched image directly, creating blob...');
                 const blob = await res.blob();
-                console.log('Blob created, size:', blob.size);
                 
                 const file = new File([blob], 'result.png', { type: 'image/png' });
                 if (!cancelled) {
@@ -124,12 +113,6 @@ export default function HomePage({ image, prompt, onSubmitReady, onResult, onErr
                   setRequestId(null);
                 }
               } catch (fetchError) {
-                console.error('Direct fetch also failed:', fetchError);
-                console.error('Error details:', {
-                  message: fetchError.message,
-                  stack: fetchError.stack,
-                  url: resultData.url
-                });
                 if (!cancelled) {
                   onError?.(`Failed to download the generated image: ${fetchError.message}`);
                   setRequestId(null);
@@ -137,7 +120,6 @@ export default function HomePage({ image, prompt, onSubmitReady, onResult, onErr
               }
             }
           } else if (resultData?.b64_json) {
-            console.log('Found base64 data, converting to file...');
             try {
               const binaryString = atob(resultData.b64_json);
               const bytes = new Uint8Array(binaryString.length);
@@ -151,34 +133,30 @@ export default function HomePage({ image, prompt, onSubmitReady, onResult, onErr
                 setRequestId(null);
               }
             } catch (b64Error) {
-              console.error('Failed to process base64 image:', b64Error);
               if (!cancelled) {
                 onError?.('Failed to process the generated image data');
                 setRequestId(null);
               }
             }
           } else {
-            console.error('Completed but no URL or base64 data found in result:', status.result);
             if (!cancelled) {
               onError?.('Image processing completed but no result data found');
               setRequestId(null);
             }
           }
         } else if (status.status === 'error') {
-          console.log('Status is error:', status.error);
           if (!cancelled) {
             onError?.(status.error || 'Processing failed');
             setRequestId(null); // Clear request ID after error
           }
         } else {
-          console.log(`Status is ${status.status}, continuing to poll... (${pollCount}/${maxPolls})`);
+          // Status is still processing, continue polling
         }
       } catch (err) {
         if (!cancelled) {
           const errorMessage = (err as Error).message;
           // If the request ID is not found (404), clear it and stop polling
           if (errorMessage.includes('404') || errorMessage.includes('Not Found')) {
-            console.log('Request ID not found, clearing polling');
             setRequestId(null);
           } else {
             onError?.(errorMessage);
@@ -196,7 +174,6 @@ export default function HomePage({ image, prompt, onSubmitReady, onResult, onErr
 
   useEffect(() => {
     if (image && prompt) {
-      console.log("HomePage received image and prompt, ready to generate if requested.");
       // Clear any previous request ID when new image/prompt is provided
       setRequestId(null);
     }

@@ -13,12 +13,10 @@ function App() {
 
   const handleFileSelected = (file: File | null) => {
     setImageFile(file);
-    console.log("File selected in App:", file?.name);
   };
 
   const handlePromptSubmit = (prompt: string) => {
     setTextPrompt(prompt);
-    console.log("Prompt submitted in App:", prompt);
   };
 
   const handleSubmitReady = (handler: () => Promise<void>) => {
@@ -49,7 +47,6 @@ function App() {
         handleProcessingStart(); // Start processing indicator
         await submitHandlerRef.current();
       } catch (error) {
-        console.error('Generation failed:', error);
         setIsProcessing(false); // Stop processing on error
       }
     }

@@ -96,7 +96,6 @@ export default function CanvasDisplay({
     const img = new Image();
     img.onload = () => {
       if (img.width === 0 || img.height === 0) {
-        console.error("Image has zero dimensions:", image.name);
         if (onError) onError(`Image has zero dimensions: ${image.name}`);
         return;
       }
@@ -121,9 +120,6 @@ export default function CanvasDisplay({
       canvas.width = displayWidth;
       canvas.height = displayHeight;
       
-      console.log(`EDITOR DEBUG: Canvas set to display size: ${canvas.width}x${canvas.height} (from original ${img.width}x${img.height})`);
-      console.log(`EDITOR DEBUG: Canvas element rect:`, canvas.getBoundingClientRect());
-      
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
@@ -138,7 +134,7 @@ export default function CanvasDisplay({
           try {
             existingMaskData = maskCtx.getImageData(0, 0, oldWidth, oldHeight);
           } catch (e) {
-            console.log("Could not preserve existing mask data:", e);
+            // Could not preserve existing mask data
           }
         }
         
@@ -146,15 +142,11 @@ export default function CanvasDisplay({
         maskCanvasRef.current.width = canvas.width;
         maskCanvasRef.current.height = canvas.height;
         
-        console.log(`Mask canvas set to: ${canvas.width}x${canvas.height}`);
-        
         // If we have existing mask data and the canvas size hasn't changed, restore it
         if (existingMaskData && oldWidth === canvas.width && oldHeight === canvas.height && maskCtx) {
           try {
             maskCtx.putImageData(existingMaskData, 0, 0);
-            console.log("Restored existing mask data");
           } catch (e) {
-            console.log("Failed to restore mask data:", e);
             maskCtx.clearRect(0, 0, canvas.width, canvas.height);
           }
         } else if (maskCtx) {
@@ -166,7 +158,6 @@ export default function CanvasDisplay({
       }
     };
     img.onerror = () => {
-      console.error("Failed to load image:", image.name);
       if (onError) onError(`Failed to load image: ${image.name}`);
     };
 
@@ -186,7 +177,6 @@ export default function CanvasDisplay({
       x: event.clientX - rect.left,
       y: event.clientY - rect.top,
     };
-    console.log(`Coords: click(${event.clientX},${event.clientY}) -> canvas(${coords.x},${coords.y}), rect: ${rect.left},${rect.top}`);
     return coords;
   }, []);
 
@@ -237,58 +227,10 @@ export default function CanvasDisplay({
     }
   }, [isDrawing, handleMouseUp]);
 
-  // Helper function to debug mask data
-  const debugMask = useCallback(async (maskBlob: Blob) => {
-    console.log('=== MASK DEBUG INFO ===');
-    console.log('Mask blob size:', maskBlob.size, 'bytes');
-    console.log('Mask blob type:', maskBlob.type);
-    
-    // Create a debug canvas to visualize the mask
-    const debugCanvas = document.createElement('canvas');
-    const img = new Image();
-    const url = URL.createObjectURL(maskBlob);
-    
-    return new Promise<void>((resolve) => {
-      img.onload = () => {
-        debugCanvas.width = img.width;
-        debugCanvas.height = img.height;
-        const ctx = debugCanvas.getContext('2d');
-        if (ctx) {
-          ctx.drawImage(img, 0, 0);
-          const imageData = ctx.getImageData(0, 0, img.width, img.height);
-          const data = imageData.data;
-          
-          let transparentPixels = 0;
-          let opaquePixels = 0;
-          let semiTransparentPixels = 0;
-          
-          for (let i = 3; i < data.length; i += 4) {
-            const alpha = data[i];
-            if (alpha === 0) transparentPixels++;
-            else if (alpha === 255) opaquePixels++;
-            else semiTransparentPixels++;
-          }
-          
-          console.log('Mask analysis:');
-          console.log('- Transparent pixels (edit areas):', transparentPixels);
-          console.log('- Opaque pixels (preserve areas):', opaquePixels);
-          console.log('- Semi-transparent pixels:', semiTransparentPixels);
-          console.log('- Total pixels:', data.length / 4);
-          console.log('- Edit area ratio:', (transparentPixels / (data.length / 4) * 100).toFixed(2) + '%');
-        }
-        URL.revokeObjectURL(url);
-        resolve();
-      };
-      img.src = url;
-    });
-  }, []);
-
   // Convert mask canvas to proper RGBA format for OpenAI
   const convertMaskToRGBA = useCallback(async (canvas: HTMLCanvasElement): Promise<Blob | null> => {
     const ctx = canvas.getContext('2d');
     if (!ctx || !originalImageSize) return null;
-    
-    console.log(`Converting mask canvas ${canvas.width}x${canvas.height} to RGBA format for original size ${originalImageSize.width}x${originalImageSize.height}`);
     
     // Create a canvas at the original image size for the final mask
     const fullSizeCanvas = document.createElement('canvas');
@@ -333,8 +275,6 @@ export default function CanvasDisplay({
       }
     }
     
-    console.log(`Mask conversion: ${drawnPixels} drawn pixels out of ${data.length / 4} total pixels at original resolution`);
-    
     // Create a temporary canvas to render the RGBA mask at original size
     const tempCanvas = document.createElement('canvas');
     tempCanvas.width = originalImageSize.width;
@@ -360,28 +300,13 @@ export default function CanvasDisplay({
     onProcessingStart?.(); // Notify parent that processing has started
     try {
       // Convert mask to proper RGBA format for OpenAI
-      console.log('Converting mask to RGBA format...');
       const maskBlob = await convertMaskToRGBA(maskCanvasRef.current);
-      
-      // Debug the mask before sending
-      if (maskBlob) {
-        await debugMask(maskBlob);
-      }
-      
-      // Debug mask data before sending
-      await debugMask(maskBlob!);
       
       // Use the original image file, not the scaled canvas version
       // The OpenAI API expects the mask to match the original image dimensions
       const maskFile = maskBlob
         ? new File([maskBlob], 'mask.png', { type: 'image/png' })
         : undefined;
-      
-      console.log('Submitting to OpenAI with:', {
-        originalImageSize: image.size,
-        maskSize: maskFile?.size,
-        hasMask: !!maskFile
-      });
       
       const result = await editImage(image, prompt || 'Edit', maskFile);
       setEta(result.eta_seconds ?? null);
@@ -397,7 +322,7 @@ export default function CanvasDisplay({
     } finally {
       setSubmitting(false);
     }
-  }, [image, maskCanvasRef, baseRef, isMaskCanvasInitialized, prompt, onRequestId, onError, convertMaskToRGBA, debugMask]);
+  }, [image, maskCanvasRef, baseRef, isMaskCanvasInitialized, prompt, onRequestId, onError, convertMaskToRGBA]);
 
   // Update the ref whenever handleSubmit changes
   useEffect(() => {
