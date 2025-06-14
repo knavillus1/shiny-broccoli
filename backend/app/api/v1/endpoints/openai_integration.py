@@ -5,6 +5,8 @@ from __future__ import annotations
 import asyncio
 import logging
 import time
+import os
+from pathlib import Path
 
 from fastapi import (
     APIRouter,
@@ -25,6 +27,21 @@ from backend.services import task_manager
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
+
+def save_debug_mask(mask_bytes: bytes) -> None:
+    """Save mask file to root directory for debugging purposes."""
+    try:
+        # Get the project root directory (parent of backend)
+        current_dir = Path(__file__).parent
+        project_root = current_dir.parent.parent.parent.parent  # Go up to project root
+        mask_path = project_root / "mask.png"
+        
+        with open(mask_path, "wb") as f:
+            f.write(mask_bytes)
+        
+        logger.info(f"Debug mask saved to: {mask_path}")
+    except Exception as e:
+        logger.error(f"Failed to save debug mask: {e}")
 
 
 async def _process_request(
@@ -85,6 +102,9 @@ async def edit_image(
             logger.info(f"Mask size: {len(mask_bytes)} bytes")
             logger.info(f"Mask content type: {mask.content_type}")
             logger.info(f"Mask filename: {mask.filename}")
+            
+            # Save debug mask to root directory
+            save_debug_mask(mask_bytes)
             
             # Quick check for PNG header
             if mask_bytes.startswith(b'\x89PNG'):

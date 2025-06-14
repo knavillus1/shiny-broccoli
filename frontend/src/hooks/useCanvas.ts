@@ -24,6 +24,13 @@ export default function useCanvas() {
       return;
     }
     const canvas = canvasRef.current;
+    
+    // Don't reinitialize if already initialized with the same size
+    if (isInitialized && canvas.width === width && canvas.height === height) {
+      console.log("Canvas already initialized with correct size, skipping reinitialization");
+      return;
+    }
+    
     canvas.width = width;
     canvas.height = height;
 
@@ -33,17 +40,21 @@ export default function useCanvas() {
       return;
     }
 
-    ctx.clearRect(0, 0, width, height);
-    try {
-      const initialImageData = ctx.getImageData(0, 0, width, height);
-      history.current = [initialImageData];
-      setHistoryIndex(0);
-      setIsInitialized(true);
-    } catch (e) {
-      console.error("Failed to get ImageData for history initialization:", e);
-      setIsInitialized(false);
+    // Only clear and reset history if this is a new initialization or size change
+    if (!isInitialized || canvas.width !== width || canvas.height !== height) {
+      ctx.clearRect(0, 0, width, height);
+      try {
+        const initialImageData = ctx.getImageData(0, 0, width, height);
+        history.current = [initialImageData];
+        setHistoryIndex(0);
+        setIsInitialized(true);
+        console.log(`Canvas initialized with size ${width}x${height}`);
+      } catch (e) {
+        console.error("Failed to get ImageData for history initialization:", e);
+        setIsInitialized(false);
+      }
     }
-  }, []);
+  }, [isInitialized]);
 
   const getContext = useCallback(() => {
     if (!isInitialized || !canvasRef.current) return null;

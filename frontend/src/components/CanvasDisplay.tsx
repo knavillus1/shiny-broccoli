@@ -73,7 +73,7 @@ export default function CanvasDisplay({
         const ctx = canvas.getContext('2d');
         ctx?.clearRect(0, 0, canvas.width, canvas.height);
       }
-      if (maskCanvasRef.current && isMaskCanvasInitialized) {
+      if (maskCanvasRef?.current && isMaskCanvasInitialized) {
         const maskCtx = maskCanvasRef.current.getContext('2d');
         maskCtx?.clearRect(0, 0, maskCanvasRef.current.width, maskCanvasRef.current.height);
       }
@@ -109,13 +109,46 @@ export default function CanvasDisplay({
       canvas.width = img.width * scale;
       canvas.height = img.height * scale;
       
+      console.log(`Canvas resized to: ${canvas.width}x${canvas.height}, scale: ${scale}`);
+      
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-      if (maskCanvasRef.current) {
+      if (maskCanvasRef?.current) {
+        const oldWidth = maskCanvasRef.current.width;
+        const oldHeight = maskCanvasRef.current.height;
+        
+        // Store existing mask data if canvas was already initialized
+        let existingMaskData: ImageData | null = null;
+        const maskCtx = maskCanvasRef.current.getContext('2d');
+        if (maskCtx && isMaskCanvasInitialized && oldWidth > 0 && oldHeight > 0) {
+          try {
+            existingMaskData = maskCtx.getImageData(0, 0, oldWidth, oldHeight);
+          } catch (e) {
+            console.log("Could not preserve existing mask data:", e);
+          }
+        }
+        
         // Ensure mask canvas has the same dimensions as the base canvas
         maskCanvasRef.current.width = canvas.width;
         maskCanvasRef.current.height = canvas.height;
+        
+        console.log(`Mask canvas resized from ${oldWidth}x${oldHeight} to ${canvas.width}x${canvas.height}`);
+        
+        // If we have existing mask data and the canvas size hasn't changed, restore it
+        if (existingMaskData && oldWidth === canvas.width && oldHeight === canvas.height && maskCtx) {
+          try {
+            maskCtx.putImageData(existingMaskData, 0, 0);
+            console.log("Restored existing mask data after canvas update");
+          } catch (e) {
+            console.log("Failed to restore mask data:", e);
+            maskCtx.clearRect(0, 0, canvas.width, canvas.height);
+          }
+        } else if (maskCtx) {
+          // Only clear if size changed or no existing data
+          maskCtx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+        
         onMaskCanvasReady(canvas.width, canvas.height);
       }
     };
@@ -139,7 +172,7 @@ export default function CanvasDisplay({
       x: event.clientX - rect.left,
       y: event.clientY - rect.top,
     };
-    console.log(`Coords: click(${event.clientX},${event.clientY}) -> canvas(${coords.x},${coords.y})`);
+    console.log(`Coords: click(${event.clientX},${event.clientY}) -> canvas(${coords.x},${coords.y}), rect: ${rect.left},${rect.top}`);
     return coords;
   }, []);
 
@@ -241,6 +274,8 @@ export default function CanvasDisplay({
     const ctx = canvas.getContext('2d');
     if (!ctx) return null;
     
+    console.log(`Converting mask canvas ${canvas.width}x${canvas.height} to RGBA format`);
+    
     // Get the current canvas image data
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
@@ -248,6 +283,8 @@ export default function CanvasDisplay({
     // Create a new ImageData for the RGBA mask
     const maskData = new ImageData(canvas.width, canvas.height);
     const mask = maskData.data;
+    
+    let drawnPixels = 0;
     
     // Convert the mask: 
     // - Areas that were drawn (have any opacity) become transparent (alpha=0) - to be edited
@@ -261,6 +298,7 @@ export default function CanvasDisplay({
         mask[i + 1] = 0; // G
         mask[i + 2] = 0; // B
         mask[i + 3] = 0; // A - transparent (edit this area)
+        drawnPixels++;
       } else {
         // This pixel was not drawn on - make it opaque in the mask (preserve this area)
         mask[i] = 0;       // R
@@ -269,6 +307,8 @@ export default function CanvasDisplay({
         mask[i + 3] = 255; // A - opaque (preserve this area)
       }
     }
+    
+    console.log(`Mask conversion: ${drawnPixels} drawn pixels out of ${data.length / 4} total pixels`);
     
     // Create a temporary canvas to render the RGBA mask
     const tempCanvas = document.createElement('canvas');
@@ -393,7 +433,11 @@ export default function CanvasDisplay({
             <canvas
               ref={baseRef}
               id="image-canvas"
-              style={{ display: image ? 'block' : 'none' }}
+              style={{ 
+                display: image ? 'block' : 'none',
+                position: 'relative',
+                zIndex: 1
+              }}
               className="border block"
             />
             {image && (
@@ -407,8 +451,13 @@ export default function CanvasDisplay({
                   opacity: 0.7, 
                   touchAction: 'none',
                   pointerEvents: 'none',
+                  zIndex: 2,
+                  // Ensure exact alignment with base canvas
+                  margin: 0,
+                  padding: 0,
+                  border: '1px solid transparent', // Match border without visual impact
                 }}
-                className="border block"
+                className="block"
               />
             )}
             {submitting && <ProgressIndicator message={submitMsg} etaSeconds={eta} />}
