@@ -41,6 +41,7 @@ export default function ResultsDisplay({ original, result, error }: Props) {
       URL.revokeObjectURL(url);
     };
   }, [result]);
+  
   return (
     <div>
       <button
@@ -66,12 +67,30 @@ export default function ResultsDisplay({ original, result, error }: Props) {
       {mode === 'side-by-side' ? (
         <div className="flex gap-4" aria-label="results-display" data-mode="side-by-side">
           {origUrl ? (
-            <img src={origUrl} alt="original" className="max-w-xs" loading="lazy" />
+            <img 
+              src={origUrl} 
+              alt="original" 
+              style={{ 
+                width: '320px', 
+                height: '320px',
+                objectFit: 'contain'
+              }}
+              loading="lazy" 
+            />
           ) : (
             <div>No original</div>
           )}
           {resultUrl ? (
-            <img src={resultUrl} alt="result" className="max-w-xs" loading="lazy" />
+            <img 
+              src={resultUrl} 
+              alt="result" 
+              style={{ 
+                width: '320px', 
+                height: '320px',
+                objectFit: 'contain'
+              }}
+              loading="lazy" 
+            />
           ) : error ? (
             <div className="text-red-600">Error: {error}</div>
           ) : (
@@ -85,7 +104,17 @@ export default function ResultsDisplay({ original, result, error }: Props) {
           data-mode="overlay"
         >
           {origUrl ? (
-            <img src={origUrl} alt="original" className="max-w-xs block" loading="lazy" />
+            <img 
+              src={origUrl} 
+              alt="original" 
+              style={{ 
+                width: '320px', 
+                height: '320px',
+                objectFit: 'contain'
+              }}
+              className="block" 
+              loading="lazy" 
+            />
           ) : (
             <div>No original</div>
           )}
@@ -93,7 +122,12 @@ export default function ResultsDisplay({ original, result, error }: Props) {
             <img
               src={resultUrl}
               alt="result"
-              className="max-w-xs absolute left-0 top-0 opacity-50"
+              style={{ 
+                width: '320px', 
+                height: '320px',
+                objectFit: 'contain'
+              }}
+              className="absolute left-0 top-0 opacity-50"
               loading="lazy"
             />
           ) : error ? (

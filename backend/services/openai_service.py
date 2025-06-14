@@ -82,32 +82,14 @@ class OpenAIService:
                             target_size = s
                             break
 
-                    # Resize image to square using padding instead of stretching
+                    # Simple resize to square format for OpenAI
                     if orig_w != target_size or orig_h != target_size:
-                        # Create a new square image with transparent background
-                        square_img = Image.new('RGBA', (target_size, target_size), (0, 0, 0, 0))
-                        
-                        # Calculate scaling to fit within target_size while maintaining aspect ratio
-                        scale = min(target_size / orig_w, target_size / orig_h)
-                        new_w = int(orig_w * scale)
-                        new_h = int(orig_h * scale)
-                        
-                        # Resize original image maintaining aspect ratio
-                        resized_img = img_obj.resize((new_w, new_h), Image.Resampling.LANCZOS)
-                        
-                        # Calculate position to center the image
-                        paste_x = (target_size - new_w) // 2
-                        paste_y = (target_size - new_h) // 2
-                        
-                        # Paste the resized image onto the square canvas
-                        square_img.paste(resized_img, (paste_x, paste_y))
-                        
+                        img_obj = img_obj.resize((target_size, target_size), Image.Resampling.LANCZOS)
                         buf = BytesIO()
-                        square_img.save(buf, format="PNG", optimize=True)
+                        img_obj.save(buf, format="PNG", optimize=True)
                         png_image = buf.getvalue()
                         
-                        logger.info(f"Image padded from {orig_w}x{orig_h} to {target_size}x{target_size}, "
-                                  f"content at ({paste_x},{paste_y}) size {new_w}x{new_h}")
+                        logger.info(f"Image resized from {orig_w}x{orig_h} to {target_size}x{target_size}")
 
                     width = height = target_size
 
@@ -116,30 +98,12 @@ class OpenAIService:
                     with Image.open(BytesIO(png_mask)) as m_obj:
                         mask_w, mask_h = m_obj.size
                         if mask_w != target_size or mask_h != target_size:
-                            # Apply the same transformation to the mask as we did to the image
-                            square_mask = Image.new('RGBA', (target_size, target_size), (0, 0, 0, 255))  # Opaque background
-                            
-                            # Calculate scaling (should match image scaling)
-                            scale = min(target_size / mask_w, target_size / mask_h)
-                            new_mask_w = int(mask_w * scale)
-                            new_mask_h = int(mask_h * scale)
-                            
-                            # Resize mask maintaining aspect ratio
-                            resized_mask = m_obj.resize((new_mask_w, new_mask_h), Image.Resampling.LANCZOS)
-                            
-                            # Calculate position to center the mask (should match image positioning)
-                            paste_x = (target_size - new_mask_w) // 2
-                            paste_y = (target_size - new_mask_h) // 2
-                            
-                            # Paste the resized mask onto the square canvas
-                            square_mask.paste(resized_mask, (paste_x, paste_y))
-                            
+                            m_obj = m_obj.resize((target_size, target_size), Image.Resampling.LANCZOS)
                             mbuf = BytesIO()
-                            square_mask.save(mbuf, format="PNG", optimize=True)
+                            m_obj.save(mbuf, format="PNG", optimize=True)
                             png_mask = mbuf.getvalue()
                             
-                            logger.info(f"Mask padded from {mask_w}x{mask_h} to {target_size}x{target_size}, "
-                                      f"content at ({paste_x},{paste_y}) size {new_mask_w}x{new_mask_h}")
+                            logger.info(f"Mask resized from {mask_w}x{mask_h} to {target_size}x{target_size}")
             else:  # pragma: no cover - Pillow not installed
                 # This case should ideally not happen if frontend validates
                 # but as a fallback, try to get dimensions if possible

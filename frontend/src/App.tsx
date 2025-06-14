@@ -111,7 +111,12 @@ function App() {
                   <img 
                     src={URL.createObjectURL(result)} 
                     alt="Generated result" 
-                    className="max-w-full max-h-[70vh] object-contain border rounded shadow-lg" 
+                    style={{ 
+                      width: '320px', 
+                      height: '320px',
+                      objectFit: 'contain'
+                    }}
+                    className="border rounded shadow-lg" 
                     loading="lazy" 
                   />
                 </div>
