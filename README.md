@@ -37,7 +37,7 @@ Shiny Broccoli is a full-stack web application that provides an intuitive interf
 shiny-broccoli/
 ├── backend/                    # Python FastAPI backend
 │   ├── app/
-│   │   ├── api/v1/endpoints/  # API route handlers
+│   │   ├── api/v1/routers/    # API route handlers
 │   │   ├── core/              # Configuration and settings
 │   │   └── main.py            # FastAPI application entry point
 │   ├── services/              # Business logic and external integrations
@@ -149,7 +149,8 @@ The backend provides a RESTful API with the following main endpoints:
 - `GET /` - Health check and welcome message
 - `GET /api/v1/health` - Detailed health status
 - `POST /api/v1/images/edit` - Submit image editing request
-- `POST /api/v1/openai/edit` - Direct OpenAI integration endpoint
+- `GET /api/v1/images/status/{request_id}` - Check processing status
+- `GET /api/v1/images/download/{request_id}` - Download the edited image
 
 API documentation is available at `http://localhost:8000/docs` when running the backend.
 

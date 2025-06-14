@@ -1,5 +1,5 @@
 import io
-from backend.app.api.v1.routers import tasks as openai_integration
+from backend.app.api.v1.routers import tasks
 import httpx
 import openai
 import pytest
@@ -24,9 +24,9 @@ def make_error(error_cls, status_code=400):
 def test_edit_image(client, monkeypatch):
 
     async def immediate(request_id, image, mask, prompt, service, processor):
-        openai_integration.task_manager.set_result(request_id, {"detail": "ok"})
+        tasks.task_manager.set_result(request_id, {"detail": "ok"})
 
-    monkeypatch.setattr(openai_integration, "_process_request", immediate)
+    monkeypatch.setattr(tasks, "_process_request", immediate)
     file_content = io.BytesIO(b"data")
     response = client.post(
         "/api/v1/images/edit",
@@ -83,8 +83,8 @@ def test_edit_image_invalid_mask(client, monkeypatch):
 
 def test_get_status(client):
     task_id = "abc123"
-    openai_integration.task_manager.create_task(task_id)
-    openai_integration.task_manager.set_result(task_id, {"ok": True})
+    tasks.task_manager.create_task(task_id)
+    tasks.task_manager.set_result(task_id, {"ok": True})
     response = client.get(f"/api/v1/images/status/{task_id}")
     assert response.status_code == 200
     assert response.json() == {
@@ -105,9 +105,9 @@ def test_get_status(client):
 )
 def test_openai_error_mapping(client, monkeypatch, error_cls):
     async def fail_task(request_id, image, mask, prompt, service, processor):
-        openai_integration.task_manager.set_error(request_id, "boom")
+        tasks.task_manager.set_error(request_id, "boom")
 
-    monkeypatch.setattr(openai_integration, "_process_request", fail_task)
+    monkeypatch.setattr(tasks, "_process_request", fail_task)
     file_content = io.BytesIO(b"data")
     response = client.post(
         "/api/v1/images/edit",
@@ -133,10 +133,10 @@ async def test_process_request_sanitizes_error():
                 body=None,
             )
 
-    processor = openai_integration.AsyncImageProcessor()
+    processor = tasks.AsyncImageProcessor()
     request_id = "test1"
-    openai_integration.task_manager.create_task(request_id)
-    await openai_integration._process_request(
+    tasks.task_manager.create_task(request_id)
+    await tasks._process_request(
         request_id,
         b"i",
         None,
@@ -144,6 +144,6 @@ async def test_process_request_sanitizes_error():
         FailService(),
         processor,
     )
-    record = openai_integration.task_manager.get_task(request_id)
+    record = tasks.task_manager.get_task(request_id)
     assert record.status == "error"
     assert record.error == "OpenAI rate limit exceeded"

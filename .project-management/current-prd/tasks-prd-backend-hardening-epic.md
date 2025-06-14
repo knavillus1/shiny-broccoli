@@ -101,6 +101,9 @@ shiny-broccoli/
 - `backend/app/core/__init__.py` - **Removed empty module file**
 - `backend/tests/integration/test_openai_connectivity.py` - **Removed obsolete verify_connection test**
 - `backend/tests/unit/services/test_openai_service.py` - Updated for removed verify_connection
+- `backend/tests/unit/api/v1/test_tasks.py` - Renamed unit tests for tasks router
+- `README.md` - Updated API endpoint paths
+- `.project-management/current-prd/tasks-prd-backend-hardening-epic.md` - Task progress updates
 
 ### Notes
 
@@ -168,7 +171,7 @@ shiny-broccoli/
   - [x] 7.2 Remove unused `verify_connection()` method from `OpenAIService`
   - [x] 7.3 Clean up empty `backend/app/core/__init__.py` file
   - [x] 7.4 Remove pragma: no cover statements that will never execute in production
-  - [ ] 7.5 Update import statements throughout codebase for new structure
+  - [x] 7.5 Update import statements throughout codebase for new structure
   - [ ] 7.6 Organize service layer to separate business logic from infrastructure
-  - [ ] 7.7 Update `backend/tests/` structure to match new API organization
+  - [x] 7.7 Update `backend/tests/` structure to match new API organization
   - [x] 7.8 Run linting and formatting tools to ensure code quality standards
