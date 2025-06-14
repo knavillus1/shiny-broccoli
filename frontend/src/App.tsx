@@ -9,6 +9,7 @@ function App() {
   const [activeTab, setActiveTab] = useState<'editor' | 'result'>('editor');
   const [result, setResult] = useState<File | null>(null);
   const [error, setError] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const handleFileSelected = (file: File | null) => {
     setImageFile(file);
@@ -26,20 +27,30 @@ function App() {
 
   const handleResult = (file: File) => {
     setResult(file);
+    setIsProcessing(false); // Stop processing when result is received
     setActiveTab('result'); // Switch to results tab when result is available
   };
 
   const handleError = (errorMsg: string) => {
     setError(errorMsg);
+    setIsProcessing(false); // Stop processing on error
+  };
+
+  const handleProcessingStart = () => {
+    setIsProcessing(true);
+    setError(''); // Clear any previous errors
+    setActiveTab('result'); // Switch to results tab to show progress
   };
 
   const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (submitHandlerRef.current && imageFile && textPrompt) {
       try {
+        handleProcessingStart(); // Start processing indicator
         await submitHandlerRef.current();
       } catch (error) {
         console.error('Generation failed:', error);
+        setIsProcessing(false); // Stop processing on error
       }
     }
   };
@@ -90,12 +101,13 @@ function App() {
             onClick={() => setActiveTab('result')}
           >
             Result
+            {isProcessing && <span className="tab-processing-pie"></span>}
           </button>
         </div>
         <div className="content-container">
           <div id="editor-content" className={`tab-content ${activeTab === 'editor' ? 'active' : ''}`}>
             {/* Router renders HomePage. HomePage needs to receive imageFile and textPrompt as props, or access them via context */}
-            <Router image={imageFile} prompt={textPrompt} onSubmitReady={handleSubmitReady} onResult={handleResult} onError={handleError} />
+            <Router image={imageFile} prompt={textPrompt} onSubmitReady={handleSubmitReady} onResult={handleResult} onError={handleError} onProcessingStart={handleProcessingStart} />
           </div>
           <div id="result-content" className={`tab-content ${activeTab === 'result' ? 'active' : ''}`}>
             {/* The result image will be displayed here */}
@@ -124,6 +136,12 @@ function App() {
                     loading="lazy" 
                   />
                 </div>
+              </div>
+            ) : isProcessing ? (
+              <div className="processing-status">
+                <div className="spinner mb-4"></div>
+                <h3>Generating Image...</h3>
+                <p>This usually takes about 20 seconds</p>
               </div>
             ) : (
               <p>No results yet. Generate an image in the Editor tab to see results here.</p>

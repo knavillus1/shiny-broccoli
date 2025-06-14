@@ -10,6 +10,7 @@ interface Props {
   onError?: (msg: string) => void;
   onRequestId?: (id: string) => void;
   onSubmitReady?: (submitHandler: () => Promise<void>) => void;
+  onProcessingStart?: () => void;
 
   maskCanvasRef: React.RefObject<HTMLCanvasElement>;
   onMaskCanvasReady: (width: number, height: number) => void;
@@ -42,6 +43,7 @@ export default function CanvasDisplay({
   onError,
   onRequestId,
   onSubmitReady,
+  onProcessingStart,
   maskCanvasRef,
   onMaskCanvasReady,
   isMaskCanvasInitialized,
@@ -355,6 +357,7 @@ export default function CanvasDisplay({
     setSubmitMsg('Processing...');
     setSubmitError('');
     setEta(null);
+    onProcessingStart?.(); // Notify parent that processing has started
     try {
       // Convert mask to proper RGBA format for OpenAI
       console.log('Converting mask to RGBA format...');

@@ -11,9 +11,10 @@ interface HomePageProps {
   onSubmitReady?: (submitHandler: () => Promise<void>) => void;
   onResult?: (file: File) => void;
   onError?: (errorMsg: string) => void;
+  onProcessingStart?: () => void;
 }
 
-export default function HomePage({ image, prompt, onSubmitReady, onResult, onError }: HomePageProps) {
+export default function HomePage({ image, prompt, onSubmitReady, onResult, onError, onProcessingStart }: HomePageProps) {
   const [requestId, setRequestId] = useState<string | null>(null);
   const [maskVisible, setMaskVisible] = useState(true);
 
@@ -333,6 +334,7 @@ export default function HomePage({ image, prompt, onSubmitReady, onResult, onErr
         onError={onError}
         onRequestId={handleRequestId}
         onSubmitReady={onSubmitReady}
+        onProcessingStart={onProcessingStart}
         
         // Pass the ref object itself, not its .current property
         maskCanvasRef={maskCanvasRefForDisplay} 

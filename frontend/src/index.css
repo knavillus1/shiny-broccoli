@@ -408,3 +408,63 @@ input[type="file"] {
     color: var(--c-text-secondary); 
     margin-left: auto; 
 }
+
+/* ==== PROCESSING INDICATOR FOR TAB ==== */
+.tab-processing-indicator {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin-left: 6px;
+    border: 2px solid transparent;
+    border-top: 2px solid var(--c-primary-action);
+    border-radius: 50%;
+    animation: tabSpinner 1s linear infinite;
+    vertical-align: middle;
+}
+
+@keyframes tabSpinner {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Alternative pie chart style - more elegant */
+.tab-processing-pie {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin-left: 6px;
+    border-radius: 50%;
+    background: conic-gradient(var(--c-primary-action) 0deg, var(--c-primary-action) 0deg, transparent 0deg);
+    animation: tabPie 2s linear infinite;
+    vertical-align: middle;
+}
+
+@keyframes tabPie {
+    0% { background: conic-gradient(var(--c-primary-action) 0deg, transparent 0deg); }
+    25% { background: conic-gradient(var(--c-primary-action) 90deg, transparent 90deg); }
+    50% { background: conic-gradient(var(--c-primary-action) 180deg, transparent 180deg); }
+    75% { background: conic-gradient(var(--c-primary-action) 270deg, transparent 270deg); }
+    100% { background: conic-gradient(var(--c-primary-action) 360deg, transparent 360deg); }
+}
+
+/* ==== PROCESSING STATUS DISPLAY ==== */
+.processing-status {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    color: var(--c-text-secondary);
+}
+
+.processing-status h3 {
+    color: var(--c-text-primary);
+    font-weight: var(--font-weight-medium);
+    margin-bottom: 0.5rem;
+}
+
+.processing-status p {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
