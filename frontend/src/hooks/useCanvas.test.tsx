@@ -15,22 +15,34 @@ describe('useCanvas', () => {
   it('clears the canvas', () => {
     const { result } = renderHook(() => useCanvas());
     const canvas = document.createElement('canvas');
-    const fillRect = vi.fn();
-    canvas.getContext = vi.fn(
+    canvas.width = 10;
+    canvas.height = 10;
+    const clearRect = vi.fn();
+    (canvas as any).getContext = vi.fn(
       () =>
         ({
-          fillRect,
-          getImageData: vi.fn(() => ({ data: new Uint8ClampedArray(1) })),
+          clearRect,
+          getImageData: vi.fn(() => ({ data: new Uint8ClampedArray(400) })), // 10x10x4 channels
           putImageData: vi.fn(),
           globalCompositeOperation: 'source-over',
           fillStyle: 'white',
         } as unknown as CanvasRenderingContext2D),
     );
-    result.current.canvasRef.current = canvas;
+    
+    // Mock the ref assignment
+    Object.defineProperty(result.current.canvasRef, 'current', {
+      value: canvas,
+      writable: true,
+    });
+    
+    // Initialize the canvas first
+    act(() => {
+      result.current.initializeCanvasWithSize(10, 10);
+    });
     act(() => {
       result.current.clear();
     });
-    expect(fillRect).toHaveBeenCalled();
+    expect(clearRect).toHaveBeenCalled();
   });
 
   it('updates brush size', () => {
@@ -55,17 +67,28 @@ describe('useCanvas', () => {
     canvas.width = 10;
     canvas.height = 10;
     const putImageData = vi.fn();
-    const getImageData = vi.fn(() => ({ data: new Uint8ClampedArray(1) }));
-    canvas.getContext = vi.fn(() =>
+    const getImageData = vi.fn(() => ({ data: new Uint8ClampedArray(400) })); // 10x10x4 channels
+    (canvas as any).getContext = vi.fn(() =>
       ({
         fillRect: vi.fn(),
+        clearRect: vi.fn(),
         getImageData,
         putImageData,
         globalCompositeOperation: 'source-over',
         fillStyle: 'white',
       } as unknown as CanvasRenderingContext2D),
     );
-    result.current.canvasRef.current = canvas;
+    
+    // Mock the ref assignment
+    Object.defineProperty(result.current.canvasRef, 'current', {
+      value: canvas,
+      writable: true,
+    });
+
+    // Initialize the canvas first
+    act(() => {
+      result.current.initializeCanvasWithSize(10, 10);
+    });
 
     act(() => {
       result.current.clear();
@@ -90,13 +113,24 @@ describe('useCanvas', () => {
     canvas.height = 10;
     const ctx = {
       fillRect: vi.fn(),
-      getImageData: vi.fn(() => ({ data: new Uint8ClampedArray(1) })),
+      clearRect: vi.fn(),
+      getImageData: vi.fn(() => ({ data: new Uint8ClampedArray(400) })), // 10x10x4 channels
       putImageData: vi.fn(),
       globalCompositeOperation: 'source-over',
       fillStyle: 'white',
     } as unknown as CanvasRenderingContext2D;
-    canvas.getContext = vi.fn(() => ctx);
-    result.current.canvasRef.current = canvas;
+    (canvas as any).getContext = vi.fn(() => ctx);
+    
+    // Mock the ref assignment
+    Object.defineProperty(result.current.canvasRef, 'current', {
+      value: canvas,
+      writable: true,
+    });
+
+    // Initialize the canvas first
+    act(() => {
+      result.current.initializeCanvasWithSize(10, 10);
+    });
 
     for (let i = 0; i < MAX_HISTORY + 5; i++) {
       act(() => {
@@ -111,6 +145,6 @@ describe('useCanvas', () => {
       });
       count += 1;
     }
-    expect(count).toBe(MAX_HISTORY);
+    expect(count).toBe(MAX_HISTORY - 1); // -1 because the initial state takes one slot
   });
 });

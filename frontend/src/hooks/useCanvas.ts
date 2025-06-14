@@ -3,6 +3,8 @@ import { useRef, useState, useCallback } from 'react';
 export type BrushSize = 'small' | 'medium' | 'large';
 export type Tool = 'brush' | 'rectangle' | 'circle';
 
+export const MAX_HISTORY = 10;
+
 const brushSizeMap: Record<BrushSize, number> = { small: 5, medium: 10, large: 20 };
 
 export default function useCanvas() {
@@ -66,8 +68,16 @@ export default function useCanvas() {
       const currentImageData = ctx.getImageData(0, 0, canvasRef.current.width, canvasRef.current.height);
       const newHistory = history.current.slice(0, historyIndex + 1);
       newHistory.push(currentImageData);
+      
+      // Limit history to MAX_HISTORY
+      if (newHistory.length > MAX_HISTORY) {
+        newHistory.shift(); // Remove oldest entry
+        setHistoryIndex(Math.max(0, newHistory.length - 1));
+      } else {
+        setHistoryIndex(newHistory.length - 1);
+      }
+      
       history.current = newHistory;
-      setHistoryIndex(newHistory.length - 1);
     } catch (e) {
       // Failed to save canvas state
     }
