@@ -33,7 +33,12 @@ export default class ErrorBoundary extends React.Component<Props, State> {
       return (
         <div role="alert">
           {this.props.fallback || <p>Something went wrong.</p>}
-          <button type="button" onClick={this.handleReset}>
+          <button
+            type="button"
+            aria-label="Reset error"
+            onClick={this.handleReset}
+            className="focus:outline focus:outline-blue-500"
+          >
             Try again
           </button>
         </div>

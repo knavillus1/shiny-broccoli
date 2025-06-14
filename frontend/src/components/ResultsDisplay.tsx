@@ -45,10 +45,11 @@ export default function ResultsDisplay({ original, result, error }: Props) {
     <div>
       <button
         type="button"
+        aria-label="Toggle result display mode"
         onClick={() =>
           setMode((m) => (m === 'side-by-side' ? 'overlay' : 'side-by-side'))
         }
-        className="mb-2 px-2 py-1 border rounded"
+        className="mb-2 px-2 py-1 border rounded focus:outline focus:outline-blue-500"
       >
         {mode === 'side-by-side' ? 'Overlay' : 'Side by Side'}
       </button>
@@ -56,7 +57,7 @@ export default function ResultsDisplay({ original, result, error }: Props) {
         <a
           href={resultUrl}
           download="result.png"
-          className="ml-2 underline"
+          className="ml-2 underline focus:outline focus:outline-blue-500"
           aria-label="download-result"
         >
           Download

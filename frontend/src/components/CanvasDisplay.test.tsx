@@ -47,8 +47,11 @@ global.URL.revokeObjectURL = vi.fn();
 describe('CanvasDisplay', () => {
   it('toggles mask visibility and submits', async () => {
     const file = new File(['data'], 'test.png', { type: 'image/png' });
-    const { getByText } = render(<CanvasDisplay image={file} prompt="edit" />);
+    const { getByText, getByLabelText } = render(
+      <CanvasDisplay image={file} prompt="edit" />,
+    );
     await waitFor(() => getByText('Switch to Erase'));
+    expect(getByLabelText('Toggle draw or erase mode')).toBeTruthy();
     const toggle = getByText('Hide Mask');
     fireEvent.click(toggle);
     expect(toggle.textContent).toBe('Show Mask');

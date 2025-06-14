@@ -95,10 +95,17 @@
 - `README.md` - Add beginner-friendly tutorial.
 - `DEVELOPMENT.md` - Document full environment setup steps.
 - `dev_init.sh` - Utilize `.env.template` files if `.env` is missing.
-- `frontend/src/components/PromptInput.tsx` - Include sample prompts.
-- `frontend/src/components/FileUpload.tsx` - Add accessible labels.
-- `frontend/src/components/CanvasDisplay.tsx` - Ensure focus outlines.
+- `frontend/src/components/PromptInput.tsx` - Include sample prompts and accessibility improvements.
+- `frontend/src/components/FileUpload.tsx` - Add accessible labels and focus states.
+- `frontend/src/components/CanvasDisplay.tsx` - Ensure focus outlines and labels.
+- `frontend/src/components/ResultsDisplay.tsx` - Add accessible toggle labels.
+- `frontend/src/components/ErrorBoundary.tsx` - Label reset button.
+- `frontend/src/components/MaskToolbar.tsx` - Improve focus visibility on inputs.
+- `frontend/src/components/PromptInput.test.tsx` - Test placeholder prompt.
+- `frontend/src/components/FileUpload.test.tsx` - Test upload button label.
+- `frontend/src/components/CanvasDisplay.test.tsx` - Check accessibility label.
 - `CHANGELOG.md` - Record progress entries.
+- `.project-management/current-prd/tasks-prd-polish-learning-epic.md` - Update task status.
 
 ## Tasks
 
@@ -113,11 +120,11 @@
   - [x] 2.3 Create `.env.template` files for backend and frontend.
   - [x] 2.4 Update `dev_init.sh` to copy `.env.template` when `.env` is missing.
 
-- [ ] 3.0 Improve UI Prompting and Accessibility (FR6, FR7)
-  - [ ] 3.1 Provide example prompts within `PromptInput.tsx`.
-  - [ ] 3.2 Ensure all forms and buttons have accessible labels.
-  - [ ] 3.3 Add focus states for interactive elements.
-  - [ ] 3.4 Update or create tests for new prompts and accessibility attributes.
+- [x] 3.0 Improve UI Prompting and Accessibility (FR6, FR7)
+  - [x] 3.1 Provide example prompts within `PromptInput.tsx`.
+  - [x] 3.2 Ensure all forms and buttons have accessible labels.
+  - [x] 3.3 Add focus states for interactive elements.
+  - [x] 3.4 Update or create tests for new prompts and accessibility attributes.
 
 - [ ] 4.0 Verify Success Metrics (SM1-SM3)
   - [x] 4.1 Run `run_tests.sh -no_integration` and ensure it passes.
