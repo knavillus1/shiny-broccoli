@@ -13,7 +13,7 @@ Follow the remaining guidelines below to manage this file.
 
 ## Task Implementation
 - **Task committment**
-  1. Anayze the tasks and select those that can be completed in one task run
+  1. Anayze the tasks and select those that can be completed in one task run, ideally such that completeion of the task run results in runnable code that preserves existing function and adds complete new features, or components of forthcoming features.
   2. Make your selections by marking them complete and saving the file like so `[c]`
 - **Completion protocol:**  
   1. When you finish a **sub‑task**, immediately mark it as completed by changing `[ ]` to `[x]`.  
