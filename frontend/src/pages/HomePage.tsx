@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { fetchEditStatus } from '../services/apiClient';
+import { fetchEditStatus, downloadResultImage } from '../services/apiClient';
 import CanvasDisplay from '../components/CanvasDisplay';
 import ResultsDisplay from '../components/ResultsDisplay';
 import ErrorBoundary from '../components/ErrorBoundary';
@@ -85,21 +85,55 @@ export default function HomePage({ image, prompt, onSubmitReady }: HomePageProps
           
           const resultData = status.result?.data?.[0];
           if (resultData?.url) {
-            console.log('Found URL:', resultData.url);
+            console.log('Found URL, downloading via backend proxy...');
             try {
-              const res = await fetch(resultData.url);
-              const blob = await res.blob();
+              const blob = await downloadResultImage(requestId);
+              console.log('Successfully downloaded image via proxy, blob size:', blob.size);
+              
               const file = new File([blob], 'result.png', { type: 'image/png' });
               if (!cancelled) {
                 setResult(file);
                 setError('');
                 setRequestId(null); // Clear request ID after successful completion
               }
-            } catch (fetchError) {
-              console.error('Failed to fetch result image:', fetchError);
-              if (!cancelled) {
-                setError('Failed to download the generated image');
-                setRequestId(null);
+            } catch (downloadError) {
+              console.error('Failed to download via proxy, trying direct fetch...', downloadError);
+              
+              // Fallback to direct fetch
+              try {
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                console.log('Fetching image directly from URL...');
+                const res = await fetch(resultData.url, {
+                  mode: 'cors',
+                  credentials: 'omit'
+                });
+                
+                if (!res.ok) {
+                  throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+                }
+                
+                console.log('Successfully fetched image directly, creating blob...');
+                const blob = await res.blob();
+                console.log('Blob created, size:', blob.size);
+                
+                const file = new File([blob], 'result.png', { type: 'image/png' });
+                if (!cancelled) {
+                  setResult(file);
+                  setError('');
+                  setRequestId(null);
+                }
+              } catch (fetchError) {
+                console.error('Direct fetch also failed:', fetchError);
+                console.error('Error details:', {
+                  message: fetchError.message,
+                  stack: fetchError.stack,
+                  url: resultData.url
+                });
+                if (!cancelled) {
+                  setError(`Failed to download the generated image: ${fetchError.message}`);
+                  setRequestId(null);
+                }
               }
             }
           } else if (resultData?.b64_json) {

@@ -14,6 +14,7 @@ from fastapi import (
     HTTPException,
     status,
     BackgroundTasks,
+    Response,
 )
 import openai
 from uuid import uuid4
@@ -76,6 +77,23 @@ async def edit_image(
     try:
         img_bytes = await image.read()
         mask_bytes = await mask.read() if mask else None
+        
+        # Debug mask information
+        logger.info(f"=== MASK DEBUG (Backend) ===")
+        logger.info(f"Image size: {len(img_bytes)} bytes")
+        if mask_bytes:
+            logger.info(f"Mask size: {len(mask_bytes)} bytes")
+            logger.info(f"Mask content type: {mask.content_type}")
+            logger.info(f"Mask filename: {mask.filename}")
+            
+            # Quick check for PNG header
+            if mask_bytes.startswith(b'\x89PNG'):
+                logger.info("Mask has valid PNG header")
+            else:
+                logger.warning("Mask does not have valid PNG header")
+        else:
+            logger.info("No mask provided")
+        
         request_id = uuid4().hex
         eta_seconds = 30
         task_manager.create_task(request_id, eta_seconds)
@@ -154,3 +172,46 @@ async def get_status(request_id: str) -> dict[str, object]:
         response["error"] = record.error
     logger.info(f"Status response for {request_id}: {response}")
     return response
+
+
+@router.get("/images/download/{request_id}")
+async def download_result(request_id: str):
+    """Download the result image for a completed request."""
+    logger.info(f"/images/download called for {request_id}")
+    record = task_manager.get_task(request_id)
+    if record is None:
+        raise HTTPException(status_code=404, detail="Request not found")
+
+    if record.status != "completed" or record.result is None:
+        raise HTTPException(
+            status_code=400,
+            detail="Request not completed or no result available",
+        )
+
+    # Extract URL from the result
+    result_data = record.result.get("data", [])
+    if not result_data or not result_data[0].get("url"):
+        raise HTTPException(status_code=400, detail="No image URL found in result")
+
+    image_url = result_data[0]["url"]
+    logger.info(f"Downloading image from OpenAI URL for {request_id}")
+
+    try:
+        import httpx
+
+        async with httpx.AsyncClient() as client:
+            response = await client.get(image_url)
+            response.raise_for_status()
+
+            return Response(
+                content=response.content,
+                media_type="image/png",
+                headers={
+                    "Content-Disposition": f"attachment; filename=result-{request_id}.png"
+                },
+            )
+    except Exception as e:
+        logger.error(f"Failed to download image for {request_id}: {e}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to download image: {str(e)}"
+        )

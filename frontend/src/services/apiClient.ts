@@ -113,3 +113,13 @@ export async function fetchEditStatus(requestId: string) {
   }
   return response.json();
 }
+
+export async function downloadResultImage(requestId: string) {
+  const response = await fetchWithRetry(
+    `${API_BASE_URL}/images/download/${requestId}`,
+  );
+  if (!response.ok) {
+    throw new Error(await parseError(response));
+  }
+  return response.blob();
+}

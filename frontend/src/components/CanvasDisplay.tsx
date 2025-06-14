@@ -189,6 +189,102 @@ export default function CanvasDisplay({
     }
   };
 
+  // Helper function to debug mask data
+  const debugMask = useCallback(async (maskBlob: Blob) => {
+    console.log('=== MASK DEBUG INFO ===');
+    console.log('Mask blob size:', maskBlob.size, 'bytes');
+    console.log('Mask blob type:', maskBlob.type);
+    
+    // Create a debug canvas to visualize the mask
+    const debugCanvas = document.createElement('canvas');
+    const img = new Image();
+    const url = URL.createObjectURL(maskBlob);
+    
+    return new Promise<void>((resolve) => {
+      img.onload = () => {
+        debugCanvas.width = img.width;
+        debugCanvas.height = img.height;
+        const ctx = debugCanvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0);
+          const imageData = ctx.getImageData(0, 0, img.width, img.height);
+          const data = imageData.data;
+          
+          let transparentPixels = 0;
+          let opaquePixels = 0;
+          let semiTransparentPixels = 0;
+          
+          for (let i = 3; i < data.length; i += 4) {
+            const alpha = data[i];
+            if (alpha === 0) transparentPixels++;
+            else if (alpha === 255) opaquePixels++;
+            else semiTransparentPixels++;
+          }
+          
+          console.log('Mask analysis:');
+          console.log('- Transparent pixels (edit areas):', transparentPixels);
+          console.log('- Opaque pixels (preserve areas):', opaquePixels);
+          console.log('- Semi-transparent pixels:', semiTransparentPixels);
+          console.log('- Total pixels:', data.length / 4);
+          console.log('- Edit area ratio:', (transparentPixels / (data.length / 4) * 100).toFixed(2) + '%');
+        }
+        URL.revokeObjectURL(url);
+        resolve();
+      };
+      img.src = url;
+    });
+  }, []);
+
+  // Convert mask canvas to proper RGBA format for OpenAI
+  const convertMaskToRGBA = useCallback(async (canvas: HTMLCanvasElement): Promise<Blob | null> => {
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+    
+    // Get the current canvas image data
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+    
+    // Create a new ImageData for the RGBA mask
+    const maskData = new ImageData(canvas.width, canvas.height);
+    const mask = maskData.data;
+    
+    // Convert the mask: 
+    // - Areas that were drawn (have any opacity) become transparent (alpha=0) - to be edited
+    // - Areas that are clear become opaque (alpha=255) - to be preserved
+    for (let i = 0; i < data.length; i += 4) {
+      const alpha = data[i + 3]; // Current alpha channel
+      
+      if (alpha > 0) {
+        // This pixel was drawn on - make it transparent in the mask (to be edited)
+        mask[i] = 0;     // R
+        mask[i + 1] = 0; // G
+        mask[i + 2] = 0; // B
+        mask[i + 3] = 0; // A - transparent (edit this area)
+      } else {
+        // This pixel was not drawn on - make it opaque in the mask (preserve this area)
+        mask[i] = 0;       // R
+        mask[i + 1] = 0;   // G
+        mask[i + 2] = 0;   // B
+        mask[i + 3] = 255; // A - opaque (preserve this area)
+      }
+    }
+    
+    // Create a temporary canvas to render the RGBA mask
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = canvas.width;
+    tempCanvas.height = canvas.height;
+    const tempCtx = tempCanvas.getContext('2d');
+    if (!tempCtx) return null;
+    
+    // Put the converted mask data onto the temporary canvas
+    tempCtx.putImageData(maskData, 0, 0);
+    
+    // Convert to blob
+    return new Promise<Blob | null>((resolve) => {
+      tempCanvas.toBlob(resolve, 'image/png');
+    });
+  }, []);
+
   const handleSubmit = useCallback(async () => {
     if (!image || !maskCanvasRef.current || !baseRef.current || !isMaskCanvasInitialized) return;
     setSubmitting(true);
@@ -196,20 +292,35 @@ export default function CanvasDisplay({
     setSubmitError('');
     setEta(null);
     try {
-      const [maskBlob, imgBlob] = await Promise.all([
-        new Promise<Blob | null>((resolve) =>
-          maskCanvasRef.current!.toBlob(resolve, 'image/png')
-        ),
-        new Promise<Blob | null>((resolve) =>
-          baseRef.current!.toBlob(resolve, 'image/png')
-        ),
-      ]);
+      // Convert mask to proper RGBA format for OpenAI
+      console.log('Converting mask to RGBA format...');
+      const maskBlob = await convertMaskToRGBA(maskCanvasRef.current);
+      
+      // Debug the mask before sending
+      if (maskBlob) {
+        await debugMask(maskBlob);
+      }
+      
+      // Debug mask data before sending
+      await debugMask(maskBlob!);
+      
+      const imgBlob = await new Promise<Blob | null>((resolve) =>
+        baseRef.current!.toBlob(resolve, 'image/png')
+      );
+      
       const maskFile = maskBlob
         ? new File([maskBlob], 'mask.png', { type: 'image/png' })
         : undefined;
       const imageFile = imgBlob
         ? new File([imgBlob], 'image.png', { type: 'image/png' })
         : image;
+      
+      console.log('Submitting to OpenAI with:', {
+        imageSize: imageFile.size,
+        maskSize: maskFile?.size,
+        hasMask: !!maskFile
+      });
+      
       const result = await editImage(imageFile, prompt || 'Edit', maskFile);
       setEta(result.eta_seconds ?? null);
       if (result.request_id) {
@@ -224,7 +335,7 @@ export default function CanvasDisplay({
     } finally {
       setSubmitting(false);
     }
-  }, [image, maskCanvasRef, baseRef, isMaskCanvasInitialized, prompt, onRequestId, onError]);
+  }, [image, maskCanvasRef, baseRef, isMaskCanvasInitialized, prompt, onRequestId, onError, convertMaskToRGBA, debugMask]);
 
   // Expose the submit handler to parent component
   useEffect(() => {
