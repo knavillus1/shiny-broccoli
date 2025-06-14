@@ -1,10 +1,14 @@
-"""Image upload and processing API endpoints."""
+"""Image upload and processing API endpoints using dependency injection."""
+
+from __future__ import annotations
 
 import logging
 import time
-from fastapi import APIRouter, UploadFile, File, HTTPException, status
+from typing import Awaitable, Callable
 
-from backend.services.image_processor import process_image
+from fastapi import APIRouter, UploadFile, File, HTTPException, status, Depends
+
+from backend.app.core.dependencies import get_process_image
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +24,6 @@ router = APIRouter()
 
 def _validate_file(file: UploadFile) -> None:
     """Validate uploaded file content type."""
-
     if file.content_type not in ALLOWED_TYPES:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -34,7 +37,6 @@ async def upload_image(file: UploadFile = File(...)):
     start = time.time()
     logger.info("/images/upload called")
     _validate_file(file)
-    # Stubbed processing: just acknowledge receipt
     result = {"filename": file.filename}
     logger.info("/images/upload completed in %.3f", time.time() - start)
     return result
@@ -42,7 +44,9 @@ async def upload_image(file: UploadFile = File(...)):
 
 @router.post("/images/process")
 async def process_endpoint(
-    file: UploadFile = File(...), mask: UploadFile | None = File(None)
+    file: UploadFile = File(...),
+    mask: UploadFile | None = File(None),
+    process_image: Callable[..., Awaitable[dict]] = Depends(get_process_image),
 ):
     """Process an image with an optional mask."""
     start = time.time()
