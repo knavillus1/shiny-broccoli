@@ -285,7 +285,7 @@ export default function CanvasDisplay({
     const { width: originalWidth, height: originalHeight, scale } = originalImageRef.current;
     
     console.log(`Converting mask canvas ${canvas.width}x${canvas.height} to RGBA format`);
-    console.log(`Scaling mask from display size to original image size: ${originalWidth}x${originalHeight}`);
+    console.log(`Scaling mask from display size to original image size: ${originalWidth}x${originalHeight} (scale factor: ${scale})`);
     
     // Create a canvas at the original image dimensions
     const scaledCanvas = document.createElement('canvas');
@@ -295,10 +295,16 @@ export default function CanvasDisplay({
     if (!scaledCtx) return null;
     
     // Scale the mask to the original image dimensions
-    // We need to scale up the mask by 1/scale factor
+    // The display canvas is scaled down by 'scale', so we scale up by 1/scale
     const scaleUpFactor = 1 / scale;
+    
+    // Set up the transformation
+    scaledCtx.save();
     scaledCtx.scale(scaleUpFactor, scaleUpFactor);
+    
+    // Draw the mask canvas scaled up to original dimensions
     scaledCtx.drawImage(canvas, 0, 0);
+    scaledCtx.restore();
     
     // Now get the image data from the scaled canvas
     const imageData = scaledCtx.getImageData(0, 0, originalWidth, originalHeight);
