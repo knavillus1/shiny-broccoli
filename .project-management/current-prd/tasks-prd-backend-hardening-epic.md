@@ -136,13 +136,13 @@ shiny-broccoli/
 
 
 - [ ] 5.0 Reorganize API Structure and Error Handling
-  - [ ] 5.1 Create `backend/app/api/v1/routers/` directory structure
-  - [ ] 5.2 Move `health.py` endpoint to `backend/app/api/v1/routers/health.py` with router patterns
+  - [x] 5.1 Create `backend/app/api/v1/routers/` directory structure
+  - [x] 5.2 Move `health.py` endpoint to `backend/app/api/v1/routers/health.py` with router patterns
   - [ ] 5.3 Move `images.py` endpoint to `backend/app/api/v1/routers/images.py` with dependency injection
   - [ ] 5.4 Move `openai_integration.py` functionality to `backend/app/api/v1/routers/tasks.py`
   - [ ] 5.5 Create `backend/app/core/errors.py` with RFC 7807 Problem Details models
   - [ ] 5.6 Implement global exception handler for `HTTPException` to Problem Details conversion
-  - [ ] 5.7 Update `backend/app/main.py` to use new router imports and exception handlers
+  - [x] 5.7 Update `backend/app/main.py` to use new router imports and exception handlers
   - [ ] 5.8 Add validation error handling with proper Problem Details format
   - [ ] 5.9 Replace raw OpenAI API errors with sanitized Problem Details responses
 

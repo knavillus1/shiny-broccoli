@@ -8,7 +8,7 @@ from .middleware import TimingMiddleware
 from .logging import setup_logging
 
 from .core.config import get_settings
-from .api.v1.endpoints.health import router as health_router
+from .api.v1.routers.health import router as health_router
 from .api.v1.endpoints.images import router as images_router
 from .api.v1.endpoints.openai_integration import router as openai_router
 

@@ -61,3 +61,4 @@
 2025-06-14 Added dependency injection system with tests
 2025-06-14 Added async image processor and updated OpenAI service
 2025-06-14 Added structlog dependency and structured logging module
+2025-06-14 Started API routers refactor with health endpoint move
