@@ -120,3 +120,30 @@ def test_openai_error_mapping(client, monkeypatch, error_cls):
     data = status_resp.json()
     assert data["status"] == "error"
     assert data["eta_seconds"] == 0
+
+
+@pytest.mark.asyncio
+async def test_process_request_sanitizes_error():
+    class FailService:
+        async def edit_image(self, image, mask, prompt, processor=None):
+            import httpx
+            raise openai.RateLimitError(
+                "boom",
+                response=httpx.Response(429, request=httpx.Request("POST", "http://")),
+                body=None,
+            )
+
+    processor = openai_integration.AsyncImageProcessor()
+    request_id = "test1"
+    openai_integration.task_manager.create_task(request_id)
+    await openai_integration._process_request(
+        request_id,
+        b"i",
+        None,
+        "prompt",
+        FailService(),
+        processor,
+    )
+    record = openai_integration.task_manager.get_task(request_id)
+    assert record.status == "error"
+    assert record.error == "OpenAI rate limit exceeded"

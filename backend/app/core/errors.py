@@ -31,3 +31,22 @@ def from_validation_error(exc: RequestValidationError) -> ProblemDetail:
     """Create a :class:`ProblemDetail` from a validation error."""
     title = HTTPStatus(422).phrase
     return ProblemDetail(title=title, detail=str(exc), status=422)
+
+
+def from_openai_error(exc) -> HTTPException:
+    """Map OpenAI errors to sanitized :class:`HTTPException` instances."""
+    import openai  # Local import to avoid hard dependency when not needed
+
+    if isinstance(exc, openai.BadRequestError):
+        return HTTPException(400, "Invalid request to OpenAI")
+    if isinstance(exc, (openai.AuthenticationError, openai.PermissionDeniedError)):
+        return HTTPException(401, "OpenAI authentication failed")
+    if isinstance(exc, openai.RateLimitError):
+        return HTTPException(429, "OpenAI rate limit exceeded")
+    if isinstance(exc, openai.APIConnectionError):
+        return HTTPException(502, "Failed to connect to OpenAI")
+    if isinstance(exc, openai.APITimeoutError):
+        return HTTPException(504, "OpenAI request timed out")
+    if isinstance(exc, openai.APIError):
+        return HTTPException(503, "OpenAI service error")
+    return HTTPException(500, "OpenAI error")

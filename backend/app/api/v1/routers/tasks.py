@@ -27,6 +27,7 @@ from backend.app.core.dependencies import (
     get_image_processor,
 )
 from backend.services.async_image_processor import AsyncImageProcessor
+from backend.app.core.errors import from_openai_error
 
 logger = logging.getLogger(__name__)
 
@@ -67,7 +68,10 @@ async def _process_request(
         logger.info(f"Result stored for request {request_id}")
     except Exception as exc:
         logger.exception(f"OpenAI edit failed for request {request_id}: {exc}")
-        task_manager.set_error(request_id, str(exc))
+        if isinstance(exc, openai.OpenAIError):
+            task_manager.set_error(request_id, from_openai_error(exc).detail)
+        else:
+            task_manager.set_error(request_id, str(exc))
 
 
 @router.post("/images/edit")
@@ -137,45 +141,9 @@ async def edit_image(
             openai_service,
             image_processor,
         )
-    except openai.BadRequestError as exc:
-        logger.warning("OpenAI bad request: %s", exc)
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(exc),
-        )
-    except (
-        openai.AuthenticationError,
-        openai.PermissionDeniedError,
-    ) as exc:
-        logger.warning("OpenAI auth error: %s", exc)
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=str(exc),
-        )
-    except openai.RateLimitError as exc:
-        logger.warning("OpenAI rate limit: %s", exc)
-        raise HTTPException(
-            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail=str(exc),
-        )
-    except openai.APIConnectionError as exc:
-        logger.warning("OpenAI connection error: %s", exc)
-        raise HTTPException(
-            status_code=status.HTTP_502_BAD_GATEWAY,
-            detail=str(exc),
-        )
-    except openai.APITimeoutError as exc:
-        logger.warning("OpenAI timeout: %s", exc)
-        raise HTTPException(
-            status_code=status.HTTP_504_GATEWAY_TIMEOUT,
-            detail=str(exc),
-        )
-    except openai.APIError as exc:
-        logger.warning("OpenAI API error: %s", exc)
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=str(exc),
-        )
+    except openai.OpenAIError as exc:
+        logger.warning("OpenAI error: %s", exc)
+        raise from_openai_error(exc)
     except Exception as exc:
         logger.exception("OpenAI edit failed")
         raise HTTPException(

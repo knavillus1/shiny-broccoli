@@ -66,3 +66,4 @@
 2025-06-14 Marked images router task complete
 2025-06-14 Added tasks router and RFC 7807 error handling
 2025-06-14 Added validation error handling and correlation ID logging
+2025-06-14 Sanitized OpenAI error handling
