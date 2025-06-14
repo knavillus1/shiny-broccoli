@@ -64,3 +64,4 @@
 2025-06-14 Started API routers refactor with health endpoint move
 2025-06-14 Moved images endpoint to routers
 2025-06-14 Marked images router task complete
+2025-06-14 Added tasks router and RFC 7807 error handling

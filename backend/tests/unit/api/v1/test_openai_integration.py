@@ -1,5 +1,5 @@
 import io
-from backend.app.api.v1.endpoints import openai_integration
+from backend.app.api.v1.routers import tasks as openai_integration
 import httpx
 import openai
 import pytest

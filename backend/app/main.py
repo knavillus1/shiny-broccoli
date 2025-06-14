@@ -10,12 +10,23 @@ from .logging import setup_logging
 from .core.config import get_settings
 from .api.v1.routers.health import router as health_router
 from .api.v1.routers.images import router as images_router
-from .api.v1.endpoints.openai_integration import router as openai_router
+from .api.v1.routers.tasks import router as openai_router
+from .core.errors import from_http_exception
+from fastapi import HTTPException, Request
+from fastapi.responses import JSONResponse
 
 settings = get_settings()
 setup_logging()
 
 app = FastAPI(title="Shiny Broccoli API")
+
+
+async def http_exception_handler(request: Request, exc: HTTPException) -> JSONResponse:
+    """Convert HTTPException to RFC 7807 Problem Details response."""
+    problem = from_http_exception(exc)
+    return JSONResponse(status_code=exc.status_code, content=problem.dict())
+
+app.add_exception_handler(HTTPException, http_exception_handler)
 
 app.add_middleware(
     CORSMiddleware,
