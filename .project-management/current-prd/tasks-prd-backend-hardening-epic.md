@@ -132,15 +132,6 @@ shiny-broccoli/
   - [ ] 3.6 Maintain existing API response format while improving performance
   - [ ] 3.7 Add performance logging to measure async optimization improvements
 
-- [ ] 4.0 Create Repository Pattern for Task Persistence
-  - [ ] 4.1 Create `backend/repositories/__init__.py` with repository base classes
-  - [ ] 4.2 Define `TaskRepository` abstract base class with `create_task`, `get_task`, `set_result`, `set_error` methods
-  - [ ] 4.3 Implement `InMemoryTaskRepository` in `backend/repositories/memory_task_repository.py`
-  - [ ] 4.4 Implement `RedisTaskRepository` in `backend/repositories/redis_task_repository.py` using redis-py
-  - [ ] 4.5 Add repository selection logic in dependencies based on environment configuration
-  - [ ] 4.6 Update `backend/services/task_manager.py` to use repository pattern instead of global dict
-  - [ ] 4.7 Create migration strategy to maintain existing task IDs during transition
-  - [ ] 4.8 Add repository health checks to startup sequence
 
 - [ ] 5.0 Reorganize API Structure and Error Handling
   - [ ] 5.1 Create `backend/app/api/v1/routers/` directory structure

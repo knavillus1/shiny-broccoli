@@ -1,143 +1,203 @@
-# codex-bootstrap
+# Shiny Broccoli
 
-codex-bootstrap is a starter template for a full-stack web application integrating a Python FastAPI backend with a React Vite frontend, with Codex agent task support.
+An AI-powered image editing application that uses OpenAI's image editing capabilities to modify images based on text prompts and custom masks.
 
-## Features
+## Overview
 
-- PRD and Task file creation within Codex via local IDE agent
-- Task orchestration and managment in Codex or local IDE agent
-- Agent managed local dev setup and application start up script `dev-init.sh`
-- Agent maintenance of dependencies, Codex environment startup script.
-    - Changes to `.codex/install.sh` must be manually propogated to teh Codex environment setup configuration, but required environment changes are saved to this file by the Codex agent.
-- Backend: Python 3, FastAPI, Uvicorn
-- Frontend: React 18, Vite, Tailwind CSS, React Router
-- Pre-configured linting and testing scripts
-# TaskMaster
-Starting with any description of a feature, this project supplies tooling to automate creation of PRD and Task List files, and then Codex agent (or local IDE agent) will manage work from this list, updating it as needed. There are four phases:
+Shiny Broccoli is a full-stack web application that provides an intuitive interface for AI-powered image editing. Users can upload images, create custom masks using drawing tools, and provide text prompts to generate edited versions of their images using OpenAI's DALL-E API.
 
-## PRD file creation
+### Key Features
 
-- Add feature specs and background to `.project-management/current-prd/prd-background/`:
-    - `feature-specification.md` containing feature specs with as much or little detail as needed.  Mandatory for running PRD creation in Codex.  For local IDE agent feature specs can be delivered via copilot.
-    - `design-mock.html` Optional design mockup file.
-    - `api-documentation.md` Optional documentation for feature techinical assistance.
-- Create the PRD:
-    - Codex: Start task in *Code* mode with just the phrase **CreatePrd**
-    - *or*
-    - Local IDE agent: Give focus to `create-prd.md` file, enter specs (or just  'go' if background has full feature specs).
-- There will be Q&A with the Agent, On Codex answer questions and resume in *Code* mode (Environment is spun up again)
-- Result should be a PRD file in `.project-management/current-prd/`
-- Merge PR to target branch
+- **Interactive Image Editor**: Upload PNG/JPEG images with a responsive canvas interface
+- **Mask Creation Tools**: Draw custom masks with adjustable brush sizes and shapes
+- **AI-Powered Editing**: Leverage OpenAI's image editing API for intelligent modifications
+- **Real-time Progress**: Live feedback during image processing
+- **Before/After Comparison**: Side-by-side display of original and edited images
+- **Download Results**: Save edited images locally
 
-## Task list file creation
-- Create Task List File:
-    - Codex: Start task in *Code* mode with just the phrase **CreateTasks**
-    - *or*
-    - Local IDE agent: Give focus to `generate-tasks.md` file and send **go** message
-- Q&A, answer and click code
-- Result should be a task list file at `.project-management/current-prd/`
-- Merge PR to target branch
+## Architecture
 
-## TaskMaster
+### Frontend
+- **Framework**: React 18 with TypeScript
+- **Build Tool**: Vite
+- **Routing**: React Router
+- **UI Components**: Custom canvas-based image editor with drawing tools
+- **Testing**: Vitest with React Testing Library
 
-- Once `.project-management/tasks/current-tasks.md` is created, the TaskMaster message can be used.  This will allow the agent to commit to one or more tasks in a session.  The task list file will be updated as part of the PR, with completed tasks checked off and relevant files updated as needed.
-- Start Codex in Code mode using the phrase *TaskMaster*.  This will corece the agent to reference `process-tasks-cloud.md' which picks one or more tasks to complete in the session.
-- *Alternatively, tasks can be executed by local agent with focus on `process-tasks-local.md' which will run one task at a time*
+### Backend
+- **Framework**: FastAPI (Python)
+- **API Integration**: OpenAI API for image editing
+- **Image Processing**: Pillow (PIL) for image optimization
+- **Testing**: pytest with async support
+- **Documentation**: Auto-generated OpenAPI/Swagger docs
 
-## Feature Close
-- Perform final feature review
-    - Codex: Start task in *Code* mode with just the phrase **ClosePrd**
-    - *or*
-    - Local IDE agent: Give focus to `close-prd.md` file and send **go** message
-- Review will either:
-    - Result in flagged changes - review and resubmit the close out
-    - Pass review and close the PRD - feature files are moved from `current-prd` to `closed-prd`
+## Project Structure
 
-# Project Notes
-## Structure
+```
+shiny-broccoli/
+├── backend/                    # Python FastAPI backend
+│   ├── app/
+│   │   ├── api/v1/endpoints/  # API route handlers
+│   │   ├── core/              # Configuration and settings
+│   │   └── main.py            # FastAPI application entry point
+│   ├── services/              # Business logic and external integrations
+│   └── tests/                 # Backend test suite
+├── frontend/                  # React TypeScript frontend
+│   ├── src/
+│   │   ├── components/        # Reusable UI components
+│   │   ├── hooks/             # Custom React hooks
+│   │   ├── pages/             # Route components
+│   │   └── services/          # API client and utilities
+│   └── tests/                 # Frontend test suite
+└── docs/                      # User documentation
+```
 
-- `AGENTS.md`: Instructions for Codex agents
-*These files are under control and watch by the Codex agent and will be updated as project tasks demand.*
-- `CHANGELOG.md`: Project change history
-- `DEVELOPMENT.md`: Developer setup and local testing instructions
-- `README.md`: Project overview and file descriptions
-- `dev_init.sh`: Script to initialize development environment and start services
-- `.codex/install.sh`: Codex Environment Setup script for dependencies and environment
-- `run_tests.sh`: Initial script to run tests across backend and frontend
-- `backend/requirements.txt`: Python dependencies with initial common pacakges
-- `frontend/`
-    - `package.json`: npm dependencies and scripts for frontend
-    - `eslint.config.js`: ESLint configuration(e.g., .NET)
-- `.flake8` python flake8 configuration for linting
-
-*Project managment instruction prompts derived from [snarktank/ai-dev-tasks](https://github.com/snarktank/ai-dev-tasks) under Apache License 2.0*
-- `.project-management/` 
-    - `create-prd.md`: Instructions and rules for generating a Product Requirements Document (PRD) via AI, including clarifying questions and output location.
-    - `generate-tasks.md`: Instructions for generating a step-by-step task list from a PRD, including process and file naming conventions.
-    - `process-tasks-cloud.md`: TaskMaster module rules for managing and marking tasks as committed or completed in a cloud workflow.
-    - `process-tasks-local.md`: TaskMaster module rules for local task management, including sub-task completion protocol and user confirmation steps.
-    - `close-prd.md`: Instructions and rules for generating a final PRD feature review, to either provide final cleanup or closeout.
-    - `prd-background/`: Feature background and html design mockups for current feature
-        - `archive-prd/`: Archived PRDs and Task lists
-        - `close-prd/`: Closed PRDs and Task lists, but reviewed during subsequent PRD creation to provide previously completed dev context
-        - `current-prd/`: Current PRD and Task list for the feature under active development
-            - `prd-background/`: feature background `design-mock.html`, `api-document.md` etc... If using Codex-cloud PRD creation, feature specification should be found at `feature-specification.md`
-
-## Target Technologies
-
-- Python 3.x
-- FastAPI
-- Uvicorn
-- React 18
-- Vite
-- Tailwind CSS
-- React Router
-
-## Codex Environment Setup
-Go to https://chatgpt.com/codex/settings/environments, select or create your github-connected environment then Edit -> Advanced and copy-paste install.sh into the startup script textbox. Save
-*End of document*
-
-## Development Setup
+## Quick Start
 
 ### Prerequisites
-- Python 3.11
-- Node.js 18 or 20
-- `pip` and `npm` available on your path
 
-### Quick Start
-Run the helper script which installs dependencies and starts both servers:
+- **Python**: 3.11+ (3.12 recommended)
+- **Node.js**: 18+ (20 recommended)
+- **OpenAI API Key**: Required for image editing functionality
+
+### Automated Setup
+
+Run the development initialization script from the project root:
 
 ```bash
 ./dev_init.sh
 ```
 
-The backend will start on http://localhost:8000 and the frontend on http://localhost:5173.
+This script will:
+- Check system prerequisites
+- Install backend dependencies (Python virtual environment)
+- Install frontend dependencies (npm packages)
+- Start both backend and frontend development servers
 
-### Beginner Tutorial
-1. Clone the repository and run `./dev_init.sh`.
-2. Open `http://localhost:5173` in your browser once both servers start.
-3. Upload an image using the **Upload** button.
-4. Enter a short text prompt describing your desired edit.
-5. Click **Submit** to process the image and view the result.
-6. Download the final image from the results panel.
+### Manual Setup
 
-### Running Services Separately
-If you prefer separate terminals:
+#### Backend Setup
 
+1. Navigate to the backend directory:
 ```bash
-# Backend
-cd backend && source .venv/bin/activate && uvicorn backend.app.main:app --reload
-
-# Frontend
-cd frontend && npm run dev
+cd backend
 ```
 
-### Environment Variables
-Backend settings are loaded from `backend/.env`. Create this from
-`backend/.env.example` and supply your values. Frontend variables use Vite's
-`.env` files (see `frontend/.env.example`).
+2. Create and activate a virtual environment:
+```bash
+python3 -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+```
 
-### Troubleshooting
-- Ensure required versions of Python and Node are installed if the script exits.
-- Delete `backend/.venv` or `frontend/node_modules` to force a clean install if
-  you encounter dependency issues.
+3. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+4. Configure environment variables:
+```bash
+cp .env.template .env
+# Edit .env and add your OPENAI_API_KEY
+```
+
+5. Start the development server:
+```bash
+uvicorn backend.app.main:app --reload --port 8000
+```
+
+#### Frontend Setup
+
+1. Navigate to the frontend directory:
+```bash
+cd frontend
+```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Configure environment variables:
+```bash
+cp .env.template .env
+# Configure frontend environment if needed
+```
+
+4. Start the development server:
+```bash
+npm run dev
+```
+
+## Usage
+
+1. **Open the application** in your browser (typically `http://localhost:5173`)
+
+2. **Upload an image** using the file upload button (PNG or JPEG formats supported)
+
+3. **Create a mask** by drawing on the canvas overlay to indicate areas you want to modify
+
+4. **Enter a text prompt** describing the desired changes
+
+5. **Submit for processing** and wait for the AI to generate the edited image
+
+6. **View results** in the side-by-side comparison and download if satisfied
+
+## API Endpoints
+
+The backend provides a RESTful API with the following main endpoints:
+
+- `GET /` - Health check and welcome message
+- `GET /api/v1/health` - Detailed health status
+- `POST /api/v1/images/edit` - Submit image editing request
+- `POST /api/v1/openai/edit` - Direct OpenAI integration endpoint
+
+API documentation is available at `http://localhost:8000/docs` when running the backend.
+
+## Testing
+
+### Backend Tests
+```bash
+cd backend
+python -m pytest
+```
+
+### Frontend Tests
+```bash
+cd frontend
+npm test
+```
+
+### Full Test Suite
+```bash
+./run_tests.sh
+```
+
+## Development
+
+### Code Quality
+- **Backend**: Flake8 linting
+- **Frontend**: ESLint with TypeScript support
+- **Testing**: Comprehensive unit and integration tests
+
+### Environment Configuration
+- Backend configuration via environment variables and `pydantic-settings`
+- Frontend configuration via Vite environment variables
+- CORS properly configured for development
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes with appropriate tests
+4. Ensure all tests pass
+5. Submit a pull request
+
+## License
+
+See [LICENSE](LICENSE) file for details.
+
+## Documentation
+
+- [User Guide](docs/user_guide.md) - Detailed usage instructions
+- [Development Guide](DEVELOPMENT.md) - Development environment setup
+- [Changelog](CHANGELOG.md) - Version history and changes
