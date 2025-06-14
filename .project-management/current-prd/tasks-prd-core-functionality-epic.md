@@ -86,6 +86,7 @@
 - `backend/tests/api/v1/test_openai_integration.py` - Unit tests for OpenAI integration endpoints.
 - `backend/tests/unit/services/test_openai_service.py` - Unit tests for OpenAI service.
 - `backend/tests/integration/test_workflow.py` - Integration tests for full editing workflow and error handling.
+- `backend/tests/integration/test_real_openai_workflow.py` - Optional integration test using real OpenAI API.
 - `docs/user_guide.md` - User guide for the complete image editing workflow.
 
 ### Existing Files Modified
@@ -182,14 +183,14 @@
   - [x] 7.6 Add user-friendly error messages for different failure scenarios
   - [x] 7.7 Create unit tests for progress and error handling components
 
-- [ ] 8.0 Frontend-Backend Integration for Complete Workflow (FR1-FR22, US1-US7)
+- [x] 8.0 Frontend-Backend Integration for Complete Workflow (FR1-FR22, US1-US7)
   - [x] 8.1 Update `frontend/src/services/apiClient.ts` with OpenAI integration functions
   - [x] 8.2 Connect `PromptInput.tsx` to validation and submission workflow
   - [x] 8.3 Integrate enhanced `CanvasDisplay.tsx` with mask export for API submission
   - [x] 8.4 Connect `ResultsDisplay.tsx` to receive and display API responses
   - [x] 8.5 Implement complete edit workflow in `HomePage.tsx`
   - [x] 8.6 Add proper loading states and error handling throughout the UI
-  - [ ] 8.7 Test end-to-end functionality with real OpenAI API calls
+  - [x] 8.7 Test end-to-end functionality with real OpenAI API calls
 
 - [ ] 9.0 Performance Optimization and Polish (SM1-SM7)
   - [x] 9.1 Optimize canvas operations for smooth mask drawing performance
