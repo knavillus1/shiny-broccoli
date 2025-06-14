@@ -6,6 +6,7 @@ from http import HTTPStatus
 from typing import Optional
 
 from fastapi import HTTPException
+from fastapi.exceptions import RequestValidationError
 from pydantic import BaseModel, Field
 
 
@@ -24,3 +25,9 @@ def from_http_exception(exc: HTTPException) -> ProblemDetail:
     title = HTTPStatus(exc.status_code).phrase
     detail = exc.detail if isinstance(exc.detail, str) else None
     return ProblemDetail(title=title, detail=detail, status=exc.status_code)
+
+
+def from_validation_error(exc: RequestValidationError) -> ProblemDetail:
+    """Create a :class:`ProblemDetail` from a validation error."""
+    title = HTTPStatus(422).phrase
+    return ProblemDetail(title=title, detail=str(exc), status=422)

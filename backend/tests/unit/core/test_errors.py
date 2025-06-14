@@ -1,8 +1,9 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.exceptions import RequestValidationError
 from fastapi.testclient import TestClient
 
 from backend.app.core.errors import from_http_exception
-from backend.app.main import http_exception_handler
+from backend.app.main import http_exception_handler, validation_exception_handler
 
 
 def test_from_http_exception():
@@ -31,3 +32,19 @@ def test_http_exception_handler():
         "detail": "missing",
         "instance": None,
     }
+
+
+def test_validation_exception_handler():
+    app = FastAPI()
+    app.add_exception_handler(RequestValidationError, validation_exception_handler)
+
+    @app.post("/items")
+    async def create_item(name: int):
+        return {"name": name}
+
+    client = TestClient(app)
+    response = client.post("/items", json={"name": "abc"})
+    assert response.status_code == 422
+    body = response.json()
+    assert body["title"] == "Unprocessable Entity"
+    assert body["status"] == 422
