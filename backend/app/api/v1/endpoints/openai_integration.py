@@ -31,9 +31,9 @@ router = APIRouter()
 def save_debug_mask(mask_bytes: bytes) -> None:
     """Save mask file to root directory for debugging purposes."""
     try:
-        # Get the project root directory (parent of backend)
+        # Get the project root directory (go up from backend/app/api/v1/endpoints/)
         current_dir = Path(__file__).parent
-        project_root = current_dir.parent.parent.parent.parent  # Go up to project root
+        project_root = current_dir.parent.parent.parent.parent.parent  # Go up to project root
         mask_path = project_root / "mask.png"
         
         with open(mask_path, "wb") as f:

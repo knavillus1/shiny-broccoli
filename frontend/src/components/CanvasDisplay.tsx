@@ -58,6 +58,7 @@ export default function CanvasDisplay({
 }: Props) {
   const baseRef = useRef<HTMLCanvasElement>(null);
   const submitHandlerRef = useRef<(() => Promise<void>) | null>(null);
+  const originalImageRef = useRef<{ width: number; height: number; scale: number } | null>(null);
   const [maskVisible, setMaskVisible] = useState(true);
   const [submitMsg, setSubmitMsg] = useState('');
   const [submitError, setSubmitError] = useState('');
@@ -106,10 +107,17 @@ export default function CanvasDisplay({
       const availableHeight = contentContainer?.clientHeight || window.innerHeight - 250;
       const scale = Math.min(availableWidth / img.width, availableHeight / img.height, 1);
       
+      // Store original image dimensions and scale for mask conversion
+      originalImageRef.current = {
+        width: img.width,
+        height: img.height,
+        scale: scale
+      };
+      
       canvas.width = img.width * scale;
       canvas.height = img.height * scale;
       
-      console.log(`Canvas resized to: ${canvas.width}x${canvas.height}, scale: ${scale}`);
+      console.log(`Canvas resized to: ${canvas.width}x${canvas.height}, scale: ${scale}, original: ${img.width}x${img.height}`);
       
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
@@ -269,19 +277,35 @@ export default function CanvasDisplay({
     });
   }, []);
 
-  // Convert mask canvas to proper RGBA format for OpenAI
+  // Convert mask canvas to proper RGBA format for OpenAI, scaled to original image dimensions
   const convertMaskToRGBA = useCallback(async (canvas: HTMLCanvasElement): Promise<Blob | null> => {
     const ctx = canvas.getContext('2d');
-    if (!ctx) return null;
+    if (!ctx || !originalImageRef.current) return null;
+    
+    const { width: originalWidth, height: originalHeight, scale } = originalImageRef.current;
     
     console.log(`Converting mask canvas ${canvas.width}x${canvas.height} to RGBA format`);
+    console.log(`Scaling mask from display size to original image size: ${originalWidth}x${originalHeight}`);
     
-    // Get the current canvas image data
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    // Create a canvas at the original image dimensions
+    const scaledCanvas = document.createElement('canvas');
+    scaledCanvas.width = originalWidth;
+    scaledCanvas.height = originalHeight;
+    const scaledCtx = scaledCanvas.getContext('2d');
+    if (!scaledCtx) return null;
+    
+    // Scale the mask to the original image dimensions
+    // We need to scale up the mask by 1/scale factor
+    const scaleUpFactor = 1 / scale;
+    scaledCtx.scale(scaleUpFactor, scaleUpFactor);
+    scaledCtx.drawImage(canvas, 0, 0);
+    
+    // Now get the image data from the scaled canvas
+    const imageData = scaledCtx.getImageData(0, 0, originalWidth, originalHeight);
     const data = imageData.data;
     
     // Create a new ImageData for the RGBA mask
-    const maskData = new ImageData(canvas.width, canvas.height);
+    const maskData = new ImageData(originalWidth, originalHeight);
     const mask = maskData.data;
     
     let drawnPixels = 0;
@@ -308,12 +332,12 @@ export default function CanvasDisplay({
       }
     }
     
-    console.log(`Mask conversion: ${drawnPixels} drawn pixels out of ${data.length / 4} total pixels`);
+    console.log(`Mask conversion: ${drawnPixels} drawn pixels out of ${data.length / 4} total pixels at ${originalWidth}x${originalHeight}`);
     
-    // Create a temporary canvas to render the RGBA mask
+    // Create a temporary canvas to render the RGBA mask at original dimensions
     const tempCanvas = document.createElement('canvas');
-    tempCanvas.width = canvas.width;
-    tempCanvas.height = canvas.height;
+    tempCanvas.width = originalWidth;
+    tempCanvas.height = originalHeight;
     const tempCtx = tempCanvas.getContext('2d');
     if (!tempCtx) return null;
     
@@ -345,24 +369,20 @@ export default function CanvasDisplay({
       // Debug mask data before sending
       await debugMask(maskBlob!);
       
-      const imgBlob = await new Promise<Blob | null>((resolve) =>
-        baseRef.current!.toBlob(resolve, 'image/png')
-      );
-      
+      // Use the original image file, not the scaled canvas version
+      // The OpenAI API expects the mask to match the original image dimensions
       const maskFile = maskBlob
         ? new File([maskBlob], 'mask.png', { type: 'image/png' })
         : undefined;
-      const imageFile = imgBlob
-        ? new File([imgBlob], 'image.png', { type: 'image/png' })
-        : image;
       
       console.log('Submitting to OpenAI with:', {
-        imageSize: imageFile.size,
+        originalImageSize: image.size,
         maskSize: maskFile?.size,
-        hasMask: !!maskFile
+        hasMask: !!maskFile,
+        originalImageDimensions: originalImageRef.current ? `${originalImageRef.current.width}x${originalImageRef.current.height}` : 'unknown'
       });
       
-      const result = await editImage(imageFile, prompt || 'Edit', maskFile);
+      const result = await editImage(image, prompt || 'Edit', maskFile);
       setEta(result.eta_seconds ?? null);
       if (result.request_id) {
         onRequestId?.(result.request_id);
