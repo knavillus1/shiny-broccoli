@@ -84,11 +84,12 @@ shiny-broccoli/
 - `backend/app/core/config.py` - Remove custom Settings, update imports
 - `backend/app/main.py` - Update to use new dependencies and routers
 - `backend/app/logging.py` - Replace with structured logging setup
-- `backend/app/middleware.py` - Add correlation middleware
+- `backend/app/middleware/__init__.py` - Timing middleware package
 - `backend/services/openai_service.py` - Update to use async image processing
 - `backend/services/task_manager.py` - Replace with repository pattern
 - `backend/requirements.txt` - Add structlog, redis-py dependencies
 - `backend/tests/conftest.py` - Update for new dependency injection
+- `backend/tests/unit/core/test_errors.py` - Updated for validation errors
 - `backend/app/api/v1/endpoints/openai_integration.py` - **Removed after relocation to routers**
 - `backend/app/core/dependencies.py` - Add process_image dependency function
 - `backend/app/api/v1/endpoints/images.py` - **Removed after relocation to routers**
@@ -145,17 +146,17 @@ shiny-broccoli/
   - [x] 5.5 Create `backend/app/core/errors.py` with RFC 7807 Problem Details models
   - [x] 5.6 Implement global exception handler for `HTTPException` to Problem Details conversion
   - [x] 5.7 Update `backend/app/main.py` to use new router imports and exception handlers
-  - [ ] 5.8 Add validation error handling with proper Problem Details format
+  - [x] 5.8 Add validation error handling with proper Problem Details format
   - [ ] 5.9 Replace raw OpenAI API errors with sanitized Problem Details responses
 
 - [ ] 6.0 Implement Structured Logging and Observability
   - [x] 6.1 Add `structlog` dependency to `backend/requirements.txt`
   - [x] 6.2 Create `backend/app/core/logging.py` with structlog configuration
-  - [ ] 6.3 Implement JSON log formatting for production and human-readable for development
-  - [ ] 6.4 Create `backend/app/middleware/correlation.py` for X-Request-ID middleware
-  - [ ] 6.5 Configure correlation ID injection into all log entries
+  - [x] 6.3 Implement JSON log formatting for production and human-readable for development
+  - [x] 6.4 Create `backend/app/middleware/correlation.py` for X-Request-ID middleware
+  - [x] 6.5 Configure correlation ID injection into all log entries
   - [ ] 6.6 Add request/response logging with configurable log levels
-  - [ ] 6.7 Update `backend/app/main.py` to use new logging and correlation middleware
+  - [x] 6.7 Update `backend/app/main.py` to use new logging and correlation middleware
   - [ ] 6.8 Include performance metrics (response time, status codes) in structured logs
   - [ ] 6.9 Replace existing `logger` usage throughout codebase with structured logging
 
