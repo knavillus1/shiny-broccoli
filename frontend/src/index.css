@@ -1,0 +1,300 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+
+/* ==== CSS RESET (MODERN) ==== */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* ==== FONT SETUP ==== */
+
+/* ==== COLOR PALETTE & VARIABLES ==== */
+:root {
+    /* BRAND PALETTE - EDIT HERE */
+    --c-brand-dark-blue: #00215E;
+    --c-brand-medium-blue: #2C4E80;
+    --c-brand-orange: #FC4100;
+    --c-brand-yellow: #FFC55A;
+
+    /* SEMANTIC PALETTE */
+    --c-bg: #F0F4F8; /* Light grayish blue */
+    --c-surface: #FFFFFF;
+    --c-text-primary: var(--c-brand-dark-blue);
+    --c-text-secondary: var(--c-brand-medium-blue);
+    --c-primary-action: var(--c-brand-orange);
+    --c-primary-action-hover: #E03A00;
+    --c-accent: var(--c-brand-yellow);
+    --c-border: #DDE4ED;
+    --c-selection-mask: rgba(252, 65, 0, 0.4);
+
+    /* TYPOGRAPHY & SPACING */
+    --font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-weight-regular: 400;
+    --font-weight-medium: 500;
+    --font-weight-bold: 700;
+    --border-radius: 8px;
+    --shadow: 0 4px 12px rgba(0, 33, 94, 0.1);
+    --transition-speed: 0.2s ease-in-out;
+}
+
+/* ==== BASE STYLES ==== */
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--font-family-base);
+    background-color: var(--c-bg);
+    color: var(--c-text-secondary);
+    line-height: 1.6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 1rem;
+}
+
+/* ==== LAYOUT: APP WRAPPER ==== */
+.app-wrapper {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    width: 100%;
+    max-width: 1200px;
+    background-color: var(--c-surface);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+}
+
+@media (min-width: 992px) {
+    .app-wrapper {
+        grid-template-columns: 350px 1fr;
+        min-height: 80vh;
+        max-height: 90vh;
+    }
+}
+
+/* ==== CONTROLS PANEL (LEFT) ==== */
+.controls-panel {
+    padding: 2rem;
+    background-color: var(--c-surface);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+@media (min-width: 992px) {
+    .controls-panel {
+        border-right: 1px solid var(--c-border);
+    }
+}
+
+.controls-panel h1 {
+    color: var(--c-text-primary);
+    font-weight: var(--font-weight-bold);
+    font-size: 1.75rem;
+    line-height: 1.2;
+}
+.controls-panel h1 span {
+    color: var(--c-primary-action);
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.control-group label {
+    font-weight: var(--font-weight-medium);
+    color: var(--c-text-primary);
+}
+
+.control-group p.description {
+    font-size: 0.875rem;
+    color: var(--c-text-secondary);
+    margin-top: -0.25rem;
+}
+
+/* Custom File Input */
+input[type="file"] {
+    display: none;
+}
+
+.file-upload-label {
+    display: inline-block;
+    padding: 0.75rem 1.25rem;
+    background-color: var(--c-text-secondary);
+    color: var(--c-surface);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    text-align: center;
+    font-weight: var(--font-weight-medium);
+    transition: background-color var(--transition-speed);
+}
+.file-upload-label:hover {
+    background-color: var(--c-text-primary);
+}
+
+.file-name-display {
+    font-size: 0.875rem;
+    color: var(--c-text-secondary);
+    margin-top: 0.5rem;
+    word-break: break-all;
+}
+
+/* Text Input */
+.text-input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--c-border);
+    border-radius: var(--border-radius);
+    font-family: inherit;
+    font-size: 1rem;
+    color: var(--c-text-primary);
+    transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+}
+.text-input:focus {
+    outline: none;
+    border-color: var(--c-primary-action);
+    box-shadow: 0 0 0 2px rgba(252, 65, 0, 0.2);
+}
+
+/* Submit Button */
+.submit-button {
+    width: 100%;
+    padding: 1rem;
+    background-color: var(--c-primary-action);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: 1.125rem;
+    font-weight: var(--font-weight-bold);
+    cursor: pointer;
+    transition: background-color var(--transition-speed);
+    margin-top: auto; /* Pushes button to the bottom in flex column */
+}
+.submit-button:hover:not(:disabled) {
+    background-color: var(--c-primary-action-hover);
+}
+.submit-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* ==== EDITOR PANEL (RIGHT) ==== */
+.editor-panel {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    position: relative;
+    background: #fafbfc; /* slightly different bg for contrast */
+    min-height: 400px;
+}
+ @media (min-width: 992px) {
+    .editor-panel {
+         padding: 2rem 2.5rem;
+         height: 100%;
+    }
+}
+
+/* Tabs */
+.tabs-container {
+    display: flex;
+    gap: 0.5rem;
+    border-bottom: 1px solid var(--c-border);
+}
+
+.tab-button {
+    padding: 0.75rem 1.5rem;
+    background-color: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: var(--font-weight-medium);
+    color: var(--c-text-secondary);
+    margin-bottom: -1px; /* Overlap with container border */
+    transition: color var(--transition-speed), border-color var(--transition-speed);
+}
+.tab-button:hover {
+    color: var(--c-text-primary);
+}
+.tab-button.active {
+    color: var(--c-primary-action);
+    border-bottom-color: var(--c-primary-action);
+}
+
+/* Content Area */
+.content-container {
+    flex-grow: 1;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--c-surface);
+    border: 1px dashed var(--c-border);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+.tab-content {
+    width: 100%;
+    height: 100%;
+    display: none; /* Hidden by default, JS will manage */
+}
+.tab-content.active {
+    display: flex; /* Use flex to easily center content */
+    justify-content: center;
+    align-items: center;
+}
+
+#editor-content {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+    color: var(--c-text-secondary);
+}
+
+#image-canvas {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    cursor: crosshair;
+    display: none; /* Hidden until an image is loaded */
+}
+
+#result-content img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* Loading Spinner */
+.loader-overlay {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(255, 255, 255, 0.8);
+    display: none; /* Managed by JS */
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+.loader-overlay.active {
+    display: flex;
+}
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid var(--c-border);
+    border-top: 5px solid var(--c-primary-action);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

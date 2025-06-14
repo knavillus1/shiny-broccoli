@@ -14,6 +14,8 @@ async function parseError(response: Response): Promise<string> {
       return detail || 'Bad request';
     case 401:
       return detail || 'Unauthorized. Check API key.';
+    case 404:
+      return detail || 'Resource not found';
     case 429:
       return 'Too many requests. Please try again later.';
     case 502:

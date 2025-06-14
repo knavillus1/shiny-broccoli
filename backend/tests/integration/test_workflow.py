@@ -78,7 +78,7 @@ def test_full_workflow_api_error(client, monkeypatch, sample_image_bytes):
 
 def test_full_workflow_connection_error(client, monkeypatch, sample_image_bytes):
     exc = openai.APIConnectionError(
-        "boom", request=httpx.Request("POST", "http://")
+        message="boom", request=httpx.Request("POST", "http://")
     )
     monkeypatch.setattr(
         openai_integration,

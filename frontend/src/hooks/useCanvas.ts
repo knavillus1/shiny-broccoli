@@ -1,184 +1,183 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useState, useCallback } from 'react';
 
-/**
- * Hook for canvas drawing interactions.
- * Sets up pointer event handlers to allow freehand drawing.
- */
 export type BrushSize = 'small' | 'medium' | 'large';
 export type Tool = 'brush' | 'rectangle' | 'circle';
 
-export const MAX_HISTORY = 20;
+const brushSizeMap: Record<BrushSize, number> = { small: 5, medium: 10, large: 20 };
 
 export default function useCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const drawing = useRef(false);
-  const startPos = useRef<{ x: number; y: number } | null>(null);
+  
   const [mode, setMode] = useState<'draw' | 'erase'>('draw');
-  const [brushSize, setBrushSize] = useState<BrushSize>('medium');
-  const [tool, setTool] = useState<Tool>('brush');
+  const [currentBrushSize, setCurrentBrushSize] = useState<BrushSize>('medium');
+  const [currentTool, setCurrentTool] = useState<Tool>('brush');
+
   const history = useRef<ImageData[]>([]);
-  const redoStack = useRef<ImageData[]>([]);
-  const [, forceRender] = useState({});
-  const toggleMode = () => setMode((m) => (m === 'draw' ? 'erase' : 'draw'));
+  const [historyIndex, setHistoryIndex] = useState<number>(-1);
+  const [isInitialized, setIsInitialized] = useState(false);
+  
+  const startPos = useRef<{ x: number; y: number } | null>(null);
 
-  const fillWhite = (ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) => {
-    ctx.globalCompositeOperation = 'source-over';
-    ctx.fillStyle = 'white';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-  };
-
-  const clear = () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    if (history.current.length >= MAX_HISTORY) {
-      history.current.shift();
+  const initializeCanvasWithSize = useCallback((width: number, height: number) => {
+    if (!canvasRef.current) {
+      setIsInitialized(false);
+      return;
     }
-    history.current.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
-    redoStack.current = [];
-    forceRender({});
-    fillWhite(ctx, canvas);
-  };
-
-  useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    canvas.width = width;
+    canvas.height = height;
+
     const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    // Initialize mask with white so opaque regions are preserved
-    fillWhite(ctx, canvas);
-    canvas.style.opacity = '0.5';
-
-    const startDraw = (e: PointerEvent) => {
-      drawing.current = true;
-      startPos.current = { x: e.offsetX, y: e.offsetY };
-      if (history.current.length >= MAX_HISTORY) {
-        history.current.shift();
-      }
-      history.current.push(
-        ctx.getImageData(0, 0, canvas.width, canvas.height),
-      );
-      redoStack.current = [];
-      forceRender({});
-      if (tool === 'brush') {
-        ctx.beginPath();
-        ctx.moveTo(e.offsetX, e.offsetY);
-      }
-      canvas.style.cursor = 'crosshair';
-    };
-    const draw = (e: PointerEvent) => {
-      if (!drawing.current) return;
-      const widthMap = { small: 4, medium: 8, large: 12 } as const;
-      ctx.lineWidth = widthMap[brushSize];
-      ctx.lineCap = 'round';
-      if (mode === 'draw') {
-        ctx.globalCompositeOperation = 'destination-out';
-        ctx.strokeStyle = 'black';
-        ctx.fillStyle = 'black';
-      } else {
-        ctx.globalCompositeOperation = 'source-over';
-        ctx.strokeStyle = 'white';
-        ctx.fillStyle = 'white';
-      }
-      if (tool === 'brush') {
-        ctx.lineTo(e.offsetX, e.offsetY);
-        ctx.stroke();
-      }
-    };
-    const stopDraw = (e: PointerEvent) => {
-      if (!drawing.current) return;
-      drawing.current = false;
-      const start = startPos.current;
-      startPos.current = null;
-      if (tool === 'rectangle' && start) {
-        const w = e.offsetX - start.x;
-        const h = e.offsetY - start.y;
-        ctx.beginPath();
-        ctx.rect(start.x, start.y, w, h);
-        ctx.fill();
-      } else if (tool === 'circle' && start) {
-        const r = Math.hypot(e.offsetX - start.x, e.offsetY - start.y);
-        ctx.beginPath();
-        ctx.arc(start.x, start.y, r, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      canvas.style.cursor = 'default';
-    };
-
-    let raf = 0;
-    let pending: PointerEvent | null = null;
-    const throttledDraw = (e: PointerEvent) => {
-      pending = e;
-      if (!raf) {
-        raf = requestAnimationFrame(() => {
-          raf = 0;
-          if (pending) {
-            draw(pending);
-            pending = null;
-          }
-        });
-      }
-    };
-
-    canvas.addEventListener('pointerdown', startDraw);
-    canvas.addEventListener('pointermove', throttledDraw);
-    canvas.addEventListener('pointerup', stopDraw);
-    canvas.addEventListener('pointerleave', stopDraw);
-
-    return () => {
-      canvas.removeEventListener('pointerdown', startDraw);
-      canvas.removeEventListener('pointermove', throttledDraw);
-      canvas.removeEventListener('pointerup', stopDraw);
-      canvas.removeEventListener('pointerleave', stopDraw);
-    };
-  }, [mode, brushSize, tool]);
-
-  const undo = () => {
-    const canvas = canvasRef.current;
-    if (!canvas || history.current.length === 0) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    const prev = history.current.pop()!;
-    if (redoStack.current.length >= MAX_HISTORY) {
-      redoStack.current.shift();
+    if (!ctx) {
+      setIsInitialized(false);
+      return;
     }
-    redoStack.current.push(
-      ctx.getImageData(0, 0, canvas.width, canvas.height),
-    );
-    ctx.putImageData(prev, 0, 0);
-    forceRender({});
-  };
 
-  const redo = () => {
-    const canvas = canvasRef.current;
-    if (!canvas || redoStack.current.length === 0) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    const next = redoStack.current.pop()!;
-    if (history.current.length >= MAX_HISTORY) {
-      history.current.shift();
+    ctx.clearRect(0, 0, width, height);
+    try {
+      const initialImageData = ctx.getImageData(0, 0, width, height);
+      history.current = [initialImageData];
+      setHistoryIndex(0);
+      setIsInitialized(true);
+    } catch (e) {
+      console.error("Failed to get ImageData for history initialization:", e);
+      setIsInitialized(false);
     }
-    history.current.push(
-      ctx.getImageData(0, 0, canvas.width, canvas.height),
-    );
-    ctx.putImageData(next, 0, 0);
-    forceRender({});
-  };
+  }, []);
+
+  const getContext = useCallback(() => {
+    if (!isInitialized || !canvasRef.current) return null;
+    return canvasRef.current.getContext('2d');
+  }, [isInitialized]);
+
+  const saveState = useCallback(() => {
+    if (!isInitialized || !canvasRef.current) return;
+    const ctx = getContext();
+    if (!ctx) return;
+    try {
+      const currentImageData = ctx.getImageData(0, 0, canvasRef.current.width, canvasRef.current.height);
+      const newHistory = history.current.slice(0, historyIndex + 1);
+      newHistory.push(currentImageData);
+      history.current = newHistory;
+      setHistoryIndex(newHistory.length - 1);
+    } catch (e) {
+      console.error("Failed to save canvas state:", e);
+    }
+  }, [isInitialized, getContext, historyIndex]);
+
+  const clear = useCallback(() => {
+    if (!isInitialized || !canvasRef.current) return;
+    const ctx = getContext();
+    if (!ctx) return;
+    ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+    saveState();
+  }, [isInitialized, getContext, saveState]);
+
+  const undo = useCallback(() => {
+    if (!isInitialized || historyIndex <= 0) return;
+    const ctx = getContext();
+    if (!ctx) return;
+    const prevState = history.current[historyIndex - 1];
+    if (!prevState) return;
+    try {
+      ctx.putImageData(prevState, 0, 0);
+      setHistoryIndex(prevIndex => prevIndex - 1);
+    } catch (e) {
+      console.error("Failed to undo:", e);
+    }
+  }, [isInitialized, getContext, historyIndex]);
+
+  const redo = useCallback(() => {
+    if (!isInitialized || historyIndex >= history.current.length - 1) return;
+    const ctx = getContext();
+    if (!ctx) return;
+    const nextState = history.current[historyIndex + 1];
+    if (!nextState) return;
+    try {
+      ctx.putImageData(nextState, 0, 0);
+      setHistoryIndex(prevIndex => prevIndex + 1);
+    } catch (e) {
+      console.error("Failed to redo:", e);
+    }
+  }, [isInitialized, getContext, historyIndex]);
+
+  const drawBrushStroke = useCallback((x: number, y: number, isStartingPath: boolean) => {
+    if (!isInitialized) return;
+    const ctx = getContext();
+    if (!ctx) return;
+
+    ctx.lineWidth = brushSizeMap[currentBrushSize];
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    if (mode === 'draw') {
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.7)'; 
+    } else { // mode === 'erase'
+      ctx.globalCompositeOperation = 'destination-out'; 
+      ctx.strokeStyle = 'rgba(0,0,0,1)'; 
+    }
+
+    if (isStartingPath) {
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+    } else {
+      ctx.lineTo(x, y);
+      ctx.stroke();
+    }
+  }, [isInitialized, getContext, currentBrushSize, mode]);
+
+  const drawShape = useCallback((x1: number, y1: number, x2: number, y2: number) => {
+    if (!isInitialized) return;
+    const ctx = getContext();
+    if (!ctx) return;
+    
+    ctx.lineWidth = brushSizeMap[currentBrushSize];
+
+    if (mode === 'draw') {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+      ctx.globalCompositeOperation = 'source-over';
+    } else { // mode === 'erase'
+      ctx.fillStyle = 'rgba(0,0,0,1)';
+      ctx.globalCompositeOperation = 'destination-out';
+    }
+    
+    ctx.beginPath();
+    if (currentTool === 'rectangle') {
+      ctx.rect(x1, y1, x2 - x1, y2 - y1);
+    } else if (currentTool === 'circle') {
+      const radiusX = Math.abs(x2 - x1) / 2;
+      const radiusY = Math.abs(y2 - y1) / 2;
+      const centerX = Math.min(x1,x2) + radiusX;
+      const centerY = Math.min(y1,y2) + radiusY;
+      ctx.ellipse(centerX, centerY, radiusX, radiusY, 0, 0, 2 * Math.PI);
+    }
+    ctx.fill();
+  }, [isInitialized, getContext, currentBrushSize, mode, currentTool]);
+
+  const toggleInternalMode = () => setMode(m => m === 'draw' ? 'erase' : 'draw');
 
   return {
     canvasRef,
-    mode,
-    toggleMode,
+    initializeCanvasWithSize,
+    isInitialized,
+    saveState,
     clear,
-    brushSize,
-    setBrushSize,
-    tool,
-    setTool,
     undo,
     redo,
-    canUndo: history.current.length > 0,
-    canRedo: redoStack.current.length > 0,
+    canUndo: isInitialized && historyIndex > 0,
+    canRedo: isInitialized && historyIndex < history.current.length - 1,
+    
+    mode,
+    toggleMode: toggleInternalMode,
+    brushSize: currentBrushSize,
+    setBrushSize: setCurrentBrushSize,
+    tool: currentTool,
+    setTool: setCurrentTool,
+
+    drawBrushStroke,
+    drawShape,
+    setStartPosition: (pos: { x: number; y: number } | null) => startPos.current = pos,
+    getStartPosition: () => startPos.current,
   };
 }

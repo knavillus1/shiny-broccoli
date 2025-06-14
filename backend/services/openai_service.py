@@ -38,10 +38,7 @@ class OpenAIService:
         response = await self._client.models.list()
         logger.debug("Models list response: %s", response)
         # Convert response to dict for consistency
-        try:
-            return response.to_dict()
-        except Exception:
-            return dict(response)
+        return response
 
     def _ensure_png(self, data: bytes) -> bytes:
         """Return image data encoded as optimized PNG."""

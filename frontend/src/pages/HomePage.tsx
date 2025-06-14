@@ -1,31 +1,61 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { fetchEditStatus } from '../services/apiClient';
-import HealthCheckDisplay from '../components/HealthCheckDisplay';
-import FileUpload from '../components/FileUpload';
 import CanvasDisplay from '../components/CanvasDisplay';
-import PromptInput from '../components/PromptInput';
 import ResultsDisplay from '../components/ResultsDisplay';
 import ErrorBoundary from '../components/ErrorBoundary';
+import MaskToolbar from '../components/MaskToolbar';
+import useCanvas from '../hooks/useCanvas';
 
-export default function HomePage() {
-  const [image, setImage] = useState<File | null>(null);
-  const [prompt, setPrompt] = useState('');
+// Define props for HomePage
+interface HomePageProps {
+  image: File | null;
+  prompt: string;
+  onSubmitReady?: (submitHandler: () => Promise<void>) => void;
+}
+
+export default function HomePage({ image, prompt, onSubmitReady }: HomePageProps) {
   const [result, setResult] = useState<File | null>(null);
   const [error, setError] = useState('');
   const [requestId, setRequestId] = useState<string | null>(null);
-  const handleUpload = (f: File) => {
-    setImage(f);
-    setResult(null);
-    setRequestId(null);
-  };
-  const handlePrompt = (p: string) => {
-    setPrompt(p);
-    setResult(null);
-    setRequestId(null);
-  };
+
+  const {
+    canvasRef: maskCanvasRefForDisplay, // This is the ref object for the mask canvas
+    initializeCanvasWithSize,
+    isInitialized: isMaskCanvasInitialized,
+    mode: maskMode,
+    toggleMode: toggleMaskMode,
+    clear: clearMaskCanvas,
+    undo: undoMaskCanvas,
+    redo: redoMaskCanvas,
+    canUndo: canUndoMask,
+    canRedo: canRedoMask,
+    brushSize: maskBrushSize,
+    setBrushSize: setMaskBrushSize,
+    tool: maskTool,
+    setTool: setMaskTool,
+    drawBrushStroke,
+    drawShape,
+    saveState: saveMaskState,
+    setStartPosition: setMaskStartPosition,
+    getStartPosition: getMaskStartPosition,
+  } = useCanvas();
+
+  const handleMaskCanvasReady = useCallback((width: number, height: number) => {
+    if (initializeCanvasWithSize) {
+      initializeCanvasWithSize(width, height);
+    }
+  }, [initializeCanvasWithSize]);
+
   const handleCanvasResult = (file: File) => {
     void file; // preview ignored until processing completes
   };
+
+  // Clear any stale request ID on component mount
+  useEffect(() => {
+    setRequestId(null);
+    setResult(null);
+    setError('');
+  }, []);
 
   useEffect(() => {
     if (!requestId) return;
@@ -33,59 +63,117 @@ export default function HomePage() {
     const poll = async () => {
       try {
         const status = await fetchEditStatus(requestId);
-        if (status.status === 'completed' && status.result?.data?.[0]?.url) {
-          const res = await fetch(status.result.data[0].url);
-          const blob = await res.blob();
-          const file = new File([blob], 'result.png', { type: 'image/png' });
-          if (!cancelled) {
-            setResult(file);
-            setError('');
-            clearInterval(interval);
+        console.log('Polling status response:', status);
+        
+        if (status.status === 'completed') {
+          console.log('Status is completed, checking result structure...');
+          console.log('Result:', status.result);
+          
+          if (status.result?.data?.[0]?.url) {
+            console.log('Found URL:', status.result.data[0].url);
+            const res = await fetch(status.result.data[0].url);
+            const blob = await res.blob();
+            const file = new File([blob], 'result.png', { type: 'image/png' });
+            if (!cancelled) {
+              setResult(file);
+              setError('');
+              setRequestId(null); // Clear request ID after successful completion
+            }
+          } else {
+            console.error('Completed but no URL found in result:', status.result);
+            if (!cancelled) {
+              setError('Image processing completed but no result URL found');
+              setRequestId(null);
+            }
           }
         } else if (status.status === 'error') {
+          console.log('Status is error:', status.error);
           if (!cancelled) {
             setError(status.error || 'Processing failed');
-            clearInterval(interval);
+            setRequestId(null); // Clear request ID after error
           }
+        } else {
+          console.log('Status is pending, continuing to poll...');
         }
       } catch (err) {
         if (!cancelled) {
-          setError((err as Error).message);
-          clearInterval(interval);
+          const errorMessage = (err as Error).message;
+          // If the request ID is not found (404), clear it and stop polling
+          if (errorMessage.includes('404') || errorMessage.includes('Not Found')) {
+            console.log('Request ID not found, clearing polling');
+            setRequestId(null);
+            setError('');
+          } else {
+            setError(errorMessage);
+          }
         }
       }
     };
     const interval = setInterval(poll, 3000);
-    poll();
+    void poll(); // Initial call
     return () => {
       cancelled = true;
       clearInterval(interval);
     };
   }, [requestId]);
+
+  useEffect(() => {
+    if (image && prompt) {
+      console.log("HomePage received image and prompt, ready to generate if requested.");
+      // Clear any previous request ID when new image/prompt is provided
+      setRequestId(null);
+      setResult(null);
+      setError('');
+    }
+  }, [image, prompt]);
+
   return (
     <ErrorBoundary fallback={<p>Something went wrong.</p>}>
-      <div>
-        <h1>Welcome to Shiny Broccoli</h1>
-        <HealthCheckDisplay />
-        <div className="my-4">
-          <FileUpload onUploaded={handleUpload} />
-        </div>
-        <PromptInput onSubmit={handlePrompt} />
-        <CanvasDisplay
-          image={image}
-          prompt={prompt}
-          onResult={handleCanvasResult}
-          onError={setError}
-          onRequestId={setRequestId}
+      {image && (
+        <MaskToolbar
+          brushSize={maskBrushSize}
+          setBrushSize={setMaskBrushSize}
+          tool={maskTool}
+          setTool={setMaskTool}
         />
-        {image && (
-          <ResultsDisplay
-            original={image}
-            result={result}
-            error={error || undefined}
-          />
-        )}
-      </div>
+      )}
+      {!image && <p id="canvas-placeholder">Upload an image to get started</p>}
+      <CanvasDisplay
+        image={image}
+        prompt={prompt}
+        onResult={handleCanvasResult}
+        onError={setError}
+        onRequestId={setRequestId}
+        onSubmitReady={onSubmitReady}
+        
+        // Pass the ref object itself, not its .current property
+        maskCanvasRef={maskCanvasRefForDisplay} 
+        onMaskCanvasReady={handleMaskCanvasReady}
+        isMaskCanvasInitialized={isMaskCanvasInitialized}
+        drawBrushStroke={drawBrushStroke}
+        drawShape={drawShape}
+        saveMaskState={saveMaskState}
+        maskTool={maskTool}
+        maskBrushSize={maskBrushSize}
+        maskMode={maskMode}
+        setMaskStartPosition={setMaskStartPosition}
+        getMaskStartPosition={getMaskStartPosition}
+        // Controls for the mask canvas itself, managed by HomePage via useCanvas
+        toggleMaskMode={toggleMaskMode}
+        clearMask={clearMaskCanvas}
+        undoMask={undoMaskCanvas}
+        redoMask={redoMaskCanvas}
+        canUndoMask={canUndoMask}
+        canRedoMask={canRedoMask}
+      />
+      {image && result && (
+        <ResultsDisplay
+          original={image}
+          result={result}
+          error={error || undefined}
+        />
+      )}
+      {error && <p className="error-message">{error}</p>}
     </ErrorBoundary>
   );
 }

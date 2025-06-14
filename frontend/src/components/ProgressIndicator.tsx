@@ -1,44 +1,25 @@
 import React from 'react';
 
 interface Props {
-  message?: string;
-  progress?: number; // 0-100
-  etaSeconds?: number;
+  message: string;
+  etaSeconds?: number | null; // Changed from eta to etaSeconds to match expected prop
 }
 
 /**
  * Displays a simple progress indicator with optional message and progress percent.
  */
-export default function ProgressIndicator({
-  message = 'Loading...',
-  progress,
-  etaSeconds,
-}: Props) {
+export default function ProgressIndicator({ message, etaSeconds }: Props) {
   return (
-    <div className="flex items-center gap-2" aria-label="progress-indicator">
-      <svg
-        className="animate-spin h-5 w-5 text-gray-600"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-      >
-        <circle
-          className="opacity-25"
-          cx="12"
-          cy="12"
-          r="10"
-          stroke="currentColor"
-          strokeWidth="4"
-        />
-        <path
-          className="opacity-75"
-          fill="currentColor"
-          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-        />
-      </svg>
-      <span>{message}</span>
-      {progress !== undefined && <span>{progress}%</span>}
-      {etaSeconds !== undefined && <span>ETA: {etaSeconds}s</span>}
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-center z-50">
+      <div className="bg-white p-5 rounded-lg shadow-xl text-center">
+        <p className="text-lg font-medium text-gray-900">{message}</p>
+        {etaSeconds !== null && etaSeconds !== undefined && (
+          <p className="text-sm text-gray-500 mt-2">
+            Estimated time remaining: {etaSeconds} seconds
+          </p>
+        )}
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mt-4"></div>
+      </div>
     </div>
   );
 }

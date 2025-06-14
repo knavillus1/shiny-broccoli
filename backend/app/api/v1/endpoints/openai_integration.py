@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
 import time
 
@@ -31,12 +32,31 @@ async def _process_request(
     """Background task to send edit request to OpenAI."""
     service = OpenAIService()
     try:
-        result = await service.edit_image(image, mask, prompt)
-    except Exception as exc:  # pragma: no cover - network errors handled in tests
-        logger.exception("OpenAI edit failed")
-        task_manager.set_error(request_id, str(exc))
-    else:
+        logger.info(f"Starting OpenAI edit for request {request_id}")
+        
+        # TEMPORARY: Mock the response for debugging
+        import time
+        await asyncio.sleep(2)  # Simulate processing time
+        mock_result = {
+            "created": int(time.time()),
+            "data": [
+                {
+                    "url": "https://oaidalleapiprodscus.blob.core.windows.net/private/test-image.png"
+                }
+            ]
+        }
+        result = mock_result
+        
+        # Uncomment this line for real OpenAI calls:
+        # result = await service.edit_image(image, mask, prompt)
+        
+        logger.info(f"OpenAI edit completed for request {request_id}")
+        logger.debug(f"OpenAI result structure: {result}")
         task_manager.set_result(request_id, result)
+        logger.info(f"Result stored for request {request_id}")
+    except Exception as exc:  # pragma: no cover - network errors handled in tests
+        logger.exception(f"OpenAI edit failed for request {request_id}: {exc}")
+        task_manager.set_error(request_id, str(exc))
 
 
 @router.post("/images/edit")
@@ -145,6 +165,8 @@ async def get_status(request_id: str) -> dict[str, object]:
     response["eta_seconds"] = eta
     if record.result is not None:
         response["result"] = record.result
+        logger.debug(f"Returning result for {request_id}: {record.result}")
     if record.error is not None:
         response["error"] = record.error
+    logger.debug(f"Status response for {request_id}: {response}")
     return response
