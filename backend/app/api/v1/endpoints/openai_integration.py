@@ -56,7 +56,7 @@ async def _process_request(
         logger.info(f"OpenAI result structure: {result}")
         task_manager.set_result(request_id, result)
         logger.info(f"Result stored for request {request_id}")
-    except Exception as exc:  # pragma: no cover - network errors handled in tests
+    except Exception as exc:
         logger.exception(f"OpenAI edit failed for request {request_id}: {exc}")
         task_manager.set_error(request_id, str(exc))
 
@@ -120,7 +120,7 @@ async def edit_image(
         background_tasks.add_task(
             _process_request, request_id, img_bytes, mask_bytes, prompt
         )
-    except openai.BadRequestError as exc:  # pragma: no cover - network
+    except openai.BadRequestError as exc:
         logger.warning("OpenAI bad request: %s", exc)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -129,37 +129,37 @@ async def edit_image(
     except (
         openai.AuthenticationError,
         openai.PermissionDeniedError,
-    ) as exc:  # pragma: no cover - network
+    ) as exc:
         logger.warning("OpenAI auth error: %s", exc)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=str(exc),
         )
-    except openai.RateLimitError as exc:  # pragma: no cover - network
+    except openai.RateLimitError as exc:
         logger.warning("OpenAI rate limit: %s", exc)
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             detail=str(exc),
         )
-    except openai.APIConnectionError as exc:  # pragma: no cover - network
+    except openai.APIConnectionError as exc:
         logger.warning("OpenAI connection error: %s", exc)
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail=str(exc),
         )
-    except openai.APITimeoutError as exc:  # pragma: no cover - network
+    except openai.APITimeoutError as exc:
         logger.warning("OpenAI timeout: %s", exc)
         raise HTTPException(
             status_code=status.HTTP_504_GATEWAY_TIMEOUT,
             detail=str(exc),
         )
-    except openai.APIError as exc:  # pragma: no cover - network
+    except openai.APIError as exc:
         logger.warning("OpenAI API error: %s", exc)
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail=str(exc),
         )
-    except Exception as exc:  # pragma: no cover - should not occur in tests
+    except Exception as exc:
         logger.exception("OpenAI edit failed")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

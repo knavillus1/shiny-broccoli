@@ -8,7 +8,7 @@ from typing import Any
 
 try:  # Pillow is optional in test environments
     from PIL import Image
-except Exception:  # pragma: no cover - pillow may not be installed
+except Exception:
     Image = None  # type: ignore
 
 import openai
@@ -29,20 +29,9 @@ class OpenAIService:
         self._client = openai.AsyncOpenAI(api_key=key)
         logger.debug("OpenAI client initialized")
 
-    async def verify_connection(self) -> dict[str, Any]:
-        """Perform a trivial API call to verify credentials.
-
-        The call is mocked during tests and does not require network access.
-        """
-        logger.info("Verifying OpenAI credentials")
-        response = await self._client.models.list()
-        logger.debug("Models list response: %s", response)
-        # Convert response to dict for consistency
-        return response
-
     def _ensure_png(self, data: bytes) -> bytes:
         """Return image data encoded as optimized PNG."""
-        if Image is None:  # pragma: no cover - Pillow not installed
+        if Image is None:
             return data
         img = Image.open(BytesIO(data))
         buf = BytesIO()
@@ -104,7 +93,7 @@ class OpenAIService:
                             png_mask = mbuf.getvalue()
                             
                             logger.info(f"Mask resized from {mask_w}x{mask_h} to {target_size}x{target_size}")
-            else:  # pragma: no cover - Pillow not installed
+            else:
                 # This case should ideally not happen if frontend validates
                 # but as a fallback, try to get dimensions if possible
                 # This might still fail if PIL is missing and image lacks size info
@@ -121,7 +110,7 @@ class OpenAIService:
                     else:  # Fallback when PNG header is missing
                         # Proceed with original bytes if no PIL
                         pass  # width/height may be missing; API might error
-                except Exception:  # pragma: no cover
+                except Exception:
                     # If we can't determine size and PIL is not there, we can't resize.
                     # The API will likely reject it if not already a supported size.
                     pass
@@ -140,7 +129,7 @@ class OpenAIService:
                 n=n,
                 size=f"{width}x{height}",
             )
-        except Exception:  # pragma: no cover - network errors mocked in tests
+        except Exception:
             logger.exception("OpenAI image edit failed")
             raise
         logger.info("Image edit response: %s", response)
