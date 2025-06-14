@@ -48,3 +48,18 @@ def test_validation_exception_handler():
     body = response.json()
     assert body["title"] == "Unprocessable Entity"
     assert body["status"] == 422
+
+
+def test_from_openai_error_mapping():
+    import openai
+    from backend.app.core.errors import from_openai_error
+
+    import httpx
+    error = openai.RateLimitError(
+        "boom",
+        response=httpx.Response(429, request=httpx.Request("POST", "http://")),
+        body=None,
+    )
+    http_exc = from_openai_error(error)
+    assert http_exc.status_code == 429
+    assert "rate limit" in http_exc.detail.lower()
