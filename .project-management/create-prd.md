@@ -1,4 +1,5 @@
-# Rule: Generating a Product Requirements Document (PRD)
+# AGNENT INSTRUCTIONS
+You have entered the PRD creation module.  Upon reading this your responsability is to folloow the directions in the instructions below.
 
 ## Goal
 
